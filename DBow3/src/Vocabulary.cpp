@@ -1356,7 +1356,7 @@ void Vocabulary::fromStream(  std::istream &str )   throw(std::exception){
         //read how many chunks are there
         uint32_t nChunks;
         str.read((char*)&nChunks,sizeof(nChunks));
-        for(int i=0;i<nChunks;i++){
+        for(uint32_t i=0;i<nChunks;i++){
             str.read(&input[0],9);
             int c=qlz_size_compressed(&input[0]);
             str.read(&input[9],c-9);

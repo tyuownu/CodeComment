@@ -63,7 +63,7 @@ struct ScopedTimerEvents
         int m=-1;
         for(auto &s:str)m=std::max(int(s.size()),m);
         for(auto &s:str){
-            while(s.size()<m) s.push_back(' ');
+            while(static_cast<int>(s.size())<m) s.push_back(' ');
         }
     }
 
@@ -79,7 +79,7 @@ struct ScopedTimerEvents
 
         add("total");
         addspaces(names);
-        for(int i=1;i<vtimes.size();i++){
+        for(size_t i=1;i<vtimes.size();i++){
             std::cout<<"Time("<<_name<<")-"<<names[i]<<" "<< double(std::chrono::duration_cast<std::chrono::nanoseconds>(vtimes[i]-vtimes[i-1]).count())/fact<<str<<" "<<double(std::chrono::duration_cast<std::chrono::nanoseconds>(vtimes[i]-vtimes[0]).count())/fact<<str<<std::endl;
         }
     }
