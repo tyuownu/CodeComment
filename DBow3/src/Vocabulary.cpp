@@ -476,7 +476,7 @@ void Vocabulary::setNodeWeights(
 
 
     for ( auto mit = training_features.begin();
-         mit != training_features.end(); ++mit) {
+         mit != training_features.end(); ++mit ) {
       fill(counted.begin(), counted.end(), false);
 
       for ( auto fit = mit->begin(); fit < mit->end(); ++fit ) {

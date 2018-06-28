@@ -87,6 +87,31 @@ double DescManip::distance(const cv::Mat &a,  const cv::Mat &b) {
     // Bit count function got from:
     // http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetKernighan
     // This implementation assumes that a.cols (CV_8U) % sizeof(uint64_t) == 0
+    //
+    // tyu- more about hamming distance
+    // unsigned int v;
+    // unsigned int c;
+    // static const int S[] = {1, 2, 4, 8, 16};  // magic Binary Numbers
+    // static const int B[] = {0x55555555, 0x33333333, 0x0F0F0F0F, 0x00FF00FF,  0x0000FFFF};
+    //
+    // c = v - ((v >> 1) & B[0]);
+    // c = ((c >> S[1]) & B[1]) + (c & B[1]);
+    // c = ((c >> S[2]) + c) & B[2];
+    // c = ((c >> S[3]) + c) & B[3];
+    // c = ((c >> S[4]) + c) & B[4];
+    // and we can adjust the method for larger integer sizes by continuing with
+    // the patterns for the Binary Magic Numbers, B & S.
+    //
+    // The best method for counting bits in a 32-bit integer v is the following
+    //
+    // v = v - ((v >> 1) & 0x55555555);
+    // v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
+    // c = ((v + (v >> 4) & 0x0F0F0F0F) * 0x01010101) >> 24;
+    //
+    // and that:
+    // (uint64_t)~(uint64_t)0/3 = 0xFFFFFFFF/3 = 0x55555555;
+    // (uint64_t)~(uint64_t)0/5 = 0xFFFFFFFF/5 = 0x33333333;
+    // (uint64_t)~(uint64_t)0/255 = 0xFFFFFFFF/255 = 0x01010101;
 
     const uint64_t *pa, *pb;
     pa = a.ptr<uint64_t>();  // a & b are actually CV_8U
