@@ -5,11 +5,11 @@
  * Description: functions for ORB descriptors
  * License: see the LICENSE.txt file
  *
- * Distance function has been modified 
+ * Distance function has been modified
  *
  */
 
- 
+
 #include <vector>
 #include <string>
 #include <sstream>
@@ -23,6 +23,6 @@ namespace DBoW2 {
 
 // --------------------------------------------------------------------------
 
-} // namespace DBoW2
+}   // namespace DBoW2
 
 
