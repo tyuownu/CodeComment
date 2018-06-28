@@ -31,10 +31,10 @@ double L1Scoring::score(const BowVector &v1, const BowVector &v2) const {
   double score = 0;
 
   while ( v1_it != v1_end && v2_it != v2_end ) {
-    const WordValue& vi = v1_it->second;
-    const WordValue& wi = v2_it->second;
-
     if ( v1_it->first == v2_it->first ) {
+      const WordValue& vi = v1_it->second;
+      const WordValue& wi = v2_it->second;
+
       score += fabs(vi - wi) - fabs(vi) - fabs(wi);
 
       // move v1 and v2 forward
@@ -74,10 +74,10 @@ double L2Scoring::score(const BowVector &v1, const BowVector &v2) const {
   double score = 0;
 
   while ( v1_it != v1_end && v2_it != v2_end ) {
-    const WordValue& vi = v1_it->second;
-    const WordValue& wi = v2_it->second;
-
     if ( v1_it->first == v2_it->first ) {
+      const WordValue& vi = v1_it->second;
+      const WordValue& wi = v2_it->second;
+
       score += vi * wi;
 
       // move v1 and v2 forward
@@ -121,10 +121,10 @@ double ChiSquareScoring::score(const BowVector &v1, const BowVector &v2) const {
   // all the items are taken into account
 
   while ( v1_it != v1_end && v2_it != v2_end ) {
-    const WordValue& vi = v1_it->second;
-    const WordValue& wi = v2_it->second;
-
     if ( v1_it->first == v2_it->first ) {
+      const WordValue& vi = v1_it->second;
+      const WordValue& wi = v2_it->second;
+
       // (v-w)^2/(v+w) - v - w = -4 vw/(v+w)
       // we move the -4 out
       if ( vi + wi != 0.0 )
@@ -208,10 +208,10 @@ double BhattacharyyaScoring::score(const BowVector &v1,
   double score = 0;
 
   while ( v1_it != v1_end && v2_it != v2_end ) {
-    const WordValue& vi = v1_it->second;
-    const WordValue& wi = v2_it->second;
-
     if ( v1_it->first == v2_it->first ) {
+      const WordValue& vi = v1_it->second;
+      const WordValue& wi = v2_it->second;
+
       score += sqrt(vi * wi);
 
       // move v1 and v2 forward
@@ -245,10 +245,10 @@ double DotProductScoring::score(const BowVector &v1, const BowVector &v2) const 
   double score = 0;
 
   while ( v1_it != v1_end && v2_it != v2_end ) {
-    const WordValue& vi = v1_it->second;
-    const WordValue& wi = v2_it->second;
-
     if ( v1_it->first == v2_it->first ) {
+      const WordValue& vi = v1_it->second;
+      const WordValue& wi = v2_it->second;
+
       score += vi * wi;
 
       // move v1 and v2 forward
