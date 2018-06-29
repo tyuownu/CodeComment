@@ -106,17 +106,17 @@ int main(int argc, char **argv)
     for ( int i = 3; i < argc; ++i ) {
       filenames[i - 3] = {argv[i]};
     }
-    for ( int i = 0; i < filenames.size(); ++i )
+    for ( size_t i = 0; i < filenames.size(); ++i )
       features[i] = loadFeatures({filenames[i]}, desc_name);
 
     fbow::fBow vv, vv2;
     int avgScore = 0;
     int counter = 0;
     auto t_start = std::chrono::high_resolution_clock::now();
-    for ( int i = 0; i < features.size(); ++i ) {
+    for ( size_t i = 0; i < features.size(); ++i ) {
       vv = voc.transform(features[i][0]);
       map<double, int> score;
-      for ( int j = 0; j < features.size(); ++j ) {
+      for ( size_t j = 0; j < features.size(); ++j ) {
         vv2 = voc.transform(features[j][0]);
         double score1 = vv.score(vv, vv2);
         counter++;
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 
     std::string command;
     int j = 0;
-    for ( int i = 0; i < scores.size(); i++ ) {
+    for ( size_t i = 0; i < scores.size(); i++ ) {
       std::stringstream str;
 
       command = "mkdir ";
