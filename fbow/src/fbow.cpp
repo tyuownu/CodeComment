@@ -56,7 +56,7 @@ void Vocabulary::setParams(int aligment, int k, int desc_type,
     _block_size_bytes_al++;
   _params._block_size_bytes_wp = _block_size_bytes_al*_params._aligment;
 
-  //give memory
+  // give memory
   _params._total_size = _params._block_size_bytes_wp*_params._nblocks;
   _data = (char*)AlignedAlloc(_params._aligment, _params._total_size);
   memset(_data, 0, _params._total_size);
@@ -75,7 +75,7 @@ fBow Vocabulary::transform(const cv::Mat &features) {
 
   // get host info to decide the version to execute
   if ( !cpu_info ) {
-    cpu_info=std::make_shared<cpu>();
+    cpu_info = std::make_shared<cpu>();
     cpu_info->detect_host();
   }
   fBow result;
@@ -84,33 +84,33 @@ fBow Vocabulary::transform(const cv::Mat &features) {
     // orb
     if ( cpu_info->HW_x64 ) {
       if ( _params._desc_size == 32 )
-        result = _transform<L1_32bytes>(features); // full akaze
+        result = _transform<L1_32bytes>(features);  // full akaze
       else if ( _params._desc_size == 61 && _params._aligment % 8 == 0 )
         result = _transform<L1_61bytes>(features);
-        //generic
+        //  generic
       else
-        result=_transform<L1_x64>(features );
+        result = _transform<L1_x64>(features);
     } else
-      result = _transform<L1_x32>(features );
+      result = _transform<L1_x32>(features);
   } else if ( features.type() == CV_32FC1 ) {
-    if ( cpu_info->isSafeAVX() && _params._aligment % 32 == 0) {  //AVX version
-        if ( _params._desc_size == 256 )
-          result = _transform<L2_avx_8w>(features);  //specific for surf 256 bytes
-        else
-          result = _transform<L2_avx_generic>(features);   //any other
+    if ( cpu_info->isSafeAVX() && _params._aligment % 32 == 0 ) {  // AVX version
+      if ( _params._desc_size == 256 )
+        result = _transform<L2_avx_8w>(features);  // specific for surf 256 bytes
+      else
+        result = _transform<L2_avx_generic>(features);   // any other
     }
-    if ( cpu_info->isSafeSSE() && _params._aligment % 16 == 0 ) {   //SSE version
-        if ( _params._desc_size == 256 )
-          result = _transform<L2_sse3_16w>(features);   //specific for surf 256 bytes
-        else
-          result=_transform<L2_se3_generic>(features);   //any other
+
+    if ( cpu_info->isSafeSSE() && _params._aligment % 16 == 0 ) {   // SSE version
+      if ( _params._desc_size == 256 )
+        result = _transform<L2_sse3_16w>(features);   // specific for surf 256 bytes
+      else
+        result = _transform<L2_se3_generic>(features);   // any other
     }
     // generic version
     result = _transform<L2_generic>(features);
-  }
-  else
+  } else
     throw std::runtime_error(
-        "Vocabulary::transform invalid feature type. Should be CV_8UC1 or CV_32FC1");
+      "Vocabulary::transform invalid feature type. Should be CV_8UC1 or CV_32FC1");
 
   /// now, normalize
   // L2
@@ -121,7 +121,7 @@ fBow Vocabulary::transform(const cv::Mat &features) {
   if ( norm > 0.0 ) {
     double inv_norm = 1. /sqrt(norm);
     for ( auto  &e : result )
-      e.second *= inv_norm ;
+      e.second *= inv_norm;
   }
   return result;
 }
@@ -169,7 +169,7 @@ void Vocabulary::fromStream(std::istream &str) {
   if ( _data != 0)
     AlignedFree(_data);
   uint64_t sig;
-  str.read((char*)&sig,sizeof(sig));
+  str.read((char*)&sig, sizeof(sig));
   if ( sig != 55824124 )
     throw std::runtime_error("Vocabulary::fromStream invalid signature");
 
@@ -181,7 +181,7 @@ void Vocabulary::fromStream(std::istream &str) {
   str.read(_data, _params._total_size);
 }
 
-double fBow::score (const  fBow &v1,const fBow &v2) {
+double fBow::score(const  fBow &v1, const fBow &v2) {
   fBow::const_iterator v1_it, v2_it;
   const fBow::const_iterator v1_end = v1.end();
   const fBow::const_iterator v2_end = v2.end();
@@ -206,11 +206,10 @@ double fBow::score (const  fBow &v1,const fBow &v2) {
       //  v1_it = v1.lower_bound(v2_it->first);
       while ( v1_it != v1_end && v1_it->first < v2_it->first)
         ++v1_it;
-    }
-    else {
+    } else {
       // move v2 forward
       // v2_it = v2.lower_bound(v1_it->first);
-      while ( v2_it != v2_end && v2_it->first < v1_it->first)
+      while ( v2_it != v2_end && v2_it->first < v1_it->first )
         ++v2_it;
 
       // v2_it = (first element >= v1_it.id)
@@ -220,7 +219,7 @@ double fBow::score (const  fBow &v1,const fBow &v2) {
   // ||v - w||_{L2} = sqrt( 2 - 2 * Sum(v_i * w_i) )
   //    for all i | v_i != 0 and w_i != 0 )
   // (Nister, 2006)
-  if(score >= 1)   // rounding errors
+  if ( score >= 1 )   // rounding errors
     score = 1.0;
   else
     score = 1.0 - sqrt(1.0 - score);   // [0..1]
@@ -242,4 +241,4 @@ uint64_t Vocabulary::hash() const {
     seed ^= _data[i] + 0x9e3779b9 + (seed << 6) + (seed >> 2);
   return seed;
 }
-}
+}  // namespace fbow

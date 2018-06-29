@@ -3,7 +3,7 @@
 #include "cpu.h"
 using namespace std;
 using namespace fbow;
-void print(const char* label, bool yes){
+void print(const char* label, bool yes) {
   cout << label;
   cout << (yes ? "Yes" : "No") << endl;
 }
@@ -72,9 +72,10 @@ void print(cpu  host_info)  {
   cout << endl;
 }
 
-int main(){
-  cout << "CPU Vendor String: " ;
-  std::cout << cpu::get_vendor_string() ;
+int main()
+{
+  cout << "CPU Vendor String: ";
+  std::cout << cpu::get_vendor_string();
   cpu features;
   features.detect_host();
   print(features);

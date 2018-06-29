@@ -29,7 +29,7 @@ class CmdLineParser {
       if ( string(argv[i]) == param )
         idx = i;
 
-    return (idx!=-1);
+    return (idx != -1);
   }
 
   string operator()(string param, string defvalue = "-1") {
@@ -56,14 +56,14 @@ std::vector<cv::Mat> toDescriptorVector(const cv::Mat &Descriptors) {
 
 std::vector<cv::Mat> loadFeatures(
     std::vector<string> path_to_images,
-    string descriptor = "") throw (std::exception) {
-  //select detector
+    string descriptor = "") throw(std::exception) {
+  // select detector
   cv::Ptr<cv::Feature2D> fdetector;
   if ( descriptor == "orb" )
     fdetector = cv::ORB::create(2000);
 
   else if ( descriptor == "brisk" )
-    fdetector=cv::BRISK::create();
+    fdetector = cv::BRISK::create();
 #ifdef OPENCV_VERSION_3
   else if ( descriptor == "akaze" )
     fdetector = cv::AKAZE::create(cv::AKAZE::DESCRIPTOR_MLDB,  0,  3, 1e-4);
@@ -139,7 +139,7 @@ int main(int argc, char**argv)
                   t_end - t_start).count());
       cout << "DBOW2 time=" << dbow2_transform << " ms" << endl;
     }
-    //repeat with fbow
+    // repeat with fbow
 
     fbow::Vocabulary fvoc;
     cout << "loading fbow voc...." << endl;
@@ -155,7 +155,7 @@ int main(int argc, char**argv)
       cout << "processing image 1000 times" << endl;
       fbow::fBow vv;
       t_start = std::chrono::high_resolution_clock::now();
-      for ( int i = 0; i < 1000; i++) {
+      for ( int i = 0; i < 1000; i++ ) {
         vv = fvoc.transform(features[0]);
       }
       t_end = std::chrono::high_resolution_clock::now();
@@ -171,6 +171,6 @@ int main(int argc, char**argv)
     cout << "Fbow load speed up=" << dbow2_load / fbow_load
         << " transform Speed up=" << dbow2_transform / fbow_transform << endl;
   } catch(std::exception &ex) {
-    cerr<<ex.what()<<endl;
+    cerr << ex.what() << endl;
   }
 }

@@ -17,11 +17,10 @@ using namespace std;
 std::vector<cv::Mat> loadFeatures(
     std::vector<string> path_to_images,
     string descriptor = "") throw(std::exception) {
-  //select detector
+  // select detector
   cv::Ptr<cv::Feature2D> fdetector;
   if ( descriptor == "orb" )
     fdetector = cv::ORB::create(2000);
-
   else if ( descriptor == "brisk" )
     fdetector = cv::BRISK::create();
 #ifdef OPENCV_VERSION_3
@@ -30,7 +29,7 @@ std::vector<cv::Mat> loadFeatures(
 #endif
 #ifdef USE_CONTRIB
   else if ( descriptor == "surf" )
-    fdetector = cv::xfeatures2d::SURF::create(15, 4, 2 );
+    fdetector = cv::xfeatures2d::SURF::create(15, 4, 2);
 #endif
   else
     throw std::runtime_error("Invalid descriptor");
@@ -79,9 +78,9 @@ class VocabularyCreator {
     // reserve memory
     cv::Mat features;
     if ( voc.getDescType() == CV_8UC1 )
-      features.create(nleafs,voc.getDescSize(), CV_8UC1);
+      features.create(nleafs, voc.getDescSize(), CV_8UC1);
     else
-      features.create(nleafs,voc.getDescSize() / sizeof(float), CV_32FC1);
+      features.create(nleafs, voc.getDescSize() / sizeof(float), CV_32FC1);
     // start copy data
     nleafs = 0;
     for ( uint32_t b = 0; b < voc._params._nblocks; b++ ) {
@@ -113,7 +112,7 @@ class CmdLineParser {
       if ( string(argv[i]) == param )
         idx = i;
 
-    return (idx!=-1);
+    return (idx != -1);
   }
 
   string operator()(string param, string defvalue = "-1") {
@@ -156,9 +155,9 @@ int main(int argc, char** argv)
   cout << "Creating tree" << endl;
   if ( voc.getDescType() == CV_8UC1 ) {
     cv::flann::HierarchicalClusteringIndexParams indexParams(
-        voc.getK(), cvflann::FLANN_CENTERS_RANDOM, 5, 1) ;
+        voc.getK(), cvflann::FLANN_CENTERS_RANDOM, 5, 1);
     tree = std::make_shared<cv::flann::Index>(
-        voc_words, indexParams,cvflann::FLANN_DIST_HAMMING);
+        voc_words, indexParams, cvflann::FLANN_DIST_HAMMING);
   } else {
     //   cv::flann::KDTreeIndexParams indexParams;
     cv::flann::KMeansIndexParams indexParams(voc.getK());

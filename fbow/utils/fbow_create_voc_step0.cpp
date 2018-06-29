@@ -1,5 +1,6 @@
 
-//First step of creating a vocabulary is extracting features from a set of images. We save them to a file for next step
+// First step of creating a vocabulary is extracting features from a set of
+// images. We save them to a file for next step
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -24,7 +25,7 @@ class CmdLineParser {
   char **argv;
 
  public:
-  CmdLineParser(int _argc,char **_argv) :
+  CmdLineParser(int _argc, char **_argv) :
       argc(_argc),
       argv(_argv)
   {}
@@ -42,12 +43,12 @@ class CmdLineParser {
     int idx = -1;
     for ( int i = 0; i < argc && idx == -1; i++ )
       if ( string(argv[i]) == param )
-        idx=i;
+        idx = i;
 
     if ( idx == -1 )
       return defvalue;
     else
-      return (argv[idx+1]);
+      return (argv[idx + 1]);
   }
 };
 
@@ -63,8 +64,8 @@ void wait() {
 
 
 vector<cv::Mat> loadFeatures(std::vector<string> path_to_images,
-                             string descriptor = "") throw (std::exception) {
-  //select detector
+                             string descriptor = "") throw(std::exception) {
+  // select detector
   cv::Ptr<cv::Feature2D> fdetector;
   if ( descriptor == "orb" )
     fdetector = cv::ORB::create(2000);
@@ -85,7 +86,7 @@ vector<cv::Mat> loadFeatures(std::vector<string> path_to_images,
 
 
   cout << "Extracting   features..." << endl;
-  for ( size_t i = 0; i < path_to_images.size(); ++i) {
+  for ( size_t i = 0; i < path_to_images.size(); ++i ) {
     vector<cv::KeyPoint> keypoints;
     cv::Mat descriptors;
     cout << "reading image: " << path_to_images[i] << endl;
@@ -106,13 +107,13 @@ vector<cv::Mat> loadFeatures(std::vector<string> path_to_images,
 void saveToFile(string filename,
                 const vector<cv::Mat> &features,
                 std::string desc_name,
-                bool rewrite = true) throw (std::exception) {
-  //test it is not created
+                bool rewrite = true) throw(std::exception) {
+  // test it is not created
   if ( !rewrite ) {
     std::fstream ifile(filename, std::ios::binary);
-    if ( ifile.is_open() )   //read size and rewrite
+    if ( ifile.is_open() )   // read size and rewrite
       std::runtime_error("ERROR::: Output File " +
-                         filename + " already exists!!!!!" );
+                         filename + " already exists!!!!!");
   }
   std::ofstream ofile(filename, std::ios::binary);
   if ( !ofile.is_open() ) {
@@ -135,12 +136,12 @@ void saveToFile(string filename,
     uint32_t aux = f.cols;
     ofile.write((char*)&aux, sizeof(aux));
 
-    aux=f.rows;
+    aux = f.rows;
     ofile.write((char*)&aux, sizeof(aux));
 
-    aux=f.type();
+    aux = f.type();
     ofile.write((char*)&aux, sizeof(aux));
-    ofile.write((char*)f.ptr<uchar>(0), f.total()*f.elemSize());
+    ofile.write((char*)f.ptr<uchar>(0), f.total() * f.elemSize());
   }
 }
 
@@ -148,10 +149,9 @@ void saveToFile(string filename,
 
 int main(int argc, char **argv)
 {
-
   try {
     CmdLineParser cml(argc, argv);
-    if (cml["-h"] || argc<4 ) {
+    if ( cml["-h"] || argc < 4 ) {
       cerr << "Usage:  descriptor_name output dir_with_images \n\t"
           << " descriptors:brisk,surf,orb(default),akaze(only if using opencv 3)"
           << endl;
