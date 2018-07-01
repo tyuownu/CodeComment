@@ -113,8 +113,13 @@ namespace g2o {
       _error = error_.log();
     }
 
-    virtual double initialEstimatePossible(const OptimizableGraph::VertexSet& , OptimizableGraph::Vertex* ) { return 1.;}
-    virtual void initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* /*to*/)
+    virtual double initialEstimatePossible(
+        const OptimizableGraph::VertexSet& , OptimizableGraph::Vertex* ) {
+      return 1.;
+    }
+
+    virtual void initialEstimate(
+        const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* /*to*/)
     {
       VertexSim3Expmap* v1 = static_cast<VertexSim3Expmap*>(_vertices[0]);
       VertexSim3Expmap* v2 = static_cast<VertexSim3Expmap*>(_vertices[1]);
@@ -127,7 +132,8 @@ namespace g2o {
 
 
 /**/
-class EdgeSim3ProjectXYZ : public  BaseBinaryEdge<2, Vector2d,  VertexSBAPointXYZ, VertexSim3Expmap>
+class EdgeSim3ProjectXYZ :
+    public  BaseBinaryEdge<2, Vector2d,  VertexSBAPointXYZ, VertexSim3Expmap>
 {
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -149,7 +155,8 @@ class EdgeSim3ProjectXYZ : public  BaseBinaryEdge<2, Vector2d,  VertexSBAPointXY
 };
 
 /**/
-class EdgeInverseSim3ProjectXYZ : public  BaseBinaryEdge<2, Vector2d,  VertexSBAPointXYZ, VertexSim3Expmap>
+class EdgeInverseSim3ProjectXYZ :
+    public  BaseBinaryEdge<2, Vector2d,  VertexSBAPointXYZ, VertexSim3Expmap>
 {
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW

@@ -44,8 +44,7 @@ namespace g2o {
    * matrix.
    */
   template <class MatrixType>
-  class SparseBlockMatrixDiagonal
-  {
+  class SparseBlockMatrixDiagonal {
     public:
       //! this is the type of the elementary block, it is an Eigen::Matrix.
       typedef MatrixType SparseMatrixBlock;
@@ -62,10 +61,14 @@ namespace g2o {
       {}
 
       //! how many rows/cols does the block at block-row / block-column r has?
-      inline int dimOfBlock(int r) const { return r ? _blockIndices[r] - _blockIndices[r-1] : _blockIndices[0] ; }
+      inline int dimOfBlock(int r) const {
+        return r ? _blockIndices[r] - _blockIndices[r-1] : _blockIndices[0] ;
+      }
 
       //! where does the row /col at block-row / block-column r starts?
-      inline int baseOfBlock(int r) const { return r ? _blockIndices[r-1] : 0 ; }
+      inline int baseOfBlock(int r) const {
+        return r ? _blockIndices[r-1] : 0 ;
+      }
 
       //! the block matrices per block-column
       const DiagonalVector& diagonal() const { return _diagonal;}

@@ -78,8 +78,7 @@ namespace g2o {
      * \brief data packet for a vertex. Extend this class to store in the vertices
      * the potential additional information you need (e.g. images, laser scans, ...).
      */
-    class  Data : public HyperGraph::HyperGraphElement
-    {
+    class  Data : public HyperGraph::HyperGraphElement {
       friend struct OptimizableGraph;
       public:
         virtual ~Data();
@@ -88,7 +87,9 @@ namespace g2o {
         virtual bool read(std::istream& is) = 0;
         //! write the data to a stream
         virtual bool write(std::ostream& os) const = 0;
-        virtual HyperGraph::HyperGraphElementType elementType() const { return HyperGraph::HGET_DATA;}
+        virtual HyperGraph::HyperGraphElementType elementType() const {
+          return HyperGraph::HGET_DATA;
+        }
         const Data* next() const {return _next;}
         Data* next() {return _next;}
         void setNext(Data* next_) { _next = next_; }
@@ -100,8 +101,7 @@ namespace g2o {
      * \brief order vertices based on their ID
      */
     struct  VertexIDCompare {
-      bool operator() (const Vertex* v1, const Vertex* v2) const
-      {
+      bool operator() (const Vertex* v1, const Vertex* v2) const {
         return v1->id() < v2->id();
       }
     };
@@ -110,8 +110,7 @@ namespace g2o {
      * \brief order edges based on the internal ID, which is assigned to the edge in addEdge()
      */
     struct  EdgeIDCompare {
-      bool operator() (const Edge* e1, const Edge* e2) const
-      {
+      bool operator() (const Edge* e1, const Edge* e2) const {
         return e1->internalId() < e2->internalId();
       }
     };
@@ -138,13 +137,13 @@ namespace g2o {
         Data* userData() { return _userData; }
 
         void setUserData(Data* obs) { _userData = obs;}
-	void addUserData(Data* obs) { 
-	  if (obs) {
-	    obs->setNext(_userData);
-	    _userData=obs;
-	  }
-	}
-	
+        void addUserData(Data* obs) {
+          if (obs) {
+            obs->setNext(_userData);
+            _userData=obs;
+          }
+        }
+
         virtual ~Vertex();
 
         //! sets the node to the origin (used in the multilevel stuff)
@@ -194,7 +193,7 @@ namespace g2o {
          * Implement setEstimateDataImpl()
          * @return true on success
          */
-        bool setEstimateData(const std::vector<double>& estimate) { 
+        bool setEstimateData(const std::vector<double>& estimate) {
 #ifndef NDEBUG
           int dim = estimateDimension();
           assert((dim == -1) || (estimate.size() == std::size_t(dim)));
@@ -378,7 +377,7 @@ namespace g2o {
         virtual bool setMinimalEstimateDataImpl(const double* ) { return false;}
 
     };
-    
+
     class  Edge: public HyperGraph::Edge {
       private:
         friend struct OptimizableGraph;
@@ -389,7 +388,7 @@ namespace g2o {
 
         // indicates if all vertices are fixed
         virtual bool allVerticesFixed() const = 0;
-        
+
         // computes the error of the edge and stores it in an internal structure
         virtual void computeError() = 0;
 
@@ -461,7 +460,13 @@ namespace g2o {
          * The return value may correspond to the cost for initiliaizng the vertex but should be positive if
          * the initialization is possible and negative if not possible.
          */
-        virtual double initialEstimatePossible(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* to) { (void) from; (void) to; return -1.;}
+        virtual double initialEstimatePossible(
+            const OptimizableGraph::VertexSet& from,
+            OptimizableGraph::Vertex* to) {
+          (void) from;
+          (void) to;
+          return -1.;
+        }
 
         //! returns the level of the edge
         int level() const { return _level;}
@@ -486,10 +491,12 @@ namespace g2o {
         const OptimizableGraph* graph() const;
 
         bool setParameterId(int argNum, int paramId);
-        inline const Parameter* parameter(int argNo) const {return *_parameters.at(argNo);}
+        inline const Parameter* parameter(int argNo) const {
+          return *_parameters.at(argNo);
+        }
         inline size_t numParameters() const {return _parameters.size();}
         inline void resizeParameters(size_t newSize) {
-          _parameters.resize(newSize, 0); 
+          _parameters.resize(newSize, 0);
           _parameterIds.resize(newSize, -1);
           _parameterTypes.resize(newSize, typeid(void*).name());
         }
@@ -512,8 +519,8 @@ namespace g2o {
           }
 
         template <typename CacheType>
-          void resolveCache(CacheType*& cache, OptimizableGraph::Vertex*, 
-              const std::string& _type, 
+          void resolveCache(CacheType*& cache, OptimizableGraph::Vertex*,
+              const std::string& _type,
               const ParameterVector& parameters);
 
         bool resolveParameters();
@@ -525,10 +532,14 @@ namespace g2o {
     };
 
     //! returns the vertex number <i>id</i> appropriately casted
-    inline Vertex* vertex(int id) { return reinterpret_cast<Vertex*>(HyperGraph::vertex(id));}
+    inline Vertex* vertex(int id) {
+      return reinterpret_cast<Vertex*>(HyperGraph::vertex(id));
+    }
 
     //! returns the vertex number <i>id</i> appropriately casted
-    inline const Vertex* vertex (int id) const{ return reinterpret_cast<const Vertex*>(HyperGraph::vertex(id));}
+    inline const Vertex* vertex (int id) const{
+      return reinterpret_cast<const Vertex*>(HyperGraph::vertex(id));
+    }
 
     //! empty constructor
     OptimizableGraph();
@@ -536,7 +547,7 @@ namespace g2o {
 
     //! adds all edges and vertices of the graph <i>g</i> to this graph.
     void addGraph(OptimizableGraph* g);
- 
+
     /**
      * adds a new vertex. The new vertex is then "taken".
      * @return false if a vertex with the same id as v is already in the graph, true otherwise.
@@ -598,7 +609,7 @@ namespace g2o {
     //! function provided for convenience, see save() above
     bool save(const char* filename, int level = 0) const;
 
-    
+
     //! save a subgraph to a stream. Again uses the Factory system.
     bool saveSubset(std::ostream& os, HyperGraph::VertexSet& vset, int level = 0);
 
@@ -627,7 +638,8 @@ namespace g2o {
      * @param solverProperty the solver property to evaluate.
      * @param vertDims should equal to the set returned by dimensions() to avoid re-evaluating.
      */
-    bool isSolverSuitable(const OptimizationAlgorithmProperty& solverProperty, const std::set<int>& vertDims = std::set<int>()) const;
+    bool isSolverSuitable(const OptimizationAlgorithmProperty& solverProperty,
+                          const std::set<int>& vertDims = std::set<int>()) const;
 
     /**
      * remove the parameters of the graph
@@ -678,11 +690,10 @@ namespace g2o {
     ParameterContainer _parameters;
     JacobianWorkspace _jacobianWorkspace;
   };
-  
+
   /**
     @}
    */
-  
-} // end namespace
+}  // end namespace g2o
 
 #endif

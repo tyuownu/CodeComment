@@ -33,26 +33,30 @@
 
 #include "hyper_graph.h"
 
-namespace g2o{
+namespace g2o {
 
-  struct  HyperDijkstra{
+  struct  HyperDijkstra {
     struct  CostFunction {
-      virtual double operator() (HyperGraph::Edge* e, HyperGraph::Vertex* from, HyperGraph::Vertex* to)=0;
+      virtual double operator() (HyperGraph::Edge* e,
+                                 HyperGraph::Vertex* from,
+                                 HyperGraph::Vertex* to) = 0;
       virtual ~CostFunction() { }
     };
 
     struct  TreeAction {
-      virtual double perform(HyperGraph::Vertex* v, HyperGraph::Vertex* vParent, HyperGraph::Edge* e);
-      virtual double perform(HyperGraph::Vertex* v, HyperGraph::Vertex* vParent, HyperGraph::Edge* e, double distance);
+      virtual double perform(HyperGraph::Vertex* v, HyperGraph::Vertex* vParent,
+                             HyperGraph::Edge* e);
+      virtual double perform(HyperGraph::Vertex* v, HyperGraph::Vertex* vParent,
+                             HyperGraph::Edge* e, double distance);
     };
 
-    
-    struct  AdjacencyMapEntry{
+
+    struct  AdjacencyMapEntry {
       friend struct HyperDijkstra;
-      AdjacencyMapEntry(HyperGraph::Vertex* _child=0, 
-          HyperGraph::Vertex* _parent=0, 
-          HyperGraph::Edge* _edge=0, 
-          double _distance=std::numeric_limits<double>::max());
+      AdjacencyMapEntry(HyperGraph::Vertex* _child = 0,
+          HyperGraph::Vertex* _parent = 0,
+          HyperGraph::Edge* _edge = 0,
+          double _distance = std::numeric_limits<double>::max());
       HyperGraph::Vertex* child() const {return _child;}
       HyperGraph::Vertex* parent() const {return _parent;}
       HyperGraph::Edge* edge() const {return _edge;}
@@ -71,29 +75,32 @@ namespace g2o{
     HyperDijkstra(HyperGraph* g);
     HyperGraph::VertexSet& visited() {return _visited; }
     AdjacencyMap& adjacencyMap() {return _adjacencyMap; }
-    HyperGraph* graph() {return _graph;} 
+    HyperGraph* graph() {return _graph;}
 
-    void shortestPaths(HyperGraph::Vertex* v, 
-           HyperDijkstra::CostFunction* cost, 
-           double maxDistance=std::numeric_limits< double >::max(), 
-           double comparisonConditioner=1e-3, 
+    void shortestPaths(HyperGraph::Vertex* v,
+           HyperDijkstra::CostFunction* cost,
+           double maxDistance=std::numeric_limits< double >::max(),
+           double comparisonConditioner=1e-3,
            bool directed=false,
            double maxEdgeCost=std::numeric_limits< double >::max());
 
-    void shortestPaths(HyperGraph::VertexSet& vset, 
-           HyperDijkstra::CostFunction* cost, 
-           double maxDistance=std::numeric_limits< double >::max(), 
-           double comparisonConditioner=1e-3, 
+    void shortestPaths(HyperGraph::VertexSet& vset,
+           HyperDijkstra::CostFunction* cost,
+           double maxDistance=std::numeric_limits< double >::max(),
+           double comparisonConditioner=1e-3,
            bool directed=false,
            double maxEdgeCost=std::numeric_limits< double >::max());
 
 
     static void computeTree(AdjacencyMap& amap);
-    static void visitAdjacencyMap(AdjacencyMap& amap, TreeAction* action, bool useDistance=false);
-    static void connectedSubset(HyperGraph::VertexSet& connected, HyperGraph::VertexSet& visited, 
-           HyperGraph::VertexSet& startingSet, 
+    static void visitAdjacencyMap(AdjacencyMap& amap,
+                                  TreeAction* action, bool useDistance=false);
+    static void connectedSubset(HyperGraph::VertexSet& connected,
+                                HyperGraph::VertexSet& visited,
+           HyperGraph::VertexSet& startingSet,
            HyperGraph* g, HyperGraph::Vertex* v,
-           HyperDijkstra::CostFunction* cost, double distance, double comparisonConditioner,
+           HyperDijkstra::CostFunction* cost, double distance,
+           double comparisonConditioner,
            double maxEdgeCost=std::numeric_limits< double >::max() );
 
   protected:
@@ -105,8 +112,9 @@ namespace g2o{
   };
 
   struct  UniformCostFunction: public HyperDijkstra::CostFunction {
-    virtual double operator ()(HyperGraph::Edge* edge, HyperGraph::Vertex* from, HyperGraph::Vertex* to);
+    virtual double operator ()(HyperGraph::Edge* edge, HyperGraph::Vertex* from,
+                               HyperGraph::Vertex* to);
   };
 
-}
+}  // end namespace g2o
 #endif

@@ -42,8 +42,7 @@ namespace g2o {
   /**
    * \brief Mutex realized via OpenMP
    */
-  class OpenMPMutex
-  {
+  class OpenMPMutex {
     public:
       OpenMPMutex() { omp_init_lock(&_lock); }
       ~OpenMPMutex() { omp_destroy_lock(&_lock); }
@@ -59,17 +58,24 @@ namespace g2o {
    * dummy which does nothing in case we don't have OpenMP support.
    * In debug mode, the mutex allows to verify the correct lock and unlock behavior
    */
-  class OpenMPMutex
-  {
+  class OpenMPMutex {
     public:
 #ifdef NDEBUG
       OpenMPMutex() {}
 #else
       OpenMPMutex() : _cnt(0) {}
 #endif
-      ~OpenMPMutex() { assert(_cnt == 0 && "Freeing locked mutex");}
-      void lock() { assert(++_cnt == 1 && "Locking already locked mutex");}
-      void unlock() { assert(--_cnt == 0 && "Trying to unlock a mutex which is not locked");}
+      ~OpenMPMutex() {
+        assert(_cnt == 0 && "Freeing locked mutex");
+      }
+
+      void lock() {
+        assert(++_cnt == 1 && "Locking already locked mutex");
+      }
+
+      void unlock() {
+        assert(--_cnt == 0 && "Trying to unlock a mutex which is not locked");
+      }
     protected:
 #ifndef NDEBUG
       char _cnt;
@@ -81,10 +87,13 @@ namespace g2o {
   /**
    * \brief lock a mutex within a scope
    */
-  class ScopedOpenMPMutex
-  {
+  class ScopedOpenMPMutex {
     public:
-      explicit ScopedOpenMPMutex(OpenMPMutex* mutex) : _mutex(mutex) { _mutex->lock(); }
+      explicit ScopedOpenMPMutex(OpenMPMutex* mutex) :
+          _mutex(mutex) {
+            _mutex->lock();
+          }
+
       ~ScopedOpenMPMutex() { _mutex->unlock(); }
     private:
       OpenMPMutex* const _mutex;
@@ -92,6 +101,6 @@ namespace g2o {
       void operator=(const ScopedOpenMPMutex&);
   };
 
-}
+}  // namespace g2o
 
 #endif

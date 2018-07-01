@@ -34,45 +34,44 @@ using namespace std;
 
 namespace g2o {
 
-  AbstractOptimizationAlgorithmCreator::AbstractOptimizationAlgorithmCreator(const OptimizationAlgorithmProperty& p) :
+  AbstractOptimizationAlgorithmCreator::AbstractOptimizationAlgorithmCreator(
+      const OptimizationAlgorithmProperty& p) :
     _property(p)
-  {
-  }
+  {}
 
   OptimizationAlgorithmFactory* OptimizationAlgorithmFactory::factoryInstance = 0;
 
   OptimizationAlgorithmFactory::OptimizationAlgorithmFactory()
-  {
-  }
+  {}
 
-  OptimizationAlgorithmFactory::~OptimizationAlgorithmFactory()
-  {
-    for (CreatorList::iterator it = _creator.begin(); it != _creator.end(); ++it)
+  OptimizationAlgorithmFactory::~OptimizationAlgorithmFactory() {
+    for (CreatorList::iterator it = _creator.begin();
+         it != _creator.end(); ++it)
       delete *it;
   }
 
-  OptimizationAlgorithmFactory* OptimizationAlgorithmFactory::instance()
-  {
+  OptimizationAlgorithmFactory* OptimizationAlgorithmFactory::instance() {
     if (factoryInstance == 0) {
       factoryInstance = new OptimizationAlgorithmFactory;
     }
     return factoryInstance;
   }
 
-  void OptimizationAlgorithmFactory::registerSolver(AbstractOptimizationAlgorithmCreator* c)
-  {
+  void OptimizationAlgorithmFactory::registerSolver(
+      AbstractOptimizationAlgorithmCreator* c) {
     const string& name = c->property().name;
     CreatorList::iterator foundIt = findSolver(name);
     if (foundIt != _creator.end()) {
       _creator.erase(foundIt);
-      cerr << "SOLVER FACTORY WARNING: Overwriting Solver creator " << name << endl;
+      cerr << "SOLVER FACTORY WARNING: Overwriting Solver creator "
+          << name << endl;
       assert(0);
     }
     _creator.push_back(c);
   }
 
-  void OptimizationAlgorithmFactory::unregisterSolver(AbstractOptimizationAlgorithmCreator* c)
-  {
+  void OptimizationAlgorithmFactory::unregisterSolver(
+      AbstractOptimizationAlgorithmCreator* c) {
     const string& name = c->property().name;
     CreatorList::iterator foundIt = findSolver(name);
     if (foundIt != _creator.end()) {
@@ -81,8 +80,9 @@ namespace g2o {
     }
   }
 
-  OptimizationAlgorithm* OptimizationAlgorithmFactory::construct(const std::string& name, OptimizationAlgorithmProperty& solverProperty) const
-  {
+  OptimizationAlgorithm* OptimizationAlgorithmFactory::construct(
+      const std::string& name,
+      OptimizationAlgorithmProperty& solverProperty) const {
     CreatorList::const_iterator foundIt = findSolver(name);
     if (foundIt != _creator.end()) {
       solverProperty = (*foundIt)->property();
@@ -92,20 +92,21 @@ namespace g2o {
     return 0;
   }
 
-  void OptimizationAlgorithmFactory::destroy()
-  {
+  void OptimizationAlgorithmFactory::destroy() {
     delete factoryInstance;
     factoryInstance = 0;
   }
 
-  void OptimizationAlgorithmFactory::listSolvers(std::ostream& os) const
-  {
+  void OptimizationAlgorithmFactory::listSolvers(std::ostream& os) const {
     size_t solverNameColumnLength = 0;
-    for (CreatorList::const_iterator it = _creator.begin(); it != _creator.end(); ++it)
-      solverNameColumnLength = std::max(solverNameColumnLength, (*it)->property().name.size());
+    for (CreatorList::const_iterator it = _creator.begin();
+         it != _creator.end(); ++it)
+      solverNameColumnLength =
+          std::max(solverNameColumnLength, (*it)->property().name.size());
     solverNameColumnLength += 4;
 
-    for (CreatorList::const_iterator it = _creator.begin(); it != _creator.end(); ++it) {
+    for (CreatorList::const_iterator it = _creator.begin();
+         it != _creator.end(); ++it) {
       const OptimizationAlgorithmProperty& sp = (*it)->property();
       os << sp.name;
       for (size_t i = sp.name.size(); i < solverNameColumnLength; ++i)
@@ -114,9 +115,10 @@ namespace g2o {
     }
   }
 
-  OptimizationAlgorithmFactory::CreatorList::const_iterator OptimizationAlgorithmFactory::findSolver(const std::string& name) const
-  {
-    for (CreatorList::const_iterator it = _creator.begin(); it != _creator.end(); ++it) {
+  OptimizationAlgorithmFactory::CreatorList::const_iterator
+      OptimizationAlgorithmFactory::findSolver(const std::string& name) const {
+    for (CreatorList::const_iterator it = _creator.begin();
+         it != _creator.end(); ++it) {
       const OptimizationAlgorithmProperty& sp = (*it)->property();
       if (sp.name == name)
         return it;
@@ -124,9 +126,10 @@ namespace g2o {
     return _creator.end();
   }
 
-  OptimizationAlgorithmFactory::CreatorList::iterator OptimizationAlgorithmFactory::findSolver(const std::string& name)
-  {
-    for (CreatorList::iterator it = _creator.begin(); it != _creator.end(); ++it) {
+  OptimizationAlgorithmFactory::CreatorList::iterator
+      OptimizationAlgorithmFactory::findSolver(const std::string& name) {
+    for (CreatorList::iterator it = _creator.begin();
+         it != _creator.end(); ++it) {
       const OptimizationAlgorithmProperty& sp = (*it)->property();
       if (sp.name == name)
         return it;
@@ -134,4 +137,4 @@ namespace g2o {
     return _creator.end();
   }
 
-} // end namespace
+}  // end namespace g2o

@@ -66,30 +66,35 @@ class SparseBlockMatrix {
     typedef MatrixType SparseMatrixBlock;
 
     //! columns of the matrix
-    inline int cols() const {return _colBlockIndices.size() ? _colBlockIndices.back() : 0;}
+    inline int cols() const {
+      return _colBlockIndices.size() ? _colBlockIndices.back() : 0;
+    }
     //! rows of the matrix
-    inline int rows() const {return _rowBlockIndices.size() ? _rowBlockIndices.back() : 0;}
+    inline int rows() const {
+      return _rowBlockIndices.size() ? _rowBlockIndices.back() : 0;
+    }
 
     typedef std::map<int, SparseMatrixBlock*> IntBlockMap;
 
     /**
      * constructs a sparse block matrix having a specific layout
-     * @param rbi: array of int containing the row layout of the blocks. 
+     * @param rbi: array of int containing the row layout of the blocks.
      * the component i of the array should contain the index of the first row of the block i+1.
-     * @param rbi: array of int containing the column layout of the blocks. 
+     * @param rbi: array of int containing the column layout of the blocks.
      *  the component i of the array should contain the index of the first col of the block i+1.
      * @param rb: number of row blocks
      * @param cb: number of col blocks
      * @param hasStorage: set it to true if the matrix "owns" the blocks, thus it deletes it on destruction.
      * if false the matrix is only a "view" over an existing structure.
      */
-    SparseBlockMatrix( const int * rbi, const int* cbi, int rb, int cb, bool hasStorage=true);
+    SparseBlockMatrix( const int * rbi, const int* cbi, int rb,
+                      int cb, bool hasStorage=true);
 
     SparseBlockMatrix();
 
     ~SparseBlockMatrix();
 
-    
+
     //! this zeroes all the blocks. If dealloc=true the blocks are removed from memory
     void clear(bool dealloc=false) ;
 
@@ -99,10 +104,14 @@ class SparseBlockMatrix {
     const SparseMatrixBlock* block(int r, int c) const;
 
     //! how many rows does the block at block-row r has?
-    inline int rowsOfBlock(int r) const { return r ? _rowBlockIndices[r] - _rowBlockIndices[r-1] : _rowBlockIndices[0] ; }
+    inline int rowsOfBlock(int r) const {
+      return r ? _rowBlockIndices[r] - _rowBlockIndices[r-1] : _rowBlockIndices[0] ;
+    }
 
     //! how many cols does the block at block-col c has?
-    inline int colsOfBlock(int c) const { return c ? _colBlockIndices[c] - _colBlockIndices[c-1] : _colBlockIndices[0]; }
+    inline int colsOfBlock(int c) const {
+      return c ? _colBlockIndices[c] - _colBlockIndices[c-1] : _colBlockIndices[0];
+    }
 
     //! where does the row at block-row r starts?
     inline int rowBaseOfBlock(int r) const { return r ? _rowBlockIndices[r-1] : 0 ; }
@@ -111,9 +120,9 @@ class SparseBlockMatrix {
     inline int colBaseOfBlock(int c) const { return c ? _colBlockIndices[c-1] : 0 ; }
 
     //! number of non-zero elements
-    size_t nonZeros() const; 
+    size_t nonZeros() const;
     //! number of allocated blocks
-    size_t nonZeroBlocks() const; 
+    size_t nonZeroBlocks() const;
 
     //! deep copy of a sparse-block-matrix;
     SparseBlockMatrix* clone() const ;
@@ -126,7 +135,8 @@ class SparseBlockMatrix {
      * @param cmax: ending  block col
      * @param alloc: if true it makes a deep copy, if false it creates a view.
      */
-    SparseBlockMatrix*  slice(int rmin, int rmax, int cmin, int cmax, bool alloc=true) const;
+    SparseBlockMatrix*  slice(int rmin, int rmax, int cmin, int cmax,
+                              bool alloc=true) const;
 
     //! transposes a block matrix, The transposed type should match the argument false on failure
     template <class MatrixTransposedType>
@@ -137,7 +147,8 @@ class SparseBlockMatrix {
 
     //! dest = (*this) *  M
     template <class MatrixResultType, class MatrixFactorType>
-    bool multiply(SparseBlockMatrix<MatrixResultType> *& dest, const SparseBlockMatrix<MatrixFactorType>* M) const;
+    bool multiply(SparseBlockMatrix<MatrixResultType> *& dest,
+                  const SparseBlockMatrix<MatrixFactorType>* M) const;
 
     //! dest = (*this) *  src
     void multiply(double*& dest, const double* src) const;
@@ -146,7 +157,8 @@ class SparseBlockMatrix {
      * compute dest = (*this) *  src
      * However, assuming that this is a symmetric matrix where only the upper triangle is stored
      */
-    void multiplySymmetricUpperTriangle(double*& dest, const double* src) const;
+    void multiplySymmetricUpperTriangle(double*& dest,
+                                        const double* src) const;
 
     //! dest = M * (*this)
     void rightMultiply(double*& dest, const double* src) const;
@@ -158,7 +170,8 @@ class SparseBlockMatrix {
      * writes in dest a block permutaton specified by pinv.
      * @param pinv: array such that new_block[i] = old_block[pinv[i]]
      */
-    bool symmPermutation(SparseBlockMatrix<MatrixType>*& dest, const int* pinv, bool onlyUpper=false) const;
+    bool symmPermutation(SparseBlockMatrix<MatrixType>*& dest, const int* pinv,
+                         bool onlyUpper=false) const;
 
     /**
      * fill the CCS arrays of a matrix, arrays have to be allocated beforehand
@@ -202,7 +215,8 @@ class SparseBlockMatrix {
      * copy as transposed into a CCS structure
      * @return number of processed blocks, -1 on error
      */
-    int fillSparseBlockMatrixCCSTransposed(SparseBlockMatrixCCS<MatrixType>& blockCCS) const;
+    int fillSparseBlockMatrixCCSTransposed(
+        SparseBlockMatrixCCS<MatrixType>& blockCCS) const;
 
     /**
      * take over the memory and matrix pattern from a hash matrix.
@@ -222,7 +236,7 @@ class SparseBlockMatrix {
 template < class  MatrixType >
 std::ostream& operator << (std::ostream&, const SparseBlockMatrix<MatrixType>& m);
 
-  typedef SparseBlockMatrix<MatrixXd> SparseBlockMatrixXd;   
+typedef SparseBlockMatrix<MatrixXd> SparseBlockMatrixXd;
 
 } //end namespace
 

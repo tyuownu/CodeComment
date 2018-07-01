@@ -34,13 +34,11 @@
 namespace g2o {
 
   class CacheContainer;
-  
-  class  Cache: public HyperGraph::HyperGraphElement
-  {
+
+  class  Cache: public HyperGraph::HyperGraphElement {
     public:
       friend class CacheContainer;
-      class  CacheKey
-      {
+      class  CacheKey {
         public:
           friend class CacheContainer;
           CacheKey();
@@ -56,7 +54,8 @@ namespace g2o {
           ParameterVector _parameters;
       };
 
-      Cache(CacheContainer* container_ = 0, const ParameterVector& parameters_ = ParameterVector());
+      Cache(CacheContainer* container_ = 0,
+            const ParameterVector& parameters_ = ParameterVector());
 
       CacheKey key() const;
 
@@ -67,7 +66,9 @@ namespace g2o {
 
       void update();
 
-      virtual HyperGraph::HyperGraphElementType elementType() const { return HyperGraph::HGET_CACHE;}
+      virtual HyperGraph::HyperGraphElementType elementType() const {
+        return HyperGraph::HGET_CACHE;
+      }
 
     protected:
       //! redefine this to do the update
@@ -84,7 +85,8 @@ namespace g2o {
        * parameter vector of C2 of the parameters needed to construct C1.
        * @returns the newly created cache
        */
-      Cache* installDependency(const std::string& type_, const std::vector<int>& parameterIndices);
+      Cache* installDependency(const std::string& type_,
+                               const std::vector<int>& parameterIndices);
 
       /**
        * Function to be called from a cache that has dependencies. It just invokes a
@@ -100,8 +102,7 @@ namespace g2o {
       CacheContainer* _container;
   };
 
-  class  CacheContainer: public std::map<Cache::CacheKey, Cache*>
-  {
+  class  CacheContainer: public std::map<Cache::CacheKey, Cache*> {
     public:
       CacheContainer(OptimizableGraph::Vertex* vertex_);
       virtual ~CacheContainer();
@@ -118,11 +119,10 @@ namespace g2o {
 
 
   template <typename CacheType>
-  void OptimizableGraph::Edge::resolveCache(CacheType*& cache, 
-      OptimizableGraph::Vertex* v, 
-      const std::string& type_, 
-      const ParameterVector& parameters_)
-  {
+  void OptimizableGraph::Edge::resolveCache(CacheType*& cache,
+      OptimizableGraph::Vertex* v,
+      const std::string& type_,
+      const ParameterVector& parameters_) {
     cache = 0;
     CacheContainer* container= v->cacheContainer();
     Cache::CacheKey key(type_, parameters_);
@@ -130,11 +130,12 @@ namespace g2o {
     if (!c) {
       c = container->createCache(key);
     }
+
     if (c) {
-      cache = dynamic_cast<CacheType*>(c); 
+      cache = dynamic_cast<CacheType*>(c);
     }
   }
 
-} // end namespace
+}   //  end namespace g2o
 
 #endif

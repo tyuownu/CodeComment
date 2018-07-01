@@ -34,8 +34,7 @@ namespace g2o {
   /**
    * \brief Implementation of the Gauss Newton Algorithm
    */
-  class  OptimizationAlgorithmGaussNewton : public OptimizationAlgorithmWithHessian
-  {
+  class  OptimizationAlgorithmGaussNewton : public OptimizationAlgorithmWithHessian {
     public:
       /**
        * construct the Gauss Newton algorithm, which use the given Solver for solving the

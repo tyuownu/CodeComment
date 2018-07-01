@@ -41,8 +41,7 @@ namespace g2o {
     /**
    * \brief Abstract interface for allocating a robust kernel
    */
-  class  AbstractRobustKernelCreator
-  {
+  class  AbstractRobustKernelCreator {
     public:
       /**
        * create a hyper graph element. Has to implemented in derived class.
@@ -55,8 +54,7 @@ namespace g2o {
    * \brief templatized creator class which creates graph elements
    */
   template <typename T>
-  class RobustKernelCreator : public AbstractRobustKernelCreator
-  {
+  class RobustKernelCreator : public AbstractRobustKernelCreator {
     public:
       RobustKernel* construct() { return new T;}
   };
@@ -64,8 +62,7 @@ namespace g2o {
   /**
    * \brief create robust kernels based on their human readable name
    */
-  class  RobustKernelFactory
-  {
+  class  RobustKernelFactory {
     public:
 
       //! return the instance
@@ -77,7 +74,8 @@ namespace g2o {
       /**
        * register a tag for a specific creator
        */
-      void registerRobustKernel(const std::string& tag, AbstractRobustKernelCreator* c);
+      void registerRobustKernel(const std::string& tag,
+                                AbstractRobustKernelCreator* c);
 
       /**
        * unregister a tag for a specific creator
@@ -101,7 +99,7 @@ namespace g2o {
 
     protected:
 
-      typedef std::map<std::string, AbstractRobustKernelCreator*>              CreatorMap;
+      typedef std::map<std::string, AbstractRobustKernelCreator*>    CreatorMap;
       RobustKernelFactory();
       ~RobustKernelFactory();
 
@@ -115,9 +113,9 @@ namespace g2o {
   class RegisterRobustKernelProxy
   {
     public:
-      RegisterRobustKernelProxy(const std::string& name) : _name(name)
-      {
-        RobustKernelFactory::instance()->registerRobustKernel(_name, new RobustKernelCreator<T>());
+      RegisterRobustKernelProxy(const std::string& name) : _name(name) {
+        RobustKernelFactory::instance()->registerRobustKernel(
+            _name, new RobustKernelCreator<T>());
       }
 
       ~RegisterRobustKernelProxy()

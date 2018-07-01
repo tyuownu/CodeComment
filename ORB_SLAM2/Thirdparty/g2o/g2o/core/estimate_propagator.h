@@ -50,7 +50,9 @@ namespace g2o {
   class  EstimatePropagatorCost {
     public:
       EstimatePropagatorCost (SparseOptimizer* graph);
-      virtual double operator()(OptimizableGraph::Edge* edge, const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* to_) const;
+      virtual double operator()(
+          OptimizableGraph::Edge* edge, const OptimizableGraph::VertexSet& from,
+          OptimizableGraph::Vertex* to_) const;
       virtual const char* name() const { return "spanning tree";}
     protected:
       SparseOptimizer* _graph;
@@ -65,7 +67,9 @@ namespace g2o {
   class  EstimatePropagatorCostOdometry : public EstimatePropagatorCost {
     public:
       EstimatePropagatorCostOdometry(SparseOptimizer* graph);
-      virtual double operator()(OptimizableGraph::Edge* edge, const OptimizableGraph::VertexSet& from_, OptimizableGraph::Vertex* to_) const;
+      virtual double operator()(OptimizableGraph::Edge* edge,
+                                const OptimizableGraph::VertexSet& from_,
+                                OptimizableGraph::Vertex* to_) const;
       virtual const char* name() const { return "odometry";}
   };
 
@@ -81,8 +85,9 @@ namespace g2o {
        * You may derive an own one, if necessary. The default is to call initialEstimate(from, to) for the edge.
        */
       struct PropagateAction {
-        virtual void operator()(OptimizableGraph::Edge* e, const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* to) const
-        {
+        virtual void operator()(OptimizableGraph::Edge* e,
+                                const OptimizableGraph::VertexSet& from,
+                                OptimizableGraph::Vertex* to) const {
           if (! to->fixed())
             e->initialEstimate(from, to);
         }
@@ -132,35 +137,38 @@ namespace g2o {
        */
       class VertexIDHashFunction {
         public:
-          size_t operator ()(const OptimizableGraph::Vertex* v) const { return v->id();}
+          size_t operator ()(const OptimizableGraph::Vertex* v) const {
+            return v->id();
+          }
       };
 
-      typedef std::tr1::unordered_map<OptimizableGraph::Vertex*, AdjacencyMapEntry, VertexIDHashFunction> AdjacencyMap;
+      typedef std::tr1::unordered_map<OptimizableGraph::Vertex*,
+              AdjacencyMapEntry, VertexIDHashFunction> AdjacencyMap;
 
     public:
       EstimatePropagator(OptimizableGraph* g);
       OptimizableGraph::VertexSet& visited() {return _visited; }
       AdjacencyMap& adjacencyMap() {return _adjacencyMap; }
-      OptimizableGraph* graph() {return _graph;} 
+      OptimizableGraph* graph() {return _graph;}
 
       /**
        * propagate an initial guess starting from v. The function computes a spanning tree
        * whereas the cost for each edge is determined by calling cost() and the action applied to
        * each vertex is action().
        */
-      void propagate(OptimizableGraph::Vertex* v, 
-          const EstimatePropagator::PropagateCost& cost, 
+      void propagate(OptimizableGraph::Vertex* v,
+          const EstimatePropagator::PropagateCost& cost,
           const EstimatePropagator::PropagateAction& action = PropagateAction(),
-          double maxDistance=std::numeric_limits<double>::max(), 
+          double maxDistance=std::numeric_limits<double>::max(),
           double maxEdgeCost=std::numeric_limits<double>::max());
 
       /**
        * same as above but starting to propagate from a set of vertices instead of just a single one.
        */
-      void propagate(OptimizableGraph::VertexSet& vset, 
-          const EstimatePropagator::PropagateCost& cost, 
+      void propagate(OptimizableGraph::VertexSet& vset,
+          const EstimatePropagator::PropagateCost& cost,
           const EstimatePropagator::PropagateAction& action = PropagateAction(),
-          double maxDistance=std::numeric_limits<double>::max(), 
+          double maxDistance=std::numeric_limits<double>::max(),
           double maxEdgeCost=std::numeric_limits<double>::max());
 
     protected:
@@ -171,5 +179,5 @@ namespace g2o {
       OptimizableGraph* _graph;
   };
 
-}
+}  // end namespace g2o
 #endif

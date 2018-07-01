@@ -47,10 +47,10 @@ namespace g2o {
    * Before calling linearizeOplus on an edge, the workspace needs to be allocated
    * by calling allocate().
    */
-  class  JacobianWorkspace
-  {
+  class  JacobianWorkspace {
     public:
-      typedef std::vector<Eigen::VectorXd, Eigen::aligned_allocator<Eigen::VectorXd> >      WorkspaceVector;
+      typedef std::vector<Eigen::VectorXd,
+              Eigen::aligned_allocator<Eigen::VectorXd> >      WorkspaceVector;
 
     public:
       JacobianWorkspace();
@@ -79,9 +79,9 @@ namespace g2o {
       /**
        * return the workspace for a vertex in an edge
        */
-      double* workspaceForVertex(int vertexIndex)
-      {
-        assert(vertexIndex >= 0 && (size_t)vertexIndex < _workspace.size() && "Index out of bounds");
+      double* workspaceForVertex(int vertexIndex) {
+        assert(vertexIndex >= 0 && (size_t)vertexIndex < _workspace.size() &&
+               "Index out of bounds");
         return _workspace[vertexIndex].data();
       }
 
@@ -91,6 +91,6 @@ namespace g2o {
       int _maxDimension;            ///< the maximum dimension (number of elements) for a Jacobian
   };
 
-} // end namespace
+}  // end namespace g2o
 
 #endif

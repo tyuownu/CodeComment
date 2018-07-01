@@ -34,39 +34,35 @@ using namespace std;
 
 namespace g2o {
 
-struct ColSort
-{
-  bool operator()(const pair<int, int>& e1, const pair<int, int>& e2) const
-  {
-    return e1.second < e2.second || (e1.second == e2.second && e1.first < e2.first);
+struct ColSort {
+  bool operator()(const pair<int, int>& e1, const pair<int, int>& e2) const {
+    return e1.second < e2.second ||
+        (e1.second == e2.second && e1.first < e2.first);
   }
 };
 
 MatrixStructure::MatrixStructure() :
   n(0), m(0), Ap(0), Aii(0), maxN(0), maxNz(0)
-{
-}
+{}
 
-MatrixStructure::~MatrixStructure()
-{
+MatrixStructure::~MatrixStructure() {
   free();
 }
 
-void MatrixStructure::alloc(int n_, int nz)
-{
+void MatrixStructure::alloc(int n_, int nz) {
   if (n == 0) {
     maxN = n = n_;
     maxNz = nz;
     Ap  = new int[maxN + 1];
     Aii = new int[maxNz];
-  }
-  else {
+  } else {
     n = n_;
     if (maxNz < nz) {
       maxNz = 2 * nz;
       delete[] Aii;
       Aii = new int[maxNz];
     }
+
     if (maxN < n) {
       maxN = 2 * n;
       delete[] Ap;
@@ -75,8 +71,7 @@ void MatrixStructure::alloc(int n_, int nz)
   }
 }
 
-void MatrixStructure::free()
-{
+void MatrixStructure::free() {
   n = 0;
   m = 0;
   maxN = 0;
@@ -85,8 +80,7 @@ void MatrixStructure::free()
   delete[] Ap; Ap = 0;
 }
 
-bool MatrixStructure::write(const char* filename) const
-{
+bool MatrixStructure::write(const char* filename) const {
   const int& cols = n;
   const int& rows = m;
 
@@ -114,12 +108,14 @@ bool MatrixStructure::write(const char* filename) const
   fout << "# nnz: " << entries.size() << std::endl;
   fout << "# rows: " << rows << std::endl;
   fout << "# columns: " << cols << std::endl;
-  for (vector<pair<int, int> >::const_iterator it = entries.begin(); it != entries.end(); ++it) {
+  for (vector<pair<int, int> >::const_iterator it = entries.begin();
+       it != entries.end(); ++it) {
     const pair<int, int>& entry = *it;
-    fout << entry.first << " " << entry.second << " 0" << std::endl; // write a constant value of 0
+    // write a constant value of 0
+    fout << entry.first << " " << entry.second << " 0" << std::endl;
   }
 
   return fout.good();
 }
 
-} // end namespace
+}  // end namespace g2o

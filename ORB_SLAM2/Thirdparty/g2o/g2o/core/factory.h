@@ -42,12 +42,11 @@
 namespace g2o {
 
   class AbstractHyperGraphElementCreator;
-  
+
   /**
    * \brief create vertices and edges based on TAGs in, for example, a file
    */
-  class  Factory
-  {
+  class  Factory {
     public:
 
       //! return the instance
@@ -75,7 +74,9 @@ namespace g2o {
        * construct a graph element based on its tag, but only if it's type (a bitmask) matches. A bitmask without any
        * bit set will construct any item. Otherwise a bit has to be set to allow construction of a graph element.
        */
-      HyperGraph::HyperGraphElement* construct(const std::string& tag, const HyperGraph::GraphElemBitset& elemsToConstruct) const;
+      HyperGraph::HyperGraphElement* construct(
+          const std::string& tag,
+          const HyperGraph::GraphElemBitset& elemsToConstruct) const;
 
       /**
        * return whether the factory knows this tag or not
@@ -96,27 +97,24 @@ namespace g2o {
       void printRegisteredTypes(std::ostream& os, bool comment = false) const;
 
     protected:
-      class CreatorInformation
-      {
+      class CreatorInformation {
         public:
           AbstractHyperGraphElementCreator* creator;
           int elementTypeBit;
-          CreatorInformation()
-          {
+          CreatorInformation() {
             creator = 0;
             elementTypeBit = -1;
           }
-        
-          ~CreatorInformation()
-          {
+
+          ~CreatorInformation() {
             std::cout << "Deleting " << (void*) creator << std::endl;
-            
+
             delete creator;
           }
       };
 
-      typedef std::map<std::string, CreatorInformation*>               CreatorMap;
-      typedef std::map<std::string, std::string>                      TagLookup;
+      typedef std::map<std::string, CreatorInformation*>         CreatorMap;
+      typedef std::map<std::string, std::string>                TagLookup;
       Factory();
       ~Factory();
 
@@ -128,21 +126,21 @@ namespace g2o {
   };
 
   template<typename T>
-  class RegisterTypeProxy
-  {
+  class RegisterTypeProxy {
     public:
-      RegisterTypeProxy(const std::string& name) : _name(name)
-      {
+      RegisterTypeProxy(const std::string& name) :
+          _name(name) {
 #ifdef G2O_DEBUG_FACTORY
-        std::cout << __FUNCTION__ << ": Registering " << _name << " of type " << typeid(T).name() << std::endl;
+        std::cout << __FUNCTION__ << ": Registering "
+            << _name << " of type " << typeid(T).name() << std::endl;
 #endif
         Factory::instance()->registerType(_name, new HyperGraphElementCreator<T>());
       }
 
-      ~RegisterTypeProxy()
-      {
+      ~RegisterTypeProxy() {
 #ifdef G2O_DEBUG_FACTORY
-        std::cout << __FUNCTION__ << ": Unregistering " << _name << " of type " << typeid(T).name() << std::endl;
+        std::cout << __FUNCTION__ << ": Unregistering "
+            << _name << " of type " << typeid(T).name() << std::endl;
 #endif
         Factory::instance()->unregisterType(_name);
       }
@@ -174,6 +172,6 @@ namespace g2o {
 #define G2O_USE_TYPE_GROUP(typeGroupName) \
     extern "C" void G2O_FACTORY_IMPORT g2o_type_group_##typeGroupName(void); \
     static g2o::ForceLinker g2o_force_type_link_##typeGroupName(g2o_type_group_##typeGroupName);
-}
+}  // end namespace g2o
 
 #endif

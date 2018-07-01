@@ -51,20 +51,25 @@ namespace g2o {
  */
   template <int D, typename T>
   class BaseVertex : public OptimizableGraph::Vertex {
-    public:
+   public:
     typedef T EstimateType;
-    typedef std::stack<EstimateType, 
-                       std::vector<EstimateType,  Eigen::aligned_allocator<EstimateType> > >
-    BackupStackType;
+    typedef std::stack<EstimateType, std::vector<EstimateType,
+            Eigen::aligned_allocator<EstimateType> > > BackupStackType;
 
-    static const int Dimension = D;           ///< dimension of the estimate (minimal) in the manifold space
+    ///< dimension of the estimate (minimal) in the manifold space
+    static const int Dimension = D;
 
-    typedef Eigen::Map<Matrix<double, D, D>, Matrix<double,D,D>::Flags & AlignedBit ? Aligned : Unaligned >  HessianBlockType;
+    typedef Eigen::Map<Matrix<double, D, D>, Matrix<double,D,D>::Flags &
+        AlignedBit ? Aligned : Unaligned >  HessianBlockType;
 
   public:
     BaseVertex();
 
-    virtual const double& hessian(int i, int j) const { assert(i<D && j<D); return _hessian(i,j);}
+    virtual const double& hessian(int i, int j) const {
+      assert(i<D && j<D);
+      return _hessian(i,j);
+    }
+
     virtual double& hessian(int i, int j)  { assert(i<D && j<D); return _hessian(i,j);}
     virtual double hessianDeterminant() const {return _hessian.determinant();}
     virtual double* hessianData() { return const_cast<double*>(_hessian.data());}
@@ -73,7 +78,7 @@ namespace g2o {
 
     virtual int copyB(double* b_) const {
       memcpy(b_, _b.data(), Dimension * sizeof(double));
-      return Dimension; 
+      return Dimension;
     }
 
     virtual const double& b(int i) const { assert(i < D); return _b(i);}
@@ -94,7 +99,12 @@ namespace g2o {
     const HessianBlockType& A() const { return _hessian;}
 
     virtual void push() { _backup.push(_estimate);}
-    virtual void pop() { assert(!_backup.empty()); _estimate = _backup.top(); _backup.pop(); updateCache();}
+    virtual void pop() {
+      assert(!_backup.empty());
+      _estimate = _backup.top();
+      _backup.pop();
+      updateCache();
+    }
     virtual void discardTop() { assert(!_backup.empty()); _backup.pop();}
     virtual int stackSize() const {return _backup.size();}
 
@@ -114,7 +124,7 @@ namespace g2o {
 
 #include "base_vertex.hpp"
 
-} // end namespace g2o
+}  // end namespace g2o
 
 
 #endif

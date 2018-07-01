@@ -30,14 +30,14 @@
 namespace g2o {
   using namespace std;
 
-  G2OBatchStatistics* G2OBatchStatistics::_globalStats=0;
+  G2OBatchStatistics* G2OBatchStatistics::_globalStats = 0;
 
   #ifndef PTHING
   #define PTHING(s) \
     #s << "= " << (st.s) << "\t "
   #endif
 
-  G2OBatchStatistics::G2OBatchStatistics(){
+  G2OBatchStatistics::G2OBatchStatistics() {
     // zero all.
     memset (this, 0, sizeof(G2OBatchStatistics));
 
@@ -45,30 +45,37 @@ namespace g2o {
     iteration = -1;
   }
 
-  std::ostream& operator << (std::ostream& os , const G2OBatchStatistics& st)
-  {
+  std::ostream& operator << (std::ostream& os , const G2OBatchStatistics& st) {
     os << PTHING(iteration);
 
-    os << PTHING( numVertices ); // how many vertices are involved
-    os << PTHING( numEdges ); // hoe many edges
-    os << PTHING(  chi2 );  // total chi2
-    
+    os << PTHING( numVertices );  // how many vertices are involved
+    os << PTHING( numEdges );  // hoe many edges
+    os << PTHING(  chi2 );   // total chi2
+
     /** timings **/
     // nonlinear part
-    os << PTHING(  timeResiduals );  
-    os << PTHING(  timeLinearize );   // jacobians
-    os << PTHING(  timeQuadraticForm ); // construct the quadratic form in the graph
-    
+    os << PTHING(  timeResiduals );
+    // jacobians
+    os << PTHING(  timeLinearize );
+    // construct the quadratic form in the graph
+    os << PTHING(  timeQuadraticForm );
+
     // block_solver (constructs Ax=b, plus maybe schur);
-    os << PTHING(  timeSchurComplement ); // compute schur complement (0 if not done);
-    
+    os << PTHING(  timeSchurComplement );  // compute schur complement (0 if not done);
+
     // linear solver (computes Ax=b); );
-    os << PTHING(  timeSymbolicDecomposition ); // symbolic decomposition (0 if not done);
-    os << PTHING(  timeNumericDecomposition ); // numeric decomposition  (0 if not done);
-    os << PTHING(  timeLinearSolution );             // total time for solving Ax=b
-    os << PTHING(  iterationsLinearSolver );  // iterations of PCG
-    os << PTHING(  timeUpdate ); // oplus
-    os << PTHING(  timeIteration ); // total time );
+    // symbolic decomposition (0 if not done);
+    os << PTHING(  timeSymbolicDecomposition );
+    // numeric decomposition  (0 if not done);
+    os << PTHING(  timeNumericDecomposition );
+    // total time for solving Ax=b
+    os << PTHING(  timeLinearSolution );
+    // iterations of PCG
+    os << PTHING(  iterationsLinearSolver );
+    // oplus
+    os << PTHING(  timeUpdate );
+    // total time );
+    os << PTHING(  timeIteration );
 
     os << PTHING( levenbergIterations );
     os << PTHING( timeLinearSolver);
@@ -82,9 +89,8 @@ namespace g2o {
     return os;
   };
 
-  void G2OBatchStatistics::setGlobalStats(G2OBatchStatistics* b)
-  {
+  void G2OBatchStatistics::setGlobalStats(G2OBatchStatistics* b) {
     _globalStats = b;
   }
 
-} // end namespace
+}   // end namespace g2o

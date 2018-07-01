@@ -32,14 +32,12 @@
 #include <string>
 #include <typeinfo>
 
-namespace g2o
-{
+namespace g2o {
 
   /**
    * \brief Abstract interface for allocating HyperGraphElement
    */
-  class  AbstractHyperGraphElementCreator
-  {
+  class  AbstractHyperGraphElementCreator {
     public:
       /**
        * create a hyper graph element. Has to implemented in derived class.
@@ -57,8 +55,7 @@ namespace g2o
    * \brief templatized creator class which creates graph elements
    */
   template <typename T>
-  class HyperGraphElementCreator : public AbstractHyperGraphElementCreator
-  {
+  class HyperGraphElementCreator : public AbstractHyperGraphElementCreator {
     public:
       HyperGraphElementCreator() : _name(typeid(T).name()) {}
 #if defined (WINDOWS) && defined(__GNUC__) // force stack alignment on Windows with GCC
@@ -70,6 +67,6 @@ namespace g2o
       std::string _name;
   };
 
-} // end namespace
+}  // end namespace g2o
 
 #endif

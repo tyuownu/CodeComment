@@ -32,27 +32,24 @@ using namespace std;
 
 namespace g2o {
 
-struct MatrixElem
-{
+struct MatrixElem {
   int r, c;
   MatrixElem(int r_, int c_) : r(r_), c(c_) {}
-  bool operator<(const MatrixElem& other) const
-  {
+  bool operator<(const MatrixElem& other) const {
     return c > other.c || (c == other.c && r > other.r);
   }
 };
 
 MarginalCovarianceCholesky::MarginalCovarianceCholesky() :
   _n(0), _Ap(0), _Ai(0), _Ax(0), _perm(0)
-{
-}
+{ }
 
 MarginalCovarianceCholesky::~MarginalCovarianceCholesky()
-{
-}
+{ }
 
-void MarginalCovarianceCholesky::setCholeskyFactor(int n, int* Lp, int* Li, double* Lx, int* permInv)
-{
+void MarginalCovarianceCholesky::setCholeskyFactor(int n, int* Lp,
+                                                   int* Li, double* Lx,
+                                                   int* permInv) {
   _n = n;
   _Ap = Lp;
   _Ai = Li;
@@ -68,8 +65,7 @@ void MarginalCovarianceCholesky::setCholeskyFactor(int n, int* Lp, int* Li, doub
   }
 }
 
-double MarginalCovarianceCholesky::computeEntry(int r, int c)
-{
+double MarginalCovarianceCholesky::computeEntry(int r, int c) {
   assert(r <= c);
   int idx = computeIndex(r, c);
 
@@ -99,8 +95,8 @@ double MarginalCovarianceCholesky::computeEntry(int r, int c)
   return result;
 }
 
-void MarginalCovarianceCholesky::computeCovariance(double** covBlocks, const std::vector<int>& blockIndices)
-{
+void MarginalCovarianceCholesky::computeCovariance(
+    double** covBlocks, const std::vector<int>& blockIndices) {
   _map.clear();
   int base = 0;
   vector<MatrixElem> elemsToCompute;
@@ -151,17 +147,18 @@ void MarginalCovarianceCholesky::computeCovariance(double** covBlocks, const std
 }
 
 
-void MarginalCovarianceCholesky::computeCovariance(SparseBlockMatrix<MatrixXd>& spinv, const std::vector<int>& rowBlockIndices, const std::vector< std::pair<int, int> >& blockIndices)
-{
+void MarginalCovarianceCholesky::computeCovariance(
+    SparseBlockMatrix<MatrixXd>& spinv, const std::vector<int>& rowBlockIndices,
+    const std::vector< std::pair<int, int> >& blockIndices) {
   // allocate the sparse
-  spinv = SparseBlockMatrix<MatrixXd>(&rowBlockIndices[0], 
-              &rowBlockIndices[0], 
+  spinv = SparseBlockMatrix<MatrixXd>(&rowBlockIndices[0],
+              &rowBlockIndices[0],
               rowBlockIndices.size(),
               rowBlockIndices.size(), true);
   _map.clear();
   vector<MatrixElem> elemsToCompute;
   for (size_t i = 0; i < blockIndices.size(); ++i) {
-    int blockRow=blockIndices[i].first;    
+    int blockRow=blockIndices[i].first;
     int blockCol=blockIndices[i].second;
     assert(blockRow>=0);
     assert(blockRow < (int)rowBlockIndices.size());
@@ -170,13 +167,13 @@ void MarginalCovarianceCholesky::computeCovariance(SparseBlockMatrix<MatrixXd>& 
 
     int rowBase=spinv.rowBaseOfBlock(blockRow);
     int colBase=spinv.colBaseOfBlock(blockCol);
-    
+
     MatrixXd *block=spinv.block(blockRow, blockCol, true);
     assert(block);
     for (int iRow=0; iRow<block->rows(); ++iRow)
       for (int iCol=0; iCol<block->cols(); ++iCol){
-  int rr=rowBase+iRow;
-  int cc=colBase+iCol;
+        int rr=rowBase+iRow;
+        int cc=colBase+iCol;
         int r = _perm ? _perm[rr] : rr; // apply permutation
         int c = _perm ? _perm[cc] : cc;
         if (r > c)
@@ -194,19 +191,19 @@ void MarginalCovarianceCholesky::computeCovariance(SparseBlockMatrix<MatrixXd>& 
     computeEntry(me.r, me.c);
   }
 
-  // set the marginal covariance 
+  // set the marginal covariance
   for (size_t i = 0; i < blockIndices.size(); ++i) {
-    int blockRow=blockIndices[i].first;    
-    int blockCol=blockIndices[i].second;
-    int rowBase=spinv.rowBaseOfBlock(blockRow);
-    int colBase=spinv.colBaseOfBlock(blockCol);
-    
+    int blockRow = blockIndices[i].first;
+    int blockCol = blockIndices[i].second;
+    int rowBase = spinv.rowBaseOfBlock(blockRow);
+    int colBase = spinv.colBaseOfBlock(blockCol);
+
     MatrixXd *block=spinv.block(blockRow, blockCol);
     assert(block);
     for (int iRow=0; iRow<block->rows(); ++iRow)
       for (int iCol=0; iCol<block->cols(); ++iCol){
-  int rr=rowBase+iRow;
-  int cc=colBase+iCol;
+        int rr=rowBase+iRow;
+        int cc=colBase+iCol;
         int r = _perm ? _perm[rr] : rr; // apply permutation
         int c = _perm ? _perm[cc] : cc;
         if (r > c)
@@ -214,9 +211,9 @@ void MarginalCovarianceCholesky::computeCovariance(SparseBlockMatrix<MatrixXd>& 
         int idx = computeIndex(r, c);
         LookupMap::const_iterator foundIt = _map.find(idx);
         assert(foundIt != _map.end());
-  (*block)(iRow, iCol) = foundIt->second;
+        (*block)(iRow, iCol) = foundIt->second;
       }
   }
 }
 
-} // end namespace
+}  // end namespace g2o

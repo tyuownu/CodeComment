@@ -34,7 +34,8 @@ using namespace Eigen;
 typedef SparseBlockMatrix< MatrixXd >
 SparseBlockMatrixX;
 
-std::ostream& operator << (std::ostream& os, const SparseBlockMatrixX::SparseMatrixBlock& m) {
+std::ostream& operator << (
+    std::ostream& os, const SparseBlockMatrixX::SparseMatrixBlock& m) {
   for (int i=0; i<m.rows(); ++i){
     for (int j=0; j<m.cols(); ++j)
       cerr << m(i,j) << " ";
@@ -82,7 +83,7 @@ int main (int argc, char** argv){
   M->add(Ms);
   M->add(Ms);
   cerr << *Ms;
-  
+
   SparseBlockMatrixX* Mt=0;
   M->transpose(Mt);
   cerr << *Mt << endl;
@@ -90,7 +91,7 @@ int main (int argc, char** argv){
   SparseBlockMatrixX* Mp=0;
   M->multiply(Mp, Mt);
   cerr << *Mp << endl;
-  
+
   int iperm[]={3,2,1,0};
   SparseBlockMatrixX* PMp=0;
 
@@ -101,7 +102,4 @@ int main (int argc, char** argv){
   Mp->block(3,0)->fill(0.);
   Mp->symmPermutation(PMp,iperm, true);
   cerr << *PMp << endl;
-  
-  
-  
 }

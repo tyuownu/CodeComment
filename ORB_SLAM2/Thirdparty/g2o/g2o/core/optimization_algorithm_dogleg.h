@@ -36,8 +36,7 @@ namespace g2o {
   /**
    * \brief Implementation of Powell's Dogleg Algorithm
    */
-  class  OptimizationAlgorithmDogleg : public OptimizationAlgorithmWithHessian
-  {
+  class  OptimizationAlgorithmDogleg : public OptimizationAlgorithmWithHessian {
     public:
       /** \brief type of the step to take */
       enum {
@@ -84,6 +83,6 @@ namespace g2o {
       int _lastNumTries;
   };
 
-} // end namespace
+}  // end namespace g2o
 
 #endif

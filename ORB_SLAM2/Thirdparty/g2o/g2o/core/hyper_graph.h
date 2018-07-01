@@ -53,10 +53,9 @@ namespace g2o {
      that operate transparently on edges or vertices (see HyperGraphAction).
 
      The vertices are uniquely identified by an int id, while the edges are
-     identfied by their pointers. 
+     identfied by their pointers.
    */
-  class  HyperGraph
-  {
+  class  HyperGraph {
     public:
 
       /**
@@ -75,7 +74,7 @@ namespace g2o {
 
       class  Vertex;
       class  Edge;
-      
+
       /**
        * base hyper graph element, specialized in vertex and edge
        */
@@ -106,13 +105,14 @@ namespace g2o {
           const EdgeSet& edges() const {return _edges;}
           //! returns the set of hyper-edges that are leaving/entering in this vertex
           EdgeSet& edges() {return _edges;}
-          virtual HyperGraphElementType elementType() const { return HGET_VERTEX;}
+          virtual HyperGraphElementType elementType() const {
+            return HGET_VERTEX;}
         protected:
           int _id;
           EdgeSet _edges;
       };
 
-      /** 
+      /**
        * Abstract Edge class. Your nice edge classes should inherit from that one.
        * An hyper-edge has pointers to the vertices it connects and stores them in a vector.
        */
@@ -137,15 +137,24 @@ namespace g2o {
           /**
             returns the pointer to the ith vertex connected to the hyper-edge.
             */
-          const Vertex* vertex(size_t i) const { assert(i < _vertices.size() && "index out of bounds"); return _vertices[i];}
+          const Vertex* vertex(size_t i) const {
+            assert(i < _vertices.size() && "index out of bounds");
+            return _vertices[i];
+          }
           /**
             returns the pointer to the ith vertex connected to the hyper-edge.
             */
-          Vertex* vertex(size_t i) { assert(i < _vertices.size() && "index out of bounds"); return _vertices[i];}
+          Vertex* vertex(size_t i) {
+            assert(i < _vertices.size() && "index out of bounds");
+            return _vertices[i];
+          }
           /**
             set the ith vertex on the hyper-edge to the pointer supplied
             */
-          void setVertex(size_t i, Vertex* v) { assert(i < _vertices.size() && "index out of bounds"); _vertices[i]=v;}
+          void setVertex(size_t i, Vertex* v) {
+            assert(i < _vertices.size() && "index out of bounds");
+            _vertices[i]=v;
+          }
 
           int id() const {return _id;}
           void setId(int id);
@@ -213,7 +222,7 @@ namespace g2o {
       HyperGraph& operator= (const HyperGraph&) { return *this; }
   };
 
-} // end namespace
+}  // end namespace g2o
 
 //@}
 

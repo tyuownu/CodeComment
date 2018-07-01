@@ -26,9 +26,7 @@
 
 #ifndef G2O_BATCH_STATS_H_
 #define G2O_BATCH_STATS_H_
-
-#include <iostream>
-#include <vector>
+#include <iostream> #include <vector>
 
 
 namespace g2o {
@@ -38,36 +36,57 @@ namespace g2o {
    */
   struct  G2OBatchStatistics {
     G2OBatchStatistics();
-    int iteration;                    ///< which iteration
-    int numVertices;                  ///< how many vertices are involved
-    int numEdges;                     ///< how many edges
-    double chi2;                      ///< total chi2
+    ///< which iteration
+    int iteration;
+    ///< how many vertices are involved
+    int numVertices;
+    ///< how many edges
+    int numEdges;
+    ///< total chi2
+    double chi2;
 
     /** timings **/
     // nonlinear part
-    double timeResiduals;             ///< residuals
-    double timeLinearize;             ///< jacobians
-    double timeQuadraticForm;         ///< construct the quadratic form in the graph
-    int levenbergIterations;          ///< number of iterations performed by LM
+    ///< residuals
+    double timeResiduals;
+    ///< jacobians
+    double timeLinearize;
+    ///< construct the quadratic form in the graph
+    double timeQuadraticForm;
+    ///< number of iterations performed by LM
+    int levenbergIterations;
     // block_solver (constructs Ax=b, plus maybe schur)
-    double timeSchurComplement;      ///< compute schur complement (0 if not done)
+    ///< compute schur complement (0 if not done)
+    double timeSchurComplement;
 
     // linear solver (computes Ax=b);
-    double timeSymbolicDecomposition; ///< symbolic decomposition (0 if not done)
-    double timeNumericDecomposition;  ///< numeric decomposition  (0 if not done)
-    double timeLinearSolution;        ///< total time for solving Ax=b (including detup for schur)
-    double timeLinearSolver;          ///< time for solving, excluding Schur setup
-    int    iterationsLinearSolver;    ///< iterations of PCG, (0 if not used, i.e., Cholesky)
-    double timeUpdate;                ///< time to apply the update
-    double timeIteration;             ///< total time;
+    ///< symbolic decomposition (0 if not done)
+    double timeSymbolicDecomposition;
+    ///< numeric decomposition  (0 if not done)
+    double timeNumericDecomposition;
+    ///< total time for solving Ax=b (including detup for schur)
+    double timeLinearSolution;
+    ///< time for solving, excluding Schur setup
+    double timeLinearSolver;
+    ///< iterations of PCG, (0 if not used, i.e., Cholesky)
+    int    iterationsLinearSolver;
+    ///< time to apply the update
+    double timeUpdate;
+    ///< total time;
+    double timeIteration;
 
-    double timeMarginals;             ///< computing the inverse elements (solve blocks) and thus the marginal covariances
+    ///< computing the inverse elements (solve blocks) and thus the marginal covariances
+    double timeMarginals;
 
     // information about the Hessian matrix
-    size_t hessianDimension;          ///< rows / cols of the Hessian
-    size_t hessianPoseDimension;      ///< dimension of the pose matrix in Schur
-    size_t hessianLandmarkDimension;  ///< dimension of the landmark matrix in Schur
-    size_t choleskyNNZ;               ///< number of non-zeros in the cholesky factor
+    ///< rows / cols of the Hessian
+    size_t hessianDimension;
+    ///< dimension of the pose matrix in Schur
+    size_t hessianPoseDimension;
+    ///< dimension of the landmark matrix in Schur
+    size_t hessianLandmarkDimension;
+    ///< number of non-zeros in the cholesky factor
+    size_t choleskyNNZ;
 
     static G2OBatchStatistics* globalStats() {return _globalStats;}
     static void setGlobalStats(G2OBatchStatistics* b);
@@ -75,9 +94,9 @@ namespace g2o {
     static G2OBatchStatistics* _globalStats;
   };
 
-   std::ostream& operator<<(std::ostream&, const G2OBatchStatistics&);
+  std::ostream& operator<<(std::ostream&, const G2OBatchStatistics&);
 
   typedef std::vector<G2OBatchStatistics> BatchStatisticsContainer;
-}
+}  // namespace g2o
 
 #endif

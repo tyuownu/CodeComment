@@ -70,8 +70,8 @@ bool VertexSE3Expmap::write(std::ostream& os) const {
 }
 
 
-EdgeSE3ProjectXYZ::EdgeSE3ProjectXYZ() : BaseBinaryEdge<2, Vector2d, VertexSBAPointXYZ, VertexSE3Expmap>() {
-}
+EdgeSE3ProjectXYZ::EdgeSE3ProjectXYZ() :
+    BaseBinaryEdge<2, Vector2d, VertexSBAPointXYZ, VertexSE3Expmap>() {}
 
 bool EdgeSE3ProjectXYZ::read(std::istream& is){
   for (int i=0; i<2; i++){
@@ -156,8 +156,8 @@ Vector3d EdgeStereoSE3ProjectXYZ::cam_project(const Vector3d & trans_xyz, const 
   return res;
 }
 
-EdgeStereoSE3ProjectXYZ::EdgeStereoSE3ProjectXYZ() : BaseBinaryEdge<3, Vector3d, VertexSBAPointXYZ, VertexSE3Expmap>() {
-}
+EdgeStereoSE3ProjectXYZ::EdgeStereoSE3ProjectXYZ() :
+    BaseBinaryEdge<3, Vector3d, VertexSBAPointXYZ, VertexSE3Expmap>() {}
 
 bool EdgeStereoSE3ProjectXYZ::read(std::istream& is){
   for (int i=0; i<=3; i++){

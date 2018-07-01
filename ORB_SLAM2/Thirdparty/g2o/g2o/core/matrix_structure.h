@@ -33,8 +33,7 @@ namespace g2o {
 /**
  * \brief representing the structure of a matrix in column compressed structure (only the upper triangular part of the matrix)
  */
-class MatrixStructure
-{
+class MatrixStructure {
   public:
     MatrixStructure();
     ~MatrixStructure();
@@ -45,7 +44,7 @@ class MatrixStructure
     void alloc(int n_, int nz);
 
     void free();
-    
+
     /**
      * Write the matrix pattern to a file. File is also loadable by octave, e.g., then use spy(matrix)
      */
@@ -64,6 +63,6 @@ class MatrixStructure
     int maxNz;    ///< size of the allocated memory
 };
 
-} // end namespace
+}  // end namespace g2o
 
 #endif

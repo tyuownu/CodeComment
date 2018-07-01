@@ -34,8 +34,7 @@ namespace g2o {
 /**
  * \brief describe the properties of a solver
  */
-struct  OptimizationAlgorithmProperty
-{
+struct  OptimizationAlgorithmProperty {
   std::string name;           ///< name of the solver, e.g., var
   std::string desc;           ///< short description of the solver
   std::string type;           ///< type of solver, e.g., "CSparse Cholesky", "PCG"
@@ -43,11 +42,25 @@ struct  OptimizationAlgorithmProperty
   int poseDim;                ///< dimension of the pose vertices (-1 if variable)
   int landmarkDim;            ///< dimension of the landmar vertices (-1 if variable)
   OptimizationAlgorithmProperty() :
-    name(), desc(), type(), requiresMarginalize(false), poseDim(-1), landmarkDim(-1)
+    name(),
+    desc(),
+    type(),
+    requiresMarginalize(false),
+    poseDim(-1),
+    landmarkDim(-1)
   {
   }
-  OptimizationAlgorithmProperty(const std::string& name_, const std::string& desc_, const std::string& type_, bool requiresMarginalize_, int poseDim_, int landmarkDim_) :
-    name(name_), desc(desc_), type(type_), requiresMarginalize(requiresMarginalize_), poseDim(poseDim_), landmarkDim(landmarkDim_)
+  OptimizationAlgorithmProperty(const std::string& name_,
+                                const std::string& desc_,
+                                const std::string& type_,
+                                bool requiresMarginalize_,
+                                int poseDim_, int landmarkDim_) :
+    name(name_),
+    desc(desc_),
+    type(type_),
+    requiresMarginalize(requiresMarginalize_),
+    poseDim(poseDim_),
+    landmarkDim(landmarkDim_)
   {
   }
 };

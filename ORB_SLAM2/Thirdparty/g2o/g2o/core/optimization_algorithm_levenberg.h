@@ -34,8 +34,7 @@ namespace g2o {
   /**
    * \brief Implementation of the Levenberg Algorithm
    */
-  class  OptimizationAlgorithmLevenberg : public OptimizationAlgorithmWithHessian
-  {
+  class  OptimizationAlgorithmLevenberg : public OptimizationAlgorithmWithHessian {
     public:
       /**
        * construct the Levenberg algorithm, which will use the given Solver for solving the

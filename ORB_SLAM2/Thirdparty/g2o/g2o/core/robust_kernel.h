@@ -48,8 +48,7 @@ namespace g2o {
    *
    * chi^2 = sum_{e} rho( e^T Omega e )
    */
-  class  RobustKernel
-  {
+  class  RobustKernel {
     public:
       RobustKernel();
       explicit RobustKernel(double delta);

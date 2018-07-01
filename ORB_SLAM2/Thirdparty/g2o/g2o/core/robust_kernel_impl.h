@@ -38,14 +38,14 @@ namespace g2o {
    * one implements a kernel which only is designed for a fixed window
    * size.
    */
-  class  RobustKernelScaleDelta : public RobustKernel
-  {
+  class  RobustKernelScaleDelta : public RobustKernel {
     public:
       /**
        * construct the scaled kernel ontop of another kernel which might be shared accross
        * several scaled kernels
        */
-      explicit RobustKernelScaleDelta(const RobustKernelPtr& kernel, double delta = 1.);
+      explicit RobustKernelScaleDelta(const RobustKernelPtr& kernel,
+                                      double delta = 1.);
       explicit RobustKernelScaleDelta(double delta = 1.);
 
       //! return the underlying kernel
@@ -73,8 +73,7 @@ namespace g2o {
    *               1/2    2
    * rho(e) = 2 d e    - d
    */
-  class  RobustKernelHuber : public RobustKernel
-  {
+  class  RobustKernelHuber : public RobustKernel {
     public:
       virtual void setDelta(double delta);
       virtual void setDeltaSqr(const double &delta, const double &deltaSqr);
@@ -92,11 +91,10 @@ namespace g2o {
    * rho(e) = delta2(1-(1-e/delta2)^3)
    *
    * else
-   *              
+   *
    * rho(e) = delta2
    */
-  class  RobustKernelTukey : public RobustKernel
-  {
+  class  RobustKernelTukey : public RobustKernel {
     public:
 
       virtual void setDeltaSqr(const double &deltaSqr, const double &inv);
@@ -118,8 +116,7 @@ namespace g2o {
    *             2
    *            d
    */
-  class  RobustKernelPseudoHuber : public RobustKernel
-  {
+  class  RobustKernelPseudoHuber : public RobustKernel {
     public:
       virtual void robustify(double e2, Eigen::Vector3d& rho) const;
   };
@@ -132,8 +129,7 @@ namespace g2o {
    *         2
    *        d
    */
-  class  RobustKernelCauchy : public RobustKernel
-  {
+  class  RobustKernelCauchy : public RobustKernel {
     public:
       virtual void robustify(double e2, Eigen::Vector3d& rho) const;
   };
@@ -143,21 +139,19 @@ namespace g2o {
    *
    * The error is at most delta^2
    */
-  class  RobustKernelSaturated : public RobustKernel
-  {
+  class  RobustKernelSaturated : public RobustKernel {
     public:
       virtual void robustify(double e2, Eigen::Vector3d& rho) const;
   };
 
   /**
    * \brief Dynamic covariance scaling - DCS
-   *  
+   *
    * See paper Robust Map Optimization from Agarwal et al.  ICRA 2013
    *
    * delta is used as $phi$
    */
-  class  RobustKernelDCS : public RobustKernel
-  {
+  class  RobustKernelDCS : public RobustKernel {
     public:
       virtual void robustify(double e2, Eigen::Vector3d& rho) const;
   };

@@ -43,8 +43,7 @@ namespace g2o {
   /**
    * \brief Generic interface for a non-linear solver operating on a graph
    */
-  class  OptimizationAlgorithm
-  {
+  class  OptimizationAlgorithm {
     public:
       enum  SolverResult {Terminate=2, OK=1, Fail=-1};
       OptimizationAlgorithm();
@@ -67,12 +66,16 @@ namespace g2o {
        * and stores them in given SparseBlockMatrix.
        * If your solver does not support computing the marginals, return false.
        */
-      virtual bool computeMarginals(SparseBlockMatrix<MatrixXd>& spinv, const std::vector<std::pair<int, int> >& blockIndices) = 0;
+      virtual bool computeMarginals(
+          SparseBlockMatrix<MatrixXd>& spinv,
+          const std::vector<std::pair<int, int> >& blockIndices) = 0;
 
       /**
        * update the structures for online processing
        */
-      virtual bool updateStructure(const std::vector<HyperGraph::Vertex*>& vset, const HyperGraph::EdgeSet& edges) = 0;
+      virtual bool updateStructure(
+          const std::vector<HyperGraph::Vertex*>& vset,
+          const HyperGraph::EdgeSet& edges) = 0;
 
       /**
        * called by the optimizer if verbose. re-implement, if you want to print something
@@ -96,7 +99,7 @@ namespace g2o {
        * update the properties from a string, see PropertyMap::updateMapFromString()
        */
       bool updatePropertiesFromString(const std::string& propString);
-      
+
       /**
        * print the properties to a stream in a human readable fashion
        */
@@ -109,9 +112,11 @@ namespace g2o {
     private:
       // Disable the copy constructor and assignment operator
       OptimizationAlgorithm(const OptimizationAlgorithm&) { }
-      OptimizationAlgorithm& operator= (const OptimizationAlgorithm&) { return *this; }
+      OptimizationAlgorithm& operator= (const OptimizationAlgorithm&) {
+        return *this;
+      }
   };
 
-} // end namespace
+}  // end namespace g2o
 
 #endif

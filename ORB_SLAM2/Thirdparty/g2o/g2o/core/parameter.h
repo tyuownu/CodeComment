@@ -33,8 +33,7 @@
 
 namespace g2o {
 
-    class  Parameter : public HyperGraph::HyperGraphElement
-    {
+    class  Parameter : public HyperGraph::HyperGraphElement {
       public:
         Parameter();
         virtual ~Parameter() {};
@@ -44,7 +43,9 @@ namespace g2o {
         virtual bool write(std::ostream& os) const = 0;
         int id() const {return _id;}
         void setId(int id_);
-        virtual HyperGraph::HyperGraphElementType elementType() const { return HyperGraph::HGET_PARAMETER;}
+        virtual HyperGraph::HyperGraphElementType elementType() const {
+          return HyperGraph::HGET_PARAMETER;
+        }
       protected:
         int _id;
     };

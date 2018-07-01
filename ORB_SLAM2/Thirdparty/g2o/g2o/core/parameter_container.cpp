@@ -82,7 +82,7 @@ namespace g2o {
     erase(it);
     return p;
   }
-  
+
   bool ParameterContainer::write(std::ostream& os) const{
     Factory* factory = Factory::instance();
     for (const_iterator it=begin(); it!=end(); it++){
@@ -94,14 +94,16 @@ namespace g2o {
     return true;
   }
 
-  bool ParameterContainer::read(std::istream& is, const std::map<std::string, std::string>* _renamedTypesLookup){
+  bool ParameterContainer::read(
+      std::istream& is,
+      const std::map<std::string, std::string>* _renamedTypesLookup){
     stringstream currentLine;
     string token;
 
     Factory* factory = Factory::instance();
     HyperGraph::GraphElemBitset elemBitset;
     elemBitset[HyperGraph::HGET_PARAMETER] = 1;
-    
+
     while (1) {
       int bytesRead = readLine(is, currentLine);
       if (bytesRead == -1)
@@ -110,16 +112,18 @@ namespace g2o {
       if (bytesRead == 0 || token.size() == 0 || token[0] == '#')
         continue;
       if (_renamedTypesLookup && _renamedTypesLookup->size()>0){
-	map<string, string>::const_iterator foundIt = _renamedTypesLookup->find(token);
-	if (foundIt != _renamedTypesLookup->end()) {
-	  token = foundIt->second;
-	}
+        map<string, string>::const_iterator foundIt = _renamedTypesLookup->find(token);
+        if (foundIt != _renamedTypesLookup->end()) {
+          token = foundIt->second;
+        }
       }
 
-      HyperGraph::HyperGraphElement* element = factory->construct(token, elemBitset);
+      HyperGraph::HyperGraphElement* element =
+          factory->construct(token, elemBitset);
       if (! element) // not a parameter or otherwise unknown tag
         continue;
-      assert(element->elementType() == HyperGraph::HGET_PARAMETER && "Should be a param");
+      assert(element->elementType() ==
+             HyperGraph::HGET_PARAMETER && "Should be a param");
 
       Parameter* p = static_cast<Parameter*>(element);
       int pid;
@@ -127,16 +131,20 @@ namespace g2o {
       p->setId(pid);
       bool r = p->read(currentLine);
       if (! r) {
-        cerr << __PRETTY_FUNCTION__ << ": Error reading data " << token << " for parameter " << pid << endl;
+        cerr << __PRETTY_FUNCTION__
+            << ": Error reading data " << token
+            << " for parameter " << pid << endl;
         delete p;
       } else {
         if (! addParameter(p) ){
-          cerr << __PRETTY_FUNCTION__ << ": Parameter of type:" << token << " id:" << pid << " already defined" << endl;
+          cerr << __PRETTY_FUNCTION__
+              << ": Parameter of type:" << token
+              << " id:" << pid << " already defined" << endl;
         }
       }
     } // while read line
-    
+
     return true;
   }
-  
+
 } // end namespace

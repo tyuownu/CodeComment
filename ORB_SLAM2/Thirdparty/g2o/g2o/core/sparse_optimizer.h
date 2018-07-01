@@ -90,8 +90,9 @@ namespace g2o {
     /**
      * HACK updating the internal structures for online processing
      */
-    virtual bool updateInitialization(HyperGraph::VertexSet& vset, HyperGraph::EdgeSet& eset);
-  
+    virtual bool updateInitialization(
+        HyperGraph::VertexSet& vset, HyperGraph::EdgeSet& eset);
+
     /**
      * Propagates an initial guess from the vertex specified as origin.
      * It should be called after initializeOptimization(...), as it relies on the _activeVertices/_edges structures.
@@ -127,7 +128,9 @@ namespace g2o {
      * @param spinv: the sparse block matrix with the result
      * @returns false if the operation is not supported by the solver
      */
-    bool computeMarginals(SparseBlockMatrix<MatrixXd>& spinv, const std::vector<std::pair<int, int> >& blockIndices);
+    bool computeMarginals(
+        SparseBlockMatrix<MatrixXd>& spinv,
+        const std::vector<std::pair<int, int> >& blockIndices);
 
     /**
      * computes the inverse of the specified vertex.
@@ -135,12 +138,14 @@ namespace g2o {
      * @param spinv: the sparse block matrix with the result
      * @returns false if the operation is not supported by the solver
      */
-    bool computeMarginals(SparseBlockMatrix<MatrixXd>& spinv, const Vertex* vertex) {
+    bool computeMarginals(SparseBlockMatrix<MatrixXd>& spinv,
+                          const Vertex* vertex) {
       if (vertex->hessianIndex() < 0) {
           return false;
       }
       std::vector<std::pair<int, int> > index;
-      index.push_back(std::pair<int, int>(vertex->hessianIndex(), vertex->hessianIndex()));
+      index.push_back(std::pair<int, int>(
+              vertex->hessianIndex(), vertex->hessianIndex()));
       return computeMarginals(spinv, index);
     }
 
@@ -150,10 +155,13 @@ namespace g2o {
      * @param spinv: the sparse block matrix with the result
      * @returns false if the operation is not supported by the solver
      */
-    bool computeMarginals(SparseBlockMatrix<MatrixXd>& spinv, const VertexContainer& vertices) {
+    bool computeMarginals(SparseBlockMatrix<MatrixXd>& spinv,
+                          const VertexContainer& vertices) {
       std::vector<std::pair<int, int> > indices;
-      for (VertexContainer::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
-        indices.push_back(std::pair<int, int>((*it)->hessianIndex(),(*it)->hessianIndex()));
+      for (VertexContainer::const_iterator it = vertices.begin();
+           it != vertices.end(); ++it) {
+        indices.push_back(std::pair<int, int>(
+                (*it)->hessianIndex(),(*it)->hessianIndex()));
       }
       return computeMarginals(spinv, indices);
     }
@@ -273,9 +281,9 @@ namespace g2o {
        returns the set of batch statistics about the optimisation
     */
     BatchStatisticsContainer& batchStatistics() { return _batchStatistics;}
-    
+
     void setComputeBatchStatistics(bool computeBatchStatistics);
-    
+
     bool computeBatchStatistics() const { return _computeBatchStatistics;}
 
     /**** callbacks ****/
@@ -284,7 +292,7 @@ namespace g2o {
     //! remove an action that should no longer be execured before computing the error vectors
     bool removeComputeErrorAction(HyperGraphAction* action);
 
-    
+
 
     protected:
     bool* _forceStopFlag;
@@ -295,7 +303,7 @@ namespace g2o {
     EdgeContainer _activeEdges;        ///< sorted according to EdgeIDCompare
 
     void sortVectorContainers();
- 
+
     OptimizationAlgorithm* _algorithm;
 
     /**

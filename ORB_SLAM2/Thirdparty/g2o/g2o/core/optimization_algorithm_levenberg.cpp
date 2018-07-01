@@ -41,14 +41,15 @@ using namespace std;
 namespace g2o {
 
   OptimizationAlgorithmLevenberg::OptimizationAlgorithmLevenberg(Solver* solver) :
-    OptimizationAlgorithmWithHessian(solver)
-  {
+    OptimizationAlgorithmWithHessian(solver) {
     _currentLambda = -1.;
     _tau = 1e-5;
     _goodStepUpperScale = 2./3.;
     _goodStepLowerScale = 1./3.;
-    _userLambdaInit = _properties.makeProperty<Property<double> >("initialLambda", 0.);
-    _maxTrialsAfterFailure = _properties.makeProperty<Property<int> >("maxTrialsAfterFailure", 10);
+    _userLambdaInit =
+        _properties.makeProperty<Property<double> >("initialLambda", 0.);
+    _maxTrialsAfterFailure =
+        _properties.makeProperty<Property<int> >("maxTrialsAfterFailure", 10);
     _ni=2.;
     _levenbergIterations = 0;
     _nBad = 0;
@@ -58,15 +59,17 @@ namespace g2o {
   {
   }
 
-  OptimizationAlgorithm::SolverResult OptimizationAlgorithmLevenberg::solve(int iteration, bool online)
-  {
+  OptimizationAlgorithm::SolverResult OptimizationAlgorithmLevenberg::solve(
+      int iteration, bool online) {
     assert(_optimizer && "_optimizer not set");
-    assert(_solver->optimizer() == _optimizer && "underlying linear solver operates on different graph");
+    assert(_solver->optimizer() == _optimizer &&
+           "underlying linear solver operates on different graph");
 
     if (iteration == 0 && !online) { // built up the CCS structure, here due to easy time measure
       bool ok = _solver->buildStructure();
       if (! ok) {
-        cerr << __PRETTY_FUNCTION__ << ": Failure while building CCS structure" << endl;
+        cerr << __PRETTY_FUNCTION__
+            << ": Failure while building CCS structure" << endl;
         return OptimizationAlgorithm::Fail;
       }
     }
@@ -90,7 +93,7 @@ namespace g2o {
     }
 
     // core part of the Levenbarg algorithm
-    if (iteration == 0) {       
+    if (iteration == 0) {
       _currentLambda = computeLambdaInit();
       _ni = 2;
       _nBad = 0;
@@ -146,7 +149,8 @@ namespace g2o {
         _optimizer->pop(); // restore the last state before trying to optimize
       }
       qmax++;
-    } while (rho<0 && qmax < _maxTrialsAfterFailure->value() && ! _optimizer->terminate());
+    } while (rho<0 && qmax < _maxTrialsAfterFailure->value() &&
+             ! _optimizer->terminate());
 
     if (qmax == _maxTrialsAfterFailure->value() || rho==0)
       return Terminate;
@@ -163,8 +167,7 @@ namespace g2o {
     return OK;
   }
 
-  double OptimizationAlgorithmLevenberg::computeLambdaInit() const
-  {
+  double OptimizationAlgorithmLevenberg::computeLambdaInit() const {
     if (_userLambdaInit->value() > 0)
       return _userLambdaInit->value();
     double maxDiagonal=0.;
@@ -179,8 +182,7 @@ namespace g2o {
     return _tau*maxDiagonal;
   }
 
-  double OptimizationAlgorithmLevenberg::computeScale() const
-  {
+  double OptimizationAlgorithmLevenberg::computeScale() const {
     double scale = 0.;
     for (size_t j=0; j < _solver->vectorSize(); j++){
       scale += _solver->x()[j] * (_currentLambda * _solver->x()[j] + _solver->b()[j]);
