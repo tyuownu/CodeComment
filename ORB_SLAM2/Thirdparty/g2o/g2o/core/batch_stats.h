@@ -26,7 +26,8 @@
 
 #ifndef G2O_BATCH_STATS_H_
 #define G2O_BATCH_STATS_H_
-#include <iostream> #include <vector>
+#include <iostream>
+#include <vector>
 
 
 namespace g2o {
