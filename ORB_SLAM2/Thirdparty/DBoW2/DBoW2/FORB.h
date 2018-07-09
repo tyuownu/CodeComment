@@ -19,12 +19,11 @@
 namespace DBoW2 {
 
 /// Functions to manipulate ORB descriptors
-class FORB: protected FClass
-{
-public:
+class FORB: protected FClass {
+ public:
 
   /// Descriptor type
-  typedef cv::Mat TDescriptor; // CV_8U
+  typedef cv::Mat TDescriptor;  // CV_8U
   /// Pointer to a single descriptor
   typedef const TDescriptor *pDescriptor;
   /// Descriptor length (in bytes)
@@ -70,10 +69,9 @@ public:
 
   static void toMat8U(const std::vector<TDescriptor> &descriptors,
     cv::Mat &mat);
-
 };
 
-} // namespace DBoW2
+}  // namespace DBoW2
 
 #endif
 
