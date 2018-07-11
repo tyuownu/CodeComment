@@ -27,7 +27,7 @@
 
 namespace ORB_SLAM2 {
 
-LocalMapping::LocalMapping(Map *pMap, const float bMonocular) :
+LocalMapping::LocalMapping(Map *pMap, const bool bMonocular) :
     mbMonocular(bMonocular),
     mbResetRequested(false),
     mbFinishRequested(false),
