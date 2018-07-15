@@ -145,6 +145,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc,
   cout << "- Minimum Fast Threshold: " << fMinThFAST << endl;
 
   if ( sensor == System::STEREO || sensor == System::RGBD ) {
+    // mThDepth = 40 * 40 / 517.3
     mThDepth = mbf*(float)fSettings["ThDepth"]/fx;
     cout << endl << "Depth Threshold (Close/Far Points): " << mThDepth << endl;
   }
@@ -213,6 +214,7 @@ cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB,
   mImGray = imRGB;
   cv::Mat imDepth = imD;
 
+  // 转换成灰度图像.
   if ( mImGray.channels() == 3 ) {
     if ( mbRGB )
       cvtColor(mImGray, mImGray, CV_RGB2GRAY);
@@ -396,6 +398,7 @@ void Tracking::Track() {
         mLastFrame.GetRotationInverse().copyTo(LastTwc.rowRange(0, 3).colRange(0, 3));
         mLastFrame.GetCameraCenter().copyTo(LastTwc.rowRange(0, 3).col(3));
         mVelocity = mCurrentFrame.mTcw*LastTwc;
+        // need more details
       } else
         mVelocity = cv::Mat();
 
@@ -479,6 +482,7 @@ void Tracking::StereoInitialization() {
 
     // Create MapPoints and asscoiate to KeyFrame
     for ( int i=0; i < mCurrentFrame.N; i++ ) {
+      // mvDepth代表的是像素实际深度值，单位米(m)
       float z = mCurrentFrame.mvDepth[i];
       if ( z > 0 ) {
         cv::Mat x3D = mCurrentFrame.UnprojectStereo(i);
@@ -489,6 +493,7 @@ void Tracking::StereoInitialization() {
         pNewMP->UpdateNormalAndDepth();
         mpMap->AddMapPoint(pNewMP);
 
+        // 由下句可见，mvpMapPoints中如果z<0，则相应的值为NULL
         mCurrentFrame.mvpMapPoints[i]=pNewMP;
       }
     }
@@ -906,6 +911,7 @@ bool Tracking::NeedNewKeyFrame() {
   const int nKFs = mpMap->KeyFramesInMap();
 
   // Do not insert keyframes if not enough frames have passed from last relocalisation
+  // mMaxFrames = 30
   if ( mCurrentFrame.mnId < mnLastRelocFrameId+mMaxFrames && nKFs > mMaxFrames )
     return false;
 

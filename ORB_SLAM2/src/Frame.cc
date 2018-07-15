@@ -74,6 +74,7 @@ Frame::Frame(const Frame &frame) :
 }
 
 
+// 双目相机构造函数.
 Frame::Frame(const cv::Mat &imLeft,
              const cv::Mat &imRight,
              const double &timeStamp,
@@ -148,6 +149,7 @@ Frame::Frame(const cv::Mat &imLeft,
   AssignFeaturesToGrid();
 }
 
+// RGBD相机构造函数.
 Frame::Frame(const cv::Mat &imGray,
              const cv::Mat &imDepth,
              const double &timeStamp,
@@ -169,12 +171,19 @@ Frame::Frame(const cv::Mat &imGray,
   mnId = nNextId++;
 
   // Scale Level Info
+  // mnScaleLevels = 8
   mnScaleLevels     = mpORBextractorLeft->GetLevels();
+  // mfScaleFactor = 1.20
   mfScaleFactor     = mpORBextractorLeft->GetScaleFactor();
+  // mfLogScaleFactor = 0.18232
   mfLogScaleFactor  = log(mfScaleFactor);
+  // mvScaleFactors = [1, 1.2, 1.44, 1.728, 2.0736, 2.48832, 2.985984, 3.58318]
   mvScaleFactors    = mpORBextractorLeft->GetScaleFactors();
+  // mvInvScaleFactors = 1.0f/mvScaleFactors
   mvInvScaleFactors = mpORBextractorLeft->GetInverseScaleFactors();
+  // mvLevelSigma2 = mvScaleFactors.^2
   mvLevelSigma2     = mpORBextractorLeft->GetScaleSigmaSquares();
+  // mvInvLevelSigma2 = mvInvScaleFactors.^2
   mvInvLevelSigma2  = mpORBextractorLeft->GetInverseScaleSigmaSquares();
 
   // ORB extraction
@@ -185,6 +194,7 @@ Frame::Frame(const cv::Mat &imGray,
   if ( mvKeys.empty() )
     return;
 
+  // 去除特征点的畸变，存在mvKeysUn里面.
   UndistortKeyPoints();
 
   ComputeStereoFromRGBD(imDepth);
@@ -196,8 +206,10 @@ Frame::Frame(const cv::Mat &imGray,
   if ( mbInitialComputations ) {
     ComputeImageBounds(imGray);
 
+    // FRAME_GRID_COLS = 64
     mfGridElementWidthInv =
         static_cast<float>(FRAME_GRID_COLS) / static_cast<float>(mnMaxX - mnMinX);
+    // FRAME_GRID_COLS = 48
     mfGridElementHeightInv =
         static_cast<float>(FRAME_GRID_ROWS) / static_cast<float>(mnMaxY - mnMinY);
 
@@ -217,6 +229,7 @@ Frame::Frame(const cv::Mat &imGray,
 }
 
 
+// 单目的构造函数.
 Frame::Frame(const cv::Mat &imGray,
              const double &timeStamp,
              ORBextractor* extractor,
@@ -454,6 +467,8 @@ void Frame::ComputeBoW() {
   if ( mBowVec.empty() ) {
     vector<cv::Mat> vCurrentDesc = Converter::toDescriptorVector(mDescriptors);
     mpORBvocabulary->transform(vCurrentDesc, mBowVec, mFeatVec, 4);
+    //   DBoW2::BowVector mBowVec;   class BowVector: public std::map<WordId, WordValue>
+    //   DBoW2::FeatureVector mFeatVec;  class FeatureVector: public std::map<NodeId, std::vector<unsigned int> >
   }
 }
 
@@ -686,6 +701,7 @@ void Frame::ComputeStereoMatches() {
 
 
 void Frame::ComputeStereoFromRGBD(const cv::Mat &imDepth) {
+  // 只有当该特征点的d大于0时，mvDepth和mvuRight才不等于-1.
   mvuRight = vector<float>(N, -1);
   mvDepth = vector<float>(N, -1);
 

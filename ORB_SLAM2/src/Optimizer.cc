@@ -261,6 +261,7 @@ int Optimizer::PoseOptimization(Frame *pFrame) {
   vnIndexEdgeStereo.reserve(N);
 
   const float deltaMono = sqrt(5.991);
+  // what is 7.815??
   const float deltaStereo = sqrt(7.815);
 
 
@@ -270,6 +271,7 @@ int Optimizer::PoseOptimization(Frame *pFrame) {
     for ( int i=0; i < N; i++ ) {
       MapPoint* pMP = pFrame->mvpMapPoints[i];
       if ( pMP ) {
+        // notice this place
         // Monocular observation
         if ( pFrame->mvuRight[i] < 0 ) {
           nInitialCorrespondences++;

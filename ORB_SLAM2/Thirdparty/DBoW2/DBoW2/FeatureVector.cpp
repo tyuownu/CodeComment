@@ -27,6 +27,7 @@ FeatureVector::~FeatureVector(void)
 // ---------------------------------------------------------------------------
 
 void FeatureVector::addFeature(NodeId id, unsigned int i_feature) {
+  // 在已经排好的数组找到id的位置.
   FeatureVector::iterator vit = this->lower_bound(id);
 
   if ( vit != this->end() && vit->first == id ) {

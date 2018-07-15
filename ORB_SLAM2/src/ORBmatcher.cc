@@ -1258,6 +1258,7 @@ int ORBmatcher::SearchByProjection(
   int nmatches = 0;
 
   // Rotation Histogram (to check rotation consistency)
+  // HISTO_LENGTH=30
   vector<int> rotHist[HISTO_LENGTH];
   for ( int i=0; i < HISTO_LENGTH; i++ )
     rotHist[i].reserve(500);

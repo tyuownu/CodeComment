@@ -432,6 +432,7 @@ ORBextractor::ORBextractor(int _nfeatures, float _scaleFactor, int _nlevels,
     nDesiredFeaturesPerScale *= factor;
   }
   mnFeaturesPerLevel[nlevels-1] = std::max(nfeatures - sumFeatures, 0);
+  // mnFeaturesPerLevel = [217 181 151 126 105 87 73 60]
 
   const int npoints = 512;
   const Point* pattern0 = (const Point*)bit_pattern_31_;
@@ -441,11 +442,16 @@ ORBextractor::ORBextractor(int _nfeatures, float _scaleFactor, int _nlevels,
   // pre-compute the end of a row in a circular patch
   umax.resize(HALF_PATCH_SIZE + 1);
 
+  // HALF_PATCH_SIZE = 15, vmax = 11
+  // cvRound: 四舍五入. cvFloor: 向下取整. cvCeil: 向上取整.
   int v, v0, vmax = cvFloor(HALF_PATCH_SIZE * sqrt(2.f) / 2 + 1);
+  // vmin = 11
   int vmin = cvCeil(HALF_PATCH_SIZE * sqrt(2.f) / 2);
+  // hp2 = 225
   const double hp2 = HALF_PATCH_SIZE*HALF_PATCH_SIZE;
   for ( v = 0; v <= vmax; ++v )
     umax[v] = cvRound(sqrt(hp2 - v * v));
+  // umax = [15, 15, 15, 15, 14, 14, 14, 13, 13, 12, 11, 10, 0, 0, 0, 0]
 
   // Make sure we are symmetric
   for ( v = HALF_PATCH_SIZE, v0 = 0; v >= vmin; --v ) {
@@ -454,6 +460,7 @@ ORBextractor::ORBextractor(int _nfeatures, float _scaleFactor, int _nlevels,
     umax[v] = v0;
     ++v0;
   }
+  // umax = [15 15 15 15 14 14 14 13 13 12 11 10 9 8 6 3]
 }
 
 static void computeOrientation(const Mat& image, vector<KeyPoint>& keypoints,
@@ -996,9 +1003,11 @@ void ORBextractor::operator()(
   assert(image.type() == CV_8UC1 );
 
   // Pre-compute the scale pyramid
+  // 预先计算图像金字塔.
   ComputePyramid(image);
 
   vector<vector<KeyPoint> > allKeypoints;
+  // 提取图像特征点.
   ComputeKeyPointsOctTree(allKeypoints);
   // ComputeKeyPointsOld(allKeypoints);
 
@@ -1054,6 +1063,8 @@ void ORBextractor::ComputePyramid(cv::Mat image) {
     Size wholeSize(sz.width + EDGE_THRESHOLD*2, sz.height + EDGE_THRESHOLD*2);
     Mat temp(wholeSize, image.type()), masktemp;
     mvImagePyramid[level] = temp(Rect(EDGE_THRESHOLD, EDGE_THRESHOLD, sz.width, sz.height));
+    // mvImagePyramid = [480*640, 400*533, 333*444, 278*370,
+    //                   231*309, 193*257, 161*214, 134*179]
 
     // Compute the resized image
     if ( level != 0 ) {

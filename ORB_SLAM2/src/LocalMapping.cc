@@ -143,6 +143,7 @@ void LocalMapping::ProcessNewKeyFrame() {
           pMP->ComputeDistinctiveDescriptors();
         } else  // this can only happen for new stereo points inserted by the Tracking
         {
+          // new stereo point in this way, how about mono point?
           mlpRecentAddedMapPoints.push_back(pMP);
         }
       }
