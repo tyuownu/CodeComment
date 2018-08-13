@@ -7,7 +7,7 @@
 %
 % Options::
 % 'trans'   Return translational submatrix of Jacobian
-% 'rot'     Return rotational submatrix of Jacobian 
+% 'rot'     Return rotational submatrix of Jacobian
 %
 % Notes::
 % - Was joacobn() is earlier version of the Toolbox.
@@ -28,17 +28,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -54,23 +54,23 @@ function J = jacobe(robot, q, varargin)
         % in degrees mode, scale the columns corresponding to revolute axes
         q = robot.todegrees(q);
     end
-    
+
     n = robot.n;
     L = robot.links;        % get the links
-    
-   
+
+
     J = zeros(6, robot.n);
     if isa(q, 'sym')
         J = sym(J);
     end
-    
+
     U = robot.tool;
     for j=n:-1:1
         if robot.mdh == 0
             % standard DH convention
             U = L(j).A(q(j)) * U;
         end
-        
+
         UT = U.T;
 
         if L(j).isrevolute
@@ -91,13 +91,13 @@ function J = jacobe(robot, q, varargin)
             U = L(j).A(q(j)) * U;
         end
     end
-    
+
     if opt.trans
         J = J(1:3,:);
     elseif opt.rot
         J = J(4:6,:);
     end
-    
+
     if isa(J, 'sym')
         J = simplify(J);
     end

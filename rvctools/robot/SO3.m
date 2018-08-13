@@ -4,7 +4,7 @@
 %
 % Constructor methods::
 %  SO3              general constructor
-%  SO3.exp          exponentiate an so(3) matrix                         
+%  SO3.exp          exponentiate an so(3) matrix
 %  SO3.angvec       rotation about vector
 %  SO3.eul          rotation defined by Euler angles
 %  SO3.oa           rotation defined by o- and a-vectors
@@ -59,7 +59,7 @@
 %
 % Static methods::
 %  check            convert object or matrix to SO2 object
-%  exp              exponentiate an so(3) matrix                         
+%  exp              exponentiate an so(3) matrix
 %  isa              check if matrix is 3x3
 %  angvec           rotation about vector
 %  eul              rotation defined by Euler angles
@@ -91,47 +91,47 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 classdef SO3 < RTBPose
-    
+
     properties (Dependent=true)
         n
         o
         a
     end
-    
+
     methods
-        
+
         function obj = SO3(a, varargin)
             %SO3.SO3  Construct an SO(2) object
             %
             % P = SO3() is an SO3 object representing null rotation.
             %
-            % P = SO3(R) is an SO3 object formed from the rotation 
+            % P = SO3(R) is an SO3 object formed from the rotation
             % matrix R (3x3)
             %
-            % P = SO3(T) is an SO3 object formed from the rotational part 
+            % P = SO3(T) is an SO3 object formed from the rotational part
             % of the homogeneous transformation matrix T (4x4)
             %
             % P = SO3(Q) is an SO3 object that is a copy of the SO3 object Q.            %
             %
             % See also SE3, SO2.
-            
+
             if nargin == 0
                 % null rotation
                 obj.data = eye(3,3);
@@ -150,12 +150,12 @@ classdef SO3 < RTBPose
                 end
             end
         end
-       
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  GET AND SET
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        
+
+
         function RR = R(obj)
             %SO3.R  Get rotation matrix
             %
@@ -189,7 +189,7 @@ classdef SO3 < RTBPose
                 TT(4,4,i) = 1;
             end
         end
-     
+
         function v = get.n(obj);
             %SO3.n  Get normal vector
             %
@@ -199,7 +199,7 @@ classdef SO3 < RTBPose
             % See also SO3.o, SO3.a.
             v = obj.data(1:3,1);
         end
-        
+
         function v = get.o(obj);
             %SO3.o  Get orientation vector
             %
@@ -209,7 +209,7 @@ classdef SO3 < RTBPose
             % See also SO3.n, SO3.a.
             v = obj.data(1:3,2);
         end
-        
+
         function v = get.a(obj);
             %SO3.a  Get approach vector
             %
@@ -224,7 +224,7 @@ classdef SO3 < RTBPose
         %  CLASSIC RTB FUNCTION COMPATIBILITY
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        
+
         function T = trnorm(obj)
             %SO3.trnorm  Normalize rotation (compatibility)
             %
@@ -239,7 +239,7 @@ classdef SO3 < RTBPose
                 T(k) = SE3( trnorm(obj(k).T) );
             end
         end
-        
+
         function rpy = tr2rpy(obj, varargin)
             %SO3.tr2rpy  Convert to RPY angles (compatibility)
             %
@@ -254,7 +254,7 @@ classdef SO3 < RTBPose
             % See also tr2rpy.
             rpy = tr2rpy(obj.R, varargin{:});
         end
-        
+
         function eul = tr2eul(obj, varargin)
             %SO3.tr2eul  Convert to Euler angles (compatibility)
             %
@@ -268,13 +268,13 @@ classdef SO3 < RTBPose
             % See also tr2eul.
             eul = tr2eul(obj.R, varargin{:});
         end
-        
-        
+
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  COMPOSITION
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-       
+
+
         function out = times(obj, a)
             %SO3.times  Compound SO3 objects and normalize
             %
@@ -288,14 +288,14 @@ classdef SO3 < RTBPose
             %
             % If Q is a vector (1xN) then R is a vector (1xN) such thatR(i) = P.*Q(i).
             %
-            % If both P and Q are vectors (1xN) then R is a vector (1xN) such that 
+            % If both P and Q are vectors (1xN) then R is a vector (1xN) such that
             % R(i) = P(i).*R(i).
             %
             % See also RTBPose.mtimes, SO3.divide, trnorm.
-            
+
             % do the multiplication
             out = mtimes(obj, a);
-            
+
             % now normalize
             if isa(out, 'SO3')
                 % created an array of SE3's
@@ -304,7 +304,7 @@ classdef SO3 < RTBPose
                 end
             end
         end
-        
+
 
         function out = rdivide(obj, a)
             %SO3.mrdivide  Compound SO3 object with inverse and normalize
@@ -317,20 +317,20 @@ classdef SO3 < RTBPose
             % elementwise product of the two vectors.
             %
             % See also SO3.mrdivide, SO3.times, trnorm.
-            
+
             % do the division
             out = mrdivide(obj, a);
-            
+
             % now normalize
             % created an array of SO3's
             for i=1:length(out)
                 out(i).data = trnorm(out(i).data);
             end
         end
-        
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%  OPERATIONS
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%        
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function ir = inv(obj)
             %SO3.inv  Inverse of SO3 object
             %
@@ -348,7 +348,7 @@ classdef SO3 < RTBPose
             % det(P) is the determinant of the SO3 object P and should always be +1.
             d = det(obj.R);
         end
-        
+
         function R = interp(obj1, obj2, s)
             %SO3.interp Interpolate between SO3 objects
             %
@@ -364,7 +364,7 @@ classdef SO3 < RTBPose
             % - It is an error if S is outside the interval 0 to 1.
             %
             % See also UnitQuaternion.
-            
+
             if (length(s) == 1) && (floor(s) == s) && (s > 1)
                 % is an integer, interpolate a sequence this long
                 s = linspace(0, 1, s);
@@ -380,14 +380,14 @@ classdef SO3 < RTBPose
             % E = eig(P) is a column vector containing the eigenvalues of the the
             % rotation matrix of the SO3 object P.
             %
-            % [V,D] = eig(P) produces a diagonal matrix D of eigenvalues and 
-            % a full matrix V whose columns are the corresponding eigenvectors  
+            % [V,D] = eig(P) produces a diagonal matrix D of eigenvalues and
+            % a full matrix V whose columns are the corresponding eigenvectors
             % so that A*V = V*D.
             %
             % See also eig.
             [varargout{1:nargout}] = eig(obj.data, varargin{:});
         end
-        
+
         function S = log(obj)
             %SE2.log  Lie algebra
             %
@@ -395,24 +395,24 @@ classdef SO3 < RTBPose
             % corresponding to the SE2 object P.
             %
             % See also SE2.Twist, trlog.
-            
+
             S = trlog(obj.data);
         end
-        
 
-        
+
+
         %         function o = set.R(obj, data)
         %             obj.data(1:3,1:3) = data;
         %             o = obj;
         %         end
-        
+
         %         function TT = T(obj)
         %             TT = eye(4,4);
         %             TT(1:3,1:3) = obj.data(1:3,1:3);
         %          end
-        
+
         % TODO singularity for XYZ case,
-        
+
         function rpy = torpy(obj, varargin)
             %SO3.RPY Convert to roll-pitch-yaw angles
             %
@@ -434,10 +434,10 @@ classdef SO3 < RTBPose
             %   set to zero and Y is the sum (R+Y).
             %
             % See also SO3.toeul, rpy2tr, tr2eul.
-            
+
             rpy = tr2rpy(obj.R, varargin{:});
         end
-        
+
         function euler = toeul(obj, varargin)
             %SO3.toeul Convert  to Euler angles
             %
@@ -458,10 +458,10 @@ classdef SO3 < RTBPose
             %   set to zero and PSI is the sum (PHI+PSI).
             %
             % See also SO3.torpy, EUL2TR, TR2RPY.
-         
+
             euler = tr2eul(obj.R, varargin{:});
         end
-        
+
         function [varargout] = toangvec(obj, varargin)
             %SO3.toangvec Convert to angle-vector form
             %
@@ -480,14 +480,14 @@ classdef SO3 < RTBPose
             % - If no output arguments are specified the result is displayed.
             %
             % See also ANGVEC2R, ANGVEC2TR, TRLOG.
-            
+
             [varargout{1:nargout}] = tr2angvec(obj.R, varargin{:});
         end
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%  conversion methods
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
         function s = SE3(obj)
             %SO3.SE3 Convert to SEe object
@@ -499,7 +499,7 @@ classdef SO3 < RTBPose
             s = SE3();
             s.data = [obj.data zeros(3,1); 0 0 0 1];
         end
-        
+
         function q = UnitQuaternion(obj)
             %SO3.UnitQuaternion Convert to UnitQuaternion object
             %
@@ -511,7 +511,7 @@ classdef SO3 < RTBPose
                 q(i) = UnitQuaternion(obj(i).R);
             end
         end
-        
+
         function n = new(obj, varargin)
             %SO3.new  Construct a new object of the same type
             %
@@ -530,14 +530,14 @@ classdef SO3 < RTBPose
             n = SO3(varargin{:});
         end
     end
-    
+
     methods (Static)
         % ICANT RECALL WHY WE NEED THIS
 %         function m = ad(s)
 %             m = skew(s);
 %         end
-        
-        
+
+
         function obj = Rx(varargin)
             %SO3.Rx Rotation about X axis
             %
@@ -547,10 +547,10 @@ classdef SO3 < RTBPose
             % P = SO3.Rx(THETA, 'deg') as above but THETA is in degrees.
             %
             % See also SO3.Ry, SO3.Rz, rotx.
-            
+
             obj = SO3( rotx(varargin{:}) );
         end
-        
+
         function obj = Ry(varargin)
             %SO3.Ry Rotation about Y axis
             %
@@ -560,10 +560,10 @@ classdef SO3 < RTBPose
             % P = SO3.Ry(THETA, 'deg') as above but THETA is in degrees.
             %
             % See also SO3.Rx, SO3.Rz, roty.
-            
+
             obj = SO3( roty(varargin{:}) );
         end
-        
+
         function obj = Rz(varargin)
             %SO3.Rz Rotation about Z axis
             %
@@ -573,11 +573,11 @@ classdef SO3 < RTBPose
             % P = SO3.Rz(THETA, 'deg') as above but THETA is in degrees.
             %
             % See also SO3.Rx, SO3.Ry, rotz.
-            
+
             obj = SO3( rotz(varargin{:}) );
         end
-                
-        
+
+
         function h = isa(r, dtest)
             %SO3.ISA Test if a rotation matrix
             %
@@ -593,7 +593,7 @@ classdef SO3 < RTBPose
             d = size(r);
             if ndims(r) >= 2
                 h = all(d(1:2) == [3 3]);
-                
+
                 if h && nargin > 1
                     h = abs(det(r) - 1) < 10*eps;
                 end
@@ -601,7 +601,7 @@ classdef SO3 < RTBPose
                 h = false;
             end
         end
-        
+
         function R = eul(varargin)
             %SO3.eul Construct an SO(3) object from Euler angles
             %
@@ -624,7 +624,7 @@ classdef SO3 < RTBPose
             % See also SO3.rpy, SE3.eul, EUL2TR, RPY2TR, TR2EUL.
             R = SO3( eul2r(varargin{:}) );
         end
-        
+
         function R = rpy(varargin)
             %SO3.rpy Construct an SO(3) object from roll-pitch-yaw angles
             %
@@ -647,16 +647,16 @@ classdef SO3 < RTBPose
             % See also SO3.eul, SE3.rpy, TR2RPY, EUL2TR.
             R = SO3( rpy2r(varargin{:}) );
         end
-        
+
         function obj = oa(o, a)
-            %SO3.oa Construct an SO(3) object from orientation and approach vectors 
+            %SO3.oa Construct an SO(3) object from orientation and approach vectors
             %
             % P = SO3.oa(O, A) is an SO3 object for the specified
             % orientation and approach vectors (3x1) formed from 3 vectors such that R
             % = [N O A] and N = O x A.
             %
             % Notes::
-            % - The rotation matrix is guaranteed to be orthonormal so long as O and A 
+            % - The rotation matrix is guaranteed to be orthonormal so long as O and A
             %   are not parallel.
             % - The vectors O and A are parallel to the Y- and Z-axes of the coordinate
             %   frame.
@@ -666,18 +666,18 @@ classdef SO3 < RTBPose
             %   Richard Paul, MIT Press, 1981.
             %
             % See also RPY2R, EUL2R, OA2TR, SE3.oa.
-            
+
             if nargin < 2 || ~isvec(o) || ~isvec(a)
                 error('RTB:SO3:oa2r:badarg', 'bad arguments');
             end
-            
+
             o = o(:); a = a(:);
             n = cross(o, a);
             o = cross(a, n);
             R = [unit(n(:)) unit(o(:)) unit(a(:))];
             obj = SO3(R);
         end
-        
+
         function R = check(tr)
             %SO3.check  Convert to SO3
             %
@@ -693,9 +693,9 @@ classdef SO3 < RTBPose
                 error('RTB:SO3:check:badarg', 'expecting an SO3 or 3x3 matrix');
             end
         end
-        
 
-        
+
+
         function R = exp(S)
                         %SO3.exp  Construct SO3 object from Lie algebra
             %
@@ -703,12 +703,12 @@ classdef SO3 < RTBPose
             % argument (2x2).
             R = SO3( trexp(S) );
         end
-        
 
-      
+
+
         function obj = angvec(theta, k)
             %SO3.angvec Construct an SO(3) object from angle and axis vector
-            % 
+            %
             % R = SO3.angvec(THETA, V) is an orthonormal rotation matrix (3x3)
             % equivalent to a rotation of THETA about the vector V.
             %
@@ -717,11 +717,11 @@ classdef SO3 < RTBPose
             % - If THETA ~= 0 then V must have a finite length.
             %
             % See also SE3.angvec, eul2r, rpy2r, tr2angvec.
-            
+
             R = angvec2r(theta, k);
             obj = SO3(R);
         end
-        
+
         function T = rand()
             %SO3.rand Construct a random SO(3) object
             %

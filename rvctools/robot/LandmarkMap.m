@@ -35,17 +35,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -74,10 +74,10 @@ classdef LandmarkMap < handle
         %
         % Options::
         % 'verbose'    Be verbose
-            
-        
+
+
         %% TODO: dim can be a 4-vector
-        
+
             opt = [];
             [opt,args] = tb_optparse(opt, varargin);
             map.verbose = opt.verbose;
@@ -146,7 +146,7 @@ classdef LandmarkMap < handle
             % values display more information.
             map.verbose = v;
         end
-            
+
         function display(map)
             %map.display Display map parameters
             %
@@ -170,8 +170,8 @@ classdef LandmarkMap < handle
         function s = char(map)
         %map.char Convert map parameters to a string
         %
-        % s = M.char() is a string showing map parameters in 
-        % a compact human readable format. 
+        % s = M.char() is a string showing map parameters in
+        % a compact human readable format.
             s = 'LandmarkMap object';
             s = char(s, sprintf('  %d landmarks', map.nlandmarks));
             s = char(s, sprintf('  dimension %.1f', map.dim));

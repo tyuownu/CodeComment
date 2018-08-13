@@ -27,17 +27,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -104,7 +104,7 @@ if length(args) > 0 && ischar(args{1})
     catch me
         % doesnt match a rotation string, go with 'rpy'
         opt.which = 'rpy';
-        
+
     end
 end
 
@@ -119,7 +119,7 @@ switch opt.which
         set(handles.popupmenu2, 'Value', 2);
         set(handles.popupmenu3, 'Value', 3);
 end
-                
+
 % draw the axes at null rotation
 %handles.h1 = trplot(eye(3,3), 'color', 'r', args{:});
 
@@ -209,7 +209,7 @@ end
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = tripleangle_OutputFcn(hObject, eventdata, handles) 
+function varargout = tripleangle_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -364,9 +364,9 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 function update(handles)
-    
+
     % compute the three rotation matrices
-    
+
     R1 = Rx( get(handles.slider1, 'Value'), get(handles.popupmenu1, 'Value'));
     R2 = Rx( get(handles.slider2, 'Value'), get(handles.popupmenu2, 'Value'));
     R3 = Rx( get(handles.slider3, 'Value'), get(handles.popupmenu3, 'Value'));
@@ -374,16 +374,16 @@ function update(handles)
 
     % display the three frames
     %trplot(R1*R2*R3, 'handle', handles.h1);
-    
+
     set(handles.ring3, 'Matrix', r2t( R1 * roty(pi/2) ));
     % Ry
     set(handles.ring2, 'Matrix', r2t( R1*R2 * rotz(pi/2) ));
     % Rx
     set(handles.ring1, 'Matrix', r2t( R1*R2*R3 * rotx(pi/2) ));
-    
+
     set(handles.plane, 'Matrix', r2t( R1*R2*R3 * roty(pi/2)*rotz(pi/2) ))
 
-    
+
 function R = Rx(theta, which)
         theta = theta * pi/180;
 
@@ -396,7 +396,7 @@ function R = Rx(theta, which)
                 R = rotz(theta);
         end
 
-    
+
 
 
 % --- Executes on button press in pb_RPY.
@@ -425,7 +425,7 @@ function pb_top_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
     view(90, 90)
-    
+
 % --- Executes on button press in pb_side.
 function pb_side_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_side (see GCBO)
@@ -454,7 +454,7 @@ function pb_reset_Callback(hObject, eventdata, handles)
 
     set(handles.slider3, 'Value', 0);
     set(handles.text3, 'String', sprintf('%.1f', 0));
-    
+
     update(handles)
     view(50, 22);
 

@@ -1,7 +1,7 @@
 %RangeBearingSensor Range and bearing sensor class
 %
 % A concrete subclass of the Sensor class that implements a range and bearing
-% angle sensor that provides robot-centric measurements of landmark points in 
+% angle sensor that provides robot-centric measurements of landmark points in
 % the world. To enable this it holds a references to a map of the world (LandmarkMap object)
 % and a robot (Vehicle subclass object) that moves in SE(2).
 %
@@ -12,12 +12,12 @@
 %
 % reading   range/bearing observation of random landmark
 % h         range/bearing observation of specific landmark
-% Hx        Jacobian matrix with respect to vehicle pose dh/dx 
-% Hp        Jacobian matrix with respect to landmark position dh/dp 
+% Hx        Jacobian matrix with respect to vehicle pose dh/dx
+% Hp        Jacobian matrix with respect to landmark position dh/dp
 % Hw        Jacobian matrix with respect to noise dh/dw
 %-
 % g         feature position given vehicle pose and observation
-% Gx        Jacobian matrix with respect to vehicle pose dg/dx 
+% Gx        Jacobian matrix with respect to vehicle pose dg/dx
 % Gz        Jacobian matrix with respect to observation dg/dz
 %
 % Properties (read/write)::
@@ -38,17 +38,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -62,8 +62,8 @@ classdef RangeBearingSensor < Sensor
         theta_range % angle limits
 
         randstream  % random stream just for Sensors
-        
-        landmarklog  % time history of observed landmarks        
+
+        landmarklog  % time history of observed landmarks
     end
 
     properties (SetAccess = private)
@@ -92,7 +92,7 @@ classdef RangeBearingSensor < Sensor
             % 'angle',[THMIN THMAX]   detection for angles betwen THMIN
             %                         and THMAX
             % 'skip',K                return a valid reading on every K'th call
-            % 'fail',[TMIN TMAX]      sensor simulates failure between 
+            % 'fail',[TMIN TMAX]      sensor simulates failure between
             %                         timesteps TMIN and TMAX
             % 'animate'               animate sensor readings
             %
@@ -135,7 +135,7 @@ classdef RangeBearingSensor < Sensor
         function init(s)
             s.landmarklog = [];
         end
-        
+
         function k = selectFeature(s)
             k = s.randstream.randi(s.map.nlandmarks);
         end
@@ -162,9 +162,9 @@ classdef RangeBearingSensor < Sensor
             % - Implements sensor failure and subsampling if specified to constructor.
             %
             % See also RangeBearingSensor.h.
-            
+
             % TODO probably should return K=0 to indicated invalid
-            
+
             % model a sensor that emits readings every interval samples
             s.count = s.count + 1;
 
@@ -179,12 +179,12 @@ classdef RangeBearingSensor < Sensor
             if ~isempty(s.fail) && (s.count >= s.fail(1)) && (s.count <= s.fail(2))
                 return;
             end
-            
+
             % create a polygon to indicate the active sensing area based on range+angle limits
             if s.animate && ~isempty(s.theta_range) && ~isempty(s.r_range)
                 h = findobj(gca, 'tag', 'sensor-area');
                 if isempty(h)
-                    
+
                     th=linspace(s.theta_range(1), s.theta_range(2), 20);
                     x = s.r_range(2) * cos(th);
                     y = s.r_range(2) * sin(th);
@@ -201,18 +201,18 @@ classdef RangeBearingSensor < Sensor
                 else
                     %hg = get(h, 'Parent');
                     plot_poly(h, s.robot.x);
-                    
+
                 end
             end
-            
+
             if ~isempty(s.r_range)  || ~isempty(s.theta_range)
                 % if range and bearing angle limits are in place look for
                 % any landmarks that match criteria
-                
+
                 % get range/bearing to all landmarks, one per row
                 z = s.h(s.robot.x');
                 jf = 1:numcols(s.map.map);
-                
+
                 if ~isempty(s.r_range)
                     % find all within range
                     k = find( z(:,1) >= s.r_range(1) & z(:,1) <= s.r_range(2) );
@@ -225,7 +225,7 @@ classdef RangeBearingSensor < Sensor
                     z = z(k,:);
                     jf = jf(k);
                 end
-                
+
                 % deal with cases for 0 or > 1 features found
                 if isempty(z)
                     % no landmarks found
@@ -240,11 +240,11 @@ classdef RangeBearingSensor < Sensor
             else
                 % randomly choose the feature
                 jf = s.selectFeature();
-                
+
                 % compute the range and bearing from robot to feature
-                z = s.h(s.robot.x', jf);   
+                z = s.h(s.robot.x', jf);
             end
-            
+
             if s.verbose
                 if isempty(z)
                     fprintf('Sensor:: no features\n');
@@ -255,7 +255,7 @@ classdef RangeBearingSensor < Sensor
             if s.animate
                 s.plot(jf);
             end
-            
+
             z = z';
 
             % add the reading to the landmark log
@@ -266,7 +266,7 @@ classdef RangeBearingSensor < Sensor
         function z = h(s, xv, jf)
             %RangeBearingSensor.h Landmark range and bearing
             %
-            % Z = S.h(X, K) is a sensor observation (1x2), range and bearing, from vehicle at 
+            % Z = S.h(X, K) is a sensor observation (1x2), range and bearing, from vehicle at
             % pose X (1x3) to the K'th landmark.
             %
             % Z = S.h(X, P) as above but compute range and bearing to a landmark at coordinate P.
@@ -281,7 +281,7 @@ classdef RangeBearingSensor < Sensor
             %   applied.
             %
             % See also RangeBearingSensor.reading, RangeBearingSensor.Hx, RangeBearingSensor.Hw, RangeBearingSensor.Hp.
-            
+
             % get the landmarks, one per row
             if nargin < 3
                 % s.h(XV)
@@ -293,7 +293,7 @@ classdef RangeBearingSensor < Sensor
                 % s.h(XV, XF)
                 xlm = jf(:)';
             end
-            
+
             % Straightforward code:
             %
             % dx = xf(1) - xv(1); dy = xf(2) - xv(2);
@@ -398,7 +398,7 @@ classdef RangeBearingSensor < Sensor
                 0,   1,    r*cos(theta + bearing)
                 ];
         end
-        
+
 
         function J = Gz(s, xv, z)
             %RangeBearingSensor.Gz Jacobian dg/dz
@@ -428,6 +428,6 @@ classdef RangeBearingSensor < Sensor
                 str = char(str, sprintf('angle: %g to %g', s.theta_range) );
             end
         end
-        
+
     end % method
 end % classdef

@@ -1,7 +1,7 @@
 %BUG2 Bug navigation class
 %
-% A concrete subclass of the abstract Navigation class that implements the bug2 
-% navigation algorithm.  This is a simple automaton that performs local 
+% A concrete subclass of the abstract Navigation class that implements the bug2
+% navigation algorithm.  This is a simple automaton that performs local
 % planning, that is, it can only sense the immediate presence of an obstacle.
 %
 % Methods::
@@ -14,17 +14,17 @@
 % Example::
 %         load map1             % load the map
 %         bug = Bug2(map);      % create navigation object
-%         start = [20,10]; 
+%         start = [20,10];
 %         goal = [50,35];
 %         bug.query(start, goal);   % animate path
 %
 % Reference::
 % -  Dynamic path planning for a mobile automaton with limited information on the environment,,
-%    V. Lumelsky and A. Stepanov, 
+%    V. Lumelsky and A. Stepanov,
 %    IEEE Transactions on Automatic Control, vol. 31, pp. 1058-1063, Nov. 1986.
 % -  Robotics, Vision & Control, Sec 5.1.2,
 %    Peter Corke, Springer, 2011.
-%  
+%
 % See also Navigation, DXform, Dstar, PRM.
 
 
@@ -32,17 +32,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -62,7 +62,7 @@ classdef Bug2 < Navigation
     methods
 
         function bug = Bug2(varargin)
-            %Bug2.Bug2 Construct a Bug2 navigation object 
+            %Bug2.Bug2 Construct a Bug2 navigation object
             %
             % B = Bug2(MAP, OPTIONS) is a bug2 navigation object, and MAP is an occupancy grid,
             % a representation of a planar world as a matrix whose elements are 0 (free
@@ -108,35 +108,35 @@ classdef Bug2 < Navigation
             %   individual frames.
             %
             % See also Animate.
-         
+
             opt.animate = false;
             opt.movie = [];
             opt.current = false;
-            
+
             opt = tb_optparse(opt, varargin);
-            
+
             if ~isempty(opt.movie)
                 anim = Animate(opt.movie);
                 opt.animate = true;
             end
-       
+
             % make sure start and goal are set and valid
             bug.start = []; bug.goal = [];
             bug.checkquery(start, goal);
-            
+
             % compute the m-line
             %  create homogeneous representation of the line
             %  line*[x y 1]' = 0
             bug.mline = homline(bug.start(1), bug.start(2), ...
                 bug.goal(1), bug.goal(2));
             bug.mline = bug.mline / norm(bug.mline(1:2));
-            
+
             if opt.animate
                 bug.plot();
-                
+
                 bug.plot_mline();
             end
-            
+
             % iterate using the next() method until we reach the goal
             robot = bug.start(:);
             bug.step = 1;
@@ -168,7 +168,7 @@ classdef Bug2 < Navigation
                     path = [path robot(:)];
                 end
             end
-            
+
             if ~isempty(opt.movie)
                 anim.close();
             end
@@ -178,19 +178,19 @@ classdef Bug2 < Navigation
                 pp = path';
             end
         end
-        
+
         function plot_mline(bug, ls)
-            
+
                 % parameters of the M-line, direct from initial position to goal
                 % as a vector mline, such that [robot 1]*mline = 0
-                
+
                 if nargin < 2
                     ls = 'k--';
                 end
                 dims = axis;
                 xmin = dims(1); xmax = dims(2);
                 ymin = dims(3); ymax = dims(4);
-                
+
                 hold on
                 if bug.mline(2) == 0
                     % handle the case that the line is vertical
@@ -201,14 +201,14 @@ classdef Bug2 < Navigation
                     plot(x, y, ls);
                 end
         end
-        
+
         function n = next(bug, robot)
-            
+
             % implement the main state machine for bug2
             n = [];
             robot = robot(:);
             % these are coordinates (x,y)
-          
+
             if bug.step == 1
                 % Step 1.  Move along the M-line toward the goal
 
@@ -231,7 +231,7 @@ classdef Bug2 < Navigation
                     x = -( (robot(2)+dy)*L(2) + L(3) ) / L(1);
                     dx = round(x - robot(1));
                 end
-                
+
 
                 % detect if next step is an obstacle
                 if bug.isoccupied(robot + [dx; dy])
@@ -278,7 +278,7 @@ classdef Bug2 < Navigation
                 bug.k = bug.k+1;
             end % step 2
         end % next
-        
+
         function plan(bug)
             error('RTB:Bug2:badcall', 'This class has no plan method');
         end

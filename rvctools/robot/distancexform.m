@@ -40,24 +40,24 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 function d = distancexform(occgrid, varargin)
-    
+
     opt.show = 0;
     opt.ipt = true;
     opt.vlfeat = true;
@@ -68,18 +68,18 @@ function d = distancexform(occgrid, varargin)
         opt.ipt = false;
         opt.vlfeat = false;
     end
-    
+
     if ~isempty(args) && isvec(args{1}, 2)
         %% path planning interpretation
         %  distancexform(world, goal, metric, show)
-        
+
         goal = args{1};
         occgrid = double(occgrid);
-        
+
         if exist('imorph', 'file') ~= 3
             error('Machine Vision Toolbox is required by this function');
         end
-        
+
         switch opt.metric
             case 'cityblock'
                 m = [ inf  1  inf
@@ -93,12 +93,12 @@ function d = distancexform(occgrid, varargin)
             otherwise
                 error('unknown distance metric');
         end
-        
+
         % check the goal point is sane
         if occgrid(goal(2), goal(1)) > 0
             error('goal inside obstacle')
         end
-        
+
         if opt.fast && exist('imorph', 'file') == 3
             % setup to use imorph
             %   - set obstacles to NaN
@@ -107,11 +107,11 @@ function d = distancexform(occgrid, varargin)
             occgrid(occgrid>0) = NaN;
             occgrid(occgrid==0) = Inf;
             occgrid(goal(2), goal(1)) = 0;
-            
+
             count = 0;
             ninf = Inf;  % number of infinities in the map
             while 1
-                
+
                 occgrid = imorph(occgrid, m, 'plusmin');
                 count = count+1;
                 if opt.show
@@ -123,7 +123,7 @@ function d = distancexform(occgrid, varargin)
                     ylabel('y');
                     pause(opt.show);
                 end
-                
+
                 ninfnow = sum( isinf(occgrid(:)) ); % current number of Infs
                 if ninfnow == ninf
                     % stop if the number of Infs left in the map had stopped reducing
@@ -134,16 +134,16 @@ function d = distancexform(occgrid, varargin)
             end
         else
             % setup to use M-function
-            
+
             occgrid(occgrid>0) = NaN;
             nans = isnan(occgrid);
             occgrid(occgrid==0) = Inf;
             occgrid(goal(2), goal(1)) = 0;
-            
+
             count = 0;
             ninf = Inf;  % number of infinities in the map
             while 1
-                
+
                 occgrid = dxstep(occgrid, m);
                 occgrid(nans) = NaN;
 
@@ -157,7 +157,7 @@ function d = distancexform(occgrid, varargin)
                     ylabel('y');
                     pause(opt.show);
                 end
-                
+
                 ninfnow = sum( isinf(occgrid(:)) ); % current number of Infs
                 if ninfnow == ninf
                     % stop if the number of Infs left in the map had stopped reducing
@@ -167,29 +167,29 @@ function d = distancexform(occgrid, varargin)
                 ninf = ninfnow;
             end
         end
-        
+
         if opt.show
             fprintf('%d iterations, %d unreachable cells\n', count, ninf);
         end
-        
+
         d = occgrid;
     else
         %% image processing interpretation
         %   distancexform(world, [metric])
-        
+
         % use other toolboxes if they exist
         if opt.fast && exist('bwdist') && opt.ipt
             d = bwdist(occgrid, opt.metric);
-            
+
         elseif exist('vl_imdisttf') == 3 && opt.vlfeat
             im = double(occgrid);
             im(im==0) = inf;
             im(im==1) = 0;
             d2 = vl_imdisttf(im);
             d = sqrt(d2);
-            
+
         elseif opt.fast && exist('imorph', 'file') == 3
-            
+
             switch opt.metric
                 case 'cityblock'
                     m = ones(3,3);
@@ -200,14 +200,14 @@ function d = distancexform(occgrid, varargin)
                 otherwise
                     error('unknown distance metric');
             end
-            
+
             % setup to use imorph
             %   - set free space to Inf
             %   - set goal to 0
             occgrid = double(occgrid);
             occgrid(occgrid==0) = Inf;
             occgrid(isfinite(occgrid)) = 0;
-            
+
             count = 0;
             while 1
                 occgrid = imorph(occgrid, m, 'plusmin');
@@ -221,7 +221,7 @@ function d = distancexform(occgrid, varargin)
                     ylabel('y');
                     pause(opt.show);
                 end
-                
+
                 ninfnow = sum( isinf(occgrid(:)) ); % current number of Infs
                 if ninfnow == 0
                     % stop if no Infs left in the image
@@ -240,11 +240,11 @@ function d = distancexform(occgrid, varargin)
                 otherwise
                     error('unknown distance metric');
             end
-            
+
             occgrid = double(occgrid);
             occgrid(occgrid==0) = Inf;
             occgrid(isfinite(occgrid)) = 0;
-            
+
             count = 0;
             while 1
                 occgrid = dxstep(occgrid, m);
@@ -258,7 +258,7 @@ function d = distancexform(occgrid, varargin)
                     ylabel('y');
                     pause(opt.show);
                 end
-                
+
                 ninfnow = sum( isinf(occgrid(:)) ); % current number of Infs
                 if ninfnow == 0
                     % stop if no Infs left in the image
@@ -271,13 +271,13 @@ function d = distancexform(occgrid, varargin)
 end
 
 function out = dxstep(G, m)
-    
+
     [h,w] = size(G);    % get size of occ grid
     % pad with inf
     G = [ones(1,w)*Inf; G; ones(1,w)*Inf];
     G = [ones(h+2,1)*Inf G ones(h+2,1)*Inf];
     w = w+2; h = h+2;
-    
+
     for r=2:h-1
         for c=2:w-1
             W = G(r-1:r+1,c-1:c+1);   % get 3x3 window

@@ -38,7 +38,7 @@ classdef instrBrickIO < BrickIO
         % wifi brick serial number
         wfSN = '0016533dbaf5';
     end
-    
+
     methods
 
         function brickIO = instrBrickIO(varargin)
@@ -51,13 +51,13 @@ classdef instrBrickIO < BrickIO
             % Notes::
             % - For bluetooth; instrBrickIO(debug,btDevice,btChannel) where
             % debug is a flag specifying output printing (0 or 1), btDevice
-            % is the bluetooth device name of the brick and btChannel is 
+            % is the bluetooth device name of the brick and btChannel is
             % the bluetooth channel.
             % - For wifi; instrBrickIO(debug,wfAddr,wfPort,wfSn) where
             % debug is a flag specifying output printing(0 or 1), wfAddr is
             % the IP address of the brick, wfPort is the TCP connection
             % port and wfSN is the serial number of the brick.
-            
+
             if nargin > 0
                 brickIO.debug = varargin{1};
                 brickIO.serConn = varargin{2};
@@ -97,32 +97,32 @@ classdef instrBrickIO < BrickIO
                end
             end
         end
-        
+
         function delete(brickIO)
             %instrBrickIO.delete Delete the instrBrickIO object
             %
             % delete(brickIO) closes the instr connection handle
-            
+
             if brickIO.debug > 0
                 fprintf('instrBrickIO delete\n');
             end
-            % delete the instr handle 
+            % delete the instr handle
             brickIO.close;
         end
-        
+
         function open(brickIO)
             %instrBrickIO.open Open the instrBrickIO object
             %
             % instrBrickIO.open() opens the instr connection to the brick
             % using fopen.
-            
+
             if brickIO.debug > 0
                 fprintf('instrBrickIO open\n');
             end
             % open the instr handle
             fopen(brickIO.handle);
         end
-        
+
         function close(brickIO)
             %instrBrickIO.close Close the instrBrickIO object
             %
@@ -130,20 +130,20 @@ classdef instrBrickIO < BrickIO
             % using fclose.
             if brickIO.debug > 0
                 fprintf('instrBrickIO close\n');
-            end 
+            end
             % close the instr handle
             fclose(brickIO.handle);
         end
-        
+
         function rmsg = read(brickIO)
             %instrBrickIO.read Read data from the instrBrickIO object
             %
             % rmsg = instrBrickIO.read() reads data from the brick through
-            % instr (either bluetooth or wifi) via fread and returns the 
+            % instr (either bluetooth or wifi) via fread and returns the
             % data in uint8 format.
             if brickIO.debug > 0
                 fprintf('instrBrickIO read\n');
-            end 
+            end
             % get the number of bytes to be read from the instrCtrl handle
             nLength = fread(brickIO.handle,2);
             % read the remaining bytes
@@ -151,7 +151,7 @@ classdef instrBrickIO < BrickIO
             % append the reply size to the return message
             rmsg = uint8([nLength' rmsg']);
         end
-        
+
         function write(brickIO,wmsg)
             %instrBrickIO.write Write data to the instrBrickIO object
             %
@@ -163,8 +163,8 @@ classdef instrBrickIO < BrickIO
             % in uint8 format.
             if brickIO.debug > 0
                 fprintf('instrBrickIO write\n');
-            end 
+            end
             fwrite(brickIO.handle,wmsg);
         end
-    end 
+    end
 end

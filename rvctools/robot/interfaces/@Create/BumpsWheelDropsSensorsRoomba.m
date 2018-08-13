@@ -15,9 +15,9 @@ BumpFront = nan;
 
 try
 
-%Flush Buffer    
+%Flush Buffer
 N = serPort.BytesAvailable();
-while(N~=0) 
+while(N~=0)
 fread(serPort,N);
 N = serPort.BytesAvailable();
 end
@@ -25,7 +25,7 @@ end
 warning off
 global td
 
-fwrite(serPort, [142]);  fwrite(serPort,7); 
+fwrite(serPort, [142]);  fwrite(serPort,7);
 BmpWheDrps = dec2bin(fread(serPort, 1),8);
 BumpRight = bin2dec(BmpWheDrps(end));
 BumpLeft = bin2dec(BmpWheDrps(end-1));

@@ -2,7 +2,7 @@ function [] = SetFwdVelRadiusRoomba(serPort, FwdVel, Radius);
 %[] = SetFwdVelRadiusRoomba(serPort, FwdVel, Radius)
 
 %  Moves Roomba by setting forward vel and turn radius
-%  serPort is a serial port object created by Roombainit 
+%  serPort is a serial port object created by Roombainit
 %  FwdVel is forward vel in m/sec [-0.5, 0.5],
 %  Radius in meters, postive turns left, negative turns right [-2,2].
 %  Special cases: Straight = inf
@@ -11,10 +11,10 @@ function [] = SetFwdVelRadiusRoomba(serPort, FwdVel, Radius);
 
 % By; Joel Esposito, US Naval Academy, 2011
 try
-    
-%Flush Buffer    
+
+%Flush Buffer
 N = serPort.BytesAvailable();
-while(N~=0) 
+while(N~=0)
 fread(serPort,N);
 N = serPort.BytesAvailable();
 end

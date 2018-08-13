@@ -24,17 +24,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -46,16 +46,16 @@ classdef (Abstract) Sensor < handle
     properties
         robot
         map
-        
+
         verbose
-        
+
         ls
         animate     % animate sensor measurements
         interval    % measurement return subsample factor
         fail
         delay
-        
-        
+
+
     end
 
     methods
@@ -77,7 +77,7 @@ classdef (Abstract) Sensor < handle
         % - Animation shows a ray from the vehicle position to the selected
         %   landmark.
         %
-        
+
             opt.skip = 1;
             opt.animate = false;
             opt.fail =  [];
@@ -85,17 +85,17 @@ classdef (Abstract) Sensor < handle
             opt.delay = 0.1;
 
             [opt,args] = tb_optparse(opt, varargin);
-            
+
             s.interval = opt.skip;
             s.animate = opt.animate;
-            
+
             s.robot = robot;
             s.map = map;
             s.verbose = false;
             s.fail = opt.fail;
             s.ls = opt.ls;
         end
-        
+
         function plot(s, jf)
         %Sensor.plot Plot sensor reading
         %
@@ -108,15 +108,15 @@ classdef (Abstract) Sensor < handle
             if isempty(s.ls)
                 return;
             end
-            
+
             h = findobj(gca, 'tag', 'sensor');
             if isempty(h)
                 % no sensor line, create one
                 h = plot(0, 0, s.ls, 'tag', 'sensor');
             end
-            
+
             % there is a sensor line animate it
-            
+
             if jf == 0
                 set(h, 'Visible', 'off');
             else

@@ -3,7 +3,7 @@
 % Mirror objects are MATLAB objects that reflect objects in the V-REP
 % environment.  Methods allow the V-REP state to be examined or changed.
 %
-% This is a concrete class, derived from VREP_mirror, for all V-REP objects 
+% This is a concrete class, derived from VREP_mirror, for all V-REP objects
 % and allows access to pose and object parameters.
 %
 % Example::
@@ -16,8 +16,8 @@
 %
 % Methods::
 %
-%  getpos              get position of object 
-%  setpos              set position of object 
+%  getpos              get position of object
+%  setpos              set position of object
 %  getorient           get orientation of object
 %  setorient           set orientation of object
 %  getpose             get pose of object
@@ -42,29 +42,29 @@
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 classdef VREP_obj < VREP_mirror
-    
+
     properties
     end
-    
+
     methods
-        
+
         function obj = VREP_obj(vrep, varargin)
             %VREP_obj.VREP_obj VREP_obj mirror object constructor
             %
@@ -72,7 +72,7 @@ classdef VREP_obj < VREP_mirror
             % simple V-REP object type.
             obj = obj@VREP_mirror(vrep, varargin{:});
         end
-        
+
         function p = getpos(obj, relto)
             %VREP_obj.getpos Get position of V-REP object
             %
@@ -88,7 +88,7 @@ classdef VREP_obj < VREP_mirror
                 p = obj.vrep.getpos(obj.h, relto.h);
             end
         end
-        
+
         function setpos(obj, p, relto)
             %VREP_obj.setpos Set position of V-REP object
             %
@@ -105,7 +105,7 @@ classdef VREP_obj < VREP_mirror
                 obj.vrep.setpos(obj.h, p, relto.h);
             end
         end
-        
+
         function p = getorient(obj, varargin)
             %VREP_obj.getorient Get orientation of V-REP object
             %
@@ -135,7 +135,7 @@ classdef VREP_obj < VREP_mirror
                 end
             end
         end
-        
+
         function setorient(obj, p, relto)
             %VREP_obj.setorient Set orientation of V-REP object
             %
@@ -152,12 +152,12 @@ classdef VREP_obj < VREP_mirror
             % See also VREP_obj.getorient, VREP_obj.setpos, VREP_obj.setpose.
             if nargin == 2
                 obj.vrep.setorient(obj.h, p);
-                
+
             elseif nargin == 3 && isa(relto, 'VREP_base')
                 obj.vrep.setorient(obj.h, p, relto.h);
             end
         end
-        
+
         function p = getpose(obj, relto)
             %VREP_obj.getpose Get pose of V-REP object
             %
@@ -173,7 +173,7 @@ classdef VREP_obj < VREP_mirror
                 p = obj.vrep.getpose(obj.h, relto.h);
             end
         end
-        
+
         function setpose(obj, p, relto)
             %VREP_obj.setpose Set pose of V-REP object
             %
@@ -192,4 +192,4 @@ classdef VREP_obj < VREP_mirror
         end
     end
 end
-    
+

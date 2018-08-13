@@ -35,41 +35,41 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 function runscript(fname, varargin)
-    
+
     opt.path = [];
     opt.delay = [];
     opt.begin = false;
     opt.cdelay = 0;
     opt.dock = false;
     opt.color = true;
-    
+
     opt = tb_optparse(opt, varargin);
-    
-    if ~exist('cprintf') 
+
+    if ~exist('cprintf')
         opt.color = false;
     end
-        
+
     close all
-    
+
     curDir = pwd();
-    
+
     prevDockStatus = get(0,'DefaultFigureWindowStyle');
     if opt.dock
         set(0,'DefaultFigureWindowStyle','docked');
@@ -77,37 +77,37 @@ function runscript(fname, varargin)
         set(0,'DefaultFigureWindowStyle','normal');
     end
 
-    
+
     if ~isempty(opt.path)
         fname = fullfile(opt.path, [fname '.m']);
     else
         fname = [fname '.m'];
     end
-    
+
     fp = fopen(fname, 'r');
-    
+
     clc
     fprintf('--- runscript <-- %s\n', fname);
-    
+
     running = false;
     shouldPause = false;
     savedText = [];
-    
+
     if ~opt.begin
         running = true;
     end
-    
+
     lineNum = 1;
-    
+
     skipping = false;
-    
+
     % stashMode
     %  0 normal
     %  1 loop
     %  2 continuation
     continMode = false;
     compoundDepth = 0;
-    
+
     while 1
         % get the next line from the file, bail if EOF
         line = fgetl(fp);
@@ -115,12 +115,12 @@ function runscript(fname, varargin)
             break
         end
         lineNum = lineNum+1;
-        
+
         if startswith(line, '% Copyright')
             skipping = true;
             continue;
         end
-        
+
         % logic to skip lines until we see one beginning with %%begin
         if ~running
             if strcmp(line, '%%begin')
@@ -129,10 +129,10 @@ function runscript(fname, varargin)
                 continue;
             end
         end;
-        
+
         if length(strtrim(line)) == 0
             % blank line
-            
+
             if skipping
                 skipping = false;
             end
@@ -155,7 +155,7 @@ function runscript(fname, varargin)
                 shouldPause = false;
             end
         end
-        
+
         % if the start of a loop, stash the text for now
         if startswith(line, 'for') || startswith(line, 'while') || startswith(line, 'if')
             % found a compound block, don't eval it until we get to the end
@@ -166,28 +166,28 @@ function runscript(fname, varargin)
             % found a compound statement, don't eval it until we get to the end
             continMode = true;
         end
-        
+
         if compoundDepth == 0 && ~continMode
             prompt = '>> ';
         else
             prompt = '';
         end
-        
+
         % display the line with a pretend MATLAB prompt
         if opt.color
             cprintf('blue', '%s%s', prompt, line)
         else
             fprintf('%s', prompt); disp(line)
         end
-        
+
         if compoundDepth > 0 || continMode
             % we're in stashing mode
             savedText = strcat(savedText, '\n', line);
         end
-        
+
         if compoundDepth > 0 && startswith(line, 'end')
             % the compound block is fully unnested
-            
+
             compoundDepth = compoundDepth - 1;
             if compoundDepth == 0
                 evalSavedText(savedText, lineNum, opt);
@@ -195,17 +195,17 @@ function runscript(fname, varargin)
                 shouldPause = true;
             end
             continue
-            
+
         elseif continMode && ~endswith(line, '...')
             % no longer in continuation mode
-            
+
             evalSavedText(savedText, lineNum, opt);
             savedText = '';
             continMode = false;
             shouldPause = true;
             continue
         end
-        
+
         if compoundDepth == 0 && ~continMode
             % it's a simple executable statement, execute it
             fprintf(' \n');
@@ -227,9 +227,9 @@ end
         if length(strtrim(text)) == 0
             return
         end
-        
+
         text = sprintf(text);
-        
+
         try
             if opt.color
                 text = strrep(text, '''', ''''''); % fix single quotes
@@ -251,7 +251,7 @@ function scriptwait(opt)
         %a = input('-', 's');
         prompt = 'continue?';
         bs = repmat('\b', [1 length(prompt)]);
-        
+
         if opt.color
             cprintf('red', prompt); pause;
             cprintf('text', bs);
@@ -286,4 +286,4 @@ function res = endswith(s1, s2)
     end
 
 end
-    
+

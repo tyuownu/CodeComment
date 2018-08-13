@@ -9,15 +9,15 @@
 % axis.  The number of steps in the trajectory K is a function of the
 % number of via points and the time or velocity limits that apply.
 %
-% - P (MxN) is a matrix of via points, 1 row per via point, one column 
+% - P (MxN) is a matrix of via points, 1 row per via point, one column
 %   per axis.  The last via point is the destination.
 % - QDMAX (1xN) are axis speed limits which cannot be exceeded,
 % - TSEG (1xM) are the durations for each of the K segments
 % - Q0 (1xN) are the initial axis coordinates
 % - DT is the time step
 % - TACC (1x1) is the acceleration time used for all segment transitions
-% - TACC (1xM) is the acceleration time per segment, TACC(i) is the acceleration 
-%   time for the transition from segment i to segment i+1.  TACC(1) is also 
+% - TACC (1xM) is the acceleration time per segment, TACC(i) is the acceleration
+%   time for the transition from segment i to segment i+1.  TACC(1) is also
 %   the acceleration time at the start of segment 1.
 %
 % TRAJ = MSTRAJ(SEGMENTS, QDMAX, Q0, DT, TACC, QD0, QDF, OPTIONS) as above
@@ -47,17 +47,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -142,7 +142,7 @@ function [TG, t, info]  = mstraj(segments, qdmax, tsegment, q, dt, Tacc, varargi
             % find the total time and slowest axis
             tt = tb + tl;
             [tseg,slowest] = max(tt);
-            
+
             info(seg).slowest = slowest;
             info(seg).segtime = tseg;
             info(seg).axtime = tt;

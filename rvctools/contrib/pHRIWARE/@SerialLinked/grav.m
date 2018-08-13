@@ -1,28 +1,28 @@
 % GRAV Quick non-mex gravload and jacob0 for SerialLink objects
-% 
+%
 % Calculates the joint loads due to gravity for SerialLink objects. The
 % world frame Jacobian can also be returned. The gravity vector is
 % defined by the SerialLink property if not explicitly given.
-% 
+%
 % Copyright (C) Bryan Moutrie, 2013-2014
 % Licensed under the GNU Lesser General Public License
 % see full file for full statement
-% 
+%
 % This file requires file(s) from The Robotics Toolbox for MATLAB (RTB)
 % by Peter Corke (www.petercorke.com), see file for statement
-% 
+%
 % Syntax:
 %  (1) tauB = robot.grav(q)
 %  (2) [tauB, J] = robot.grav(q)
 %  (3) ... = robot.grav(q, grav)
-% 
+%
 %  (2) as per (1) but also returns world-frame Jacobian at little time
 %  (3) as per others but with explicit gravity vector
-% 
+%
 % Outputs:
 %  tauB : Generalised joint force/torques
 %  J    : Jacobian in world frame
-% 
+%
 % Inputs:
 %  robot : SerialLink object (sdh or mdh, R and P supported)
 %  q     : Joint row vector, or trajectory matrix of joint row vectors
@@ -33,10 +33,10 @@
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
-% 
+%
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -44,7 +44,7 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 %
 % RTB LIBRARY:
@@ -81,23 +81,23 @@ end
 com_arr = zeros(3, n);
 
 for pose = 1: poses
-    
+
     [Te, T] = robot.fkine(q(pose,:));
-    
+
     jointOrigins = squeeze(T(1:3,4,:));
     jointAxes = squeeze(T(1:3,3,:));
-    
+
     if ~robot.mdh
         jointOrigins = [baseOrigin, jointOrigins(:,1:end-1)];
-        jointAxes = [baseAxis, jointAxes(:,1:end-1)];  
+        jointAxes = [baseAxis, jointAxes(:,1:end-1)];
     end
-    
+
     % Backwards recursion
     for joint = n: -1: 1
-        
+
         com = T(:,:,joint) * r(:,joint); % C.o.M. in world frame, homog
         com_arr(:,joint) = com(1:3); % Add it to the distal others
-        
+
         t = 0;
         for link = joint: n % for all links distal to it
             if revolute(joint)
@@ -111,10 +111,10 @@ for pose = 1: poses
                 t = t + force(:,link); %force on prismatic joint
             end
         end
-        
+
         tauB(pose,joint) = t' * jointAxes(:,joint);
     end
-    
+
     if nargout == 2
         J(:,:,pose) = makeJ(jointOrigins,jointAxes,Te(1:3,4),revolute);
     end

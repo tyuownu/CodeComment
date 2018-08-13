@@ -1,5 +1,5 @@
 function d = odom(robot)
-% Displays the current percent charge remaining in Create's Battery 
+% Displays the current percent charge remaining in Create's Battery
 
 % By; Joel Esposito, US Naval Academy, 2011
 

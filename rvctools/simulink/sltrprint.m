@@ -1,4 +1,4 @@
-%SLPLOTBOT	S-function for robot animation
+%SLPLOTBOT    S-function for robot animation
 %
 % This is the S-function for animating the robot.  It assumes input
 % data u to be the joint angles q.
@@ -7,16 +7,16 @@
 % each Simulink major integration step.
 
 function [sys,x0,str,ts] = sltrprint(t,x,u,flag, options)
-	switch flag
+    switch flag
 
-	case 0
-		% initialize
-		[sys,x0,str,ts] = mdlInitializeSizes();	% Init
+    case 0
+        % initialize
+        [sys,x0,str,ts] = mdlInitializeSizes();    % Init
 
 
-	case 3
-		% come here on update
-		if ~isempty(u)
+    case 3
+        % come here on update
+        if ~isempty(u)
             if length(u) == 3
                 s = trprint2(transl2(u(1), u(2))*trot2(u(3)));
             elseif ishomog2(u)
@@ -27,11 +27,11 @@ function [sys,x0,str,ts] = sltrprint(t,x,u,flag, options)
                 error('RTB:sltrprint', 'unknown type passed, expecting 3x1, 3x3, 4x4');
             end
             set_param(gcs, 'MaskDisplay', ['disp(''' s ''');'])
-		end
-		ret = [];
-	case {1, 2, 4, 9}
-		ret = [];
-	end
+        end
+        ret = [];
+    case {1, 2, 4, 9}
+        ret = [];
+    end
 %
 %=============================================================================
 % mdlInitializeSizes
@@ -39,7 +39,7 @@ function [sys,x0,str,ts] = sltrprint(t,x,u,flag, options)
 %=============================================================================
 %
 function [sys,x0,str,ts]=mdlInitializeSizes()
- 
+
 %
 % call simsizes for a sizes structure, fill it in and convert it to a
 % sizes array.
@@ -49,29 +49,29 @@ function [sys,x0,str,ts]=mdlInitializeSizes()
 % defined by the S-function parameters.
 %
 sizes = simsizes;
- 
+
 sizes.NumContStates  = 0;
 sizes.NumDiscStates  = 0;
 sizes.NumOutputs     = 0;
 sizes.NumInputs      = -1;
 sizes.DirFeedthrough = 1;
 sizes.NumSampleTimes = 1;   % at least one sample time is needed
- 
+
 sys = simsizes(sizes);
- 
+
 %
 % initialize the initial conditions
 %
 x0  = [];
- 
+
 %
 % str is always an empty matrix
 %
 str = [];
- 
+
 %
 % initialize the array of sample times
 %
 ts  = [-1 0];
- 
+
 % end mdlInitializeSizes

@@ -3,11 +3,11 @@
 % A convenience function for plotting time-series data held in a matrix.
 % Each row is a timestep and the first column is time.
 %
-% MPLOT(Y, OPTIONS) plots the time series data Y(NxM) in multiple 
+% MPLOT(Y, OPTIONS) plots the time series data Y(NxM) in multiple
 % subplots.  The first column is assumed to be time, so M-1 plots are
 % produced.
 %
-% MPLOT(T, Y, OPTIONS) plots the time series data Y(NxM) in multiple 
+% MPLOT(T, Y, OPTIONS) plots the time series data Y(NxM) in multiple
 % subplots.  Time is provided explicitly as the first argument so M plots
 % are produced.
 %
@@ -16,11 +16,11 @@
 % called 't'.  Plots are labelled according to the name of the
 % corresponding field.
 %
-% MPLOT(W, OPTIONS) as above but W is a structure created by the Simulink 
-% write to workspace block where the save format is set to "Structure 
+% MPLOT(W, OPTIONS) as above but W is a structure created by the Simulink
+% write to workspace block where the save format is set to "Structure
 % with time". Each field in the signals substructure is plotted.
 %
-% MPLOT(R, OPTIONS) as above but R is a Simulink.SimulationOutput object 
+% MPLOT(R, OPTIONS) as above but R is a Simulink.SimulationOutput object
 % returned by the Simulink sim() function.
 %
 % Options::
@@ -43,30 +43,30 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 function mplot(varargin)
-    
+
     opt.label = [];
     opt.date = false;
     opt.cols = [];
-    
+
     [opt,args] = tb_optparse(opt, varargin);
-    
+
     if isstruct(args{1})
         s = args{1};
         if isfield(s, 'signals'),
@@ -79,7 +79,7 @@ function mplot(varargin)
             % retriever type structure
             structplot(args{:})
         end
-        
+
     elseif isa(args{1}, 'Simulink.SimulationOutput')
         % Simulink output object
         s = args{1};
@@ -90,15 +90,15 @@ function mplot(varargin)
     else
         matplot(args{:}, opt)
 end
-    
+
     if opt.date
         datestamp
     end
-    
+
     if ~isempty(opt.label)
         mlabel(opt.label);
     end
-    
+
     mtools
 end
 
@@ -137,7 +137,7 @@ function structplot(s)
     end
     axes(h(1));
     figure(gcf)
-    
+
 end
 
 
@@ -196,12 +196,12 @@ function matplot(a1, a2, a3)
 end
 
 function mlabel(lab, varargin)
-    
+
     % find all child axes (subplots)
     h = findobj(gcf, 'Type', 'axes');
-    
+
     for i=1:length(h),
-        
+
         if strcmp( get(h(i), 'visible'), 'on'),
             axes(h(i))
             % get subplot number from user data (I don't know who
@@ -213,17 +213,17 @@ function mlabel(lab, varargin)
             ylabel(lab{sp}, varargin{:});
         end
     end
-    
+
     if 0
         if nargin > 1,
-            axes(h(topplot));	% top plot
+            axes(h(topplot));    % top plot
             title(tit);
         end
     end
 end
 
 function mtools
-    
+
     h = uicontextmenu;
     uimenu(h, 'Label', 'X zoom', 'CallBack', 'xaxis');
     uimenu(h, 'Label', '-->', 'CallBack', 'xscroll(0.5)');
@@ -238,17 +238,17 @@ function mtools
         set(c, 'UIContextMenu', h);
         l = get(c, 'Children');
     end
-    
-    
+
+
     axes('pos', [0 0 1 0.05], 'visible', 'off')
-    
+
 end
 
 function datestamp
   uicontrol('Style', 'text', ...
-	 'String', date, ...
-	'Units', 'Normalized', ...
-	'HorizontalAlignment', 'Right', ...
-	'BackgroundColor', 'w', ...
-	'Position', [.8 0.97 .2 .03]);
+    'String', date, ...
+    'Units', 'Normalized', ...
+    'HorizontalAlignment', 'Right', ...
+    'BackgroundColor', 'w', ...
+    'Position', [.8 0.97 .2 .03]);
 end

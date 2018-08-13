@@ -46,7 +46,7 @@
 % Create a vehicle with this noisy odometry
 %       v = Bicycle( 'covar', diag([0.1 0.01].^2 );
 % and display its initial state
-%       v 
+%       v
 % now apply a speed (0.2m/s) and steer angle (0.1rad) for 1 time step
 %       odo = v.step(0.2, 0.1)
 % where odo is the noisy odometry estimate, and the new true vehicle state
@@ -77,17 +77,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -98,7 +98,7 @@ classdef Bicycle < Vehicle
     properties
         % state
         L           % length of vehicle
-        
+
         steermax
         accelmax
         vprev
@@ -126,16 +126,16 @@ classdef Bicycle < Vehicle
         % 'verbose'       Be verbose
         %
         % Notes::
-        % - The covariance is used by a "hidden" random number generator within the class. 
+        % - The covariance is used by a "hidden" random number generator within the class.
         % - Subclasses the MATLAB handle class which means that pass by reference semantics
         %   apply.
         %
         % Notes::
         % - Subclasses the MATLAB handle class which means that pass by reference semantics
         %   apply.
-            
+
             veh = veh@Vehicle(varargin{:});
-            
+
             veh.x = zeros(3,1);
 
             opt.L = 1;
@@ -186,7 +186,7 @@ classdef Bicycle < Vehicle
             % Notes::
             % - The parameter T is ignored but  called from a continuous time integrator such as ode45 or
             %   Simulink.
-            
+
             % implement acceleration limit if required
             if ~isinf(veh.accelmax)
                 if (u(1) - veh.vprev)/veh.dt > veh.accelmax
@@ -196,7 +196,7 @@ classdef Bicycle < Vehicle
                 end
                 veh.vprev = u(1);
             end
-            
+
             % implement speed and steer angle limits
             u(1) = min(veh.speedmax, max(u(1), -veh.speedmax));
             u(2) = min(veh.steermax, max(u(2), -veh.steermax));
@@ -207,7 +207,7 @@ classdef Bicycle < Vehicle
             dx(2) = u(1)*sin(x(3));
             dx(3) = u(1)/veh.L * tan(u(2));
         end
-        
+
         function odo = update(veh, u)
             %Bicycle.update Update the vehicle state
             %
@@ -258,8 +258,8 @@ classdef Bicycle < Vehicle
             thp = x(3);
 
             J = [
-                cos(thp)    0 
-                sin(thp)    0 
+                cos(thp)    0
+                sin(thp)    0
                 0           1
                 ];
         end
@@ -267,12 +267,12 @@ classdef Bicycle < Vehicle
         function s = char(veh)
         %Bicycle.char Convert to a string
         %
-        % s = V.char() is a string showing vehicle parameters and state in 
-        % a compact human readable format. 
+        % s = V.char() is a string showing vehicle parameters and state in
+        % a compact human readable format.
         %
         % See also Bicycle.display.
 
-            ss = char@Vehicle(veh); 
+            ss = char@Vehicle(veh);
 
             s = 'Bicycle object';
             s = char(s, sprintf('  L=%g, steer.max=%g, accel.max=%g', veh.L, veh.steermax, veh.accelmax));

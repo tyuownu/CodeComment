@@ -1,6 +1,6 @@
 %WIKINE Wrist inverse kinematics of HAL-like right wrist
 %
-% Computes the inverse kinematics of the right wrist which is the 
+% Computes the inverse kinematics of the right wrist which is the
 % same kinematically as a HAL object. Either the hand and wrist frames
 % can be entered separately, or a relative rotation used.
 %
@@ -32,10 +32,10 @@
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
-% 
+%
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -43,7 +43,7 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 
 function [q1, q2] = wikine(varargin)
@@ -51,19 +51,19 @@ function [q1, q2] = wikine(varargin)
 if length(varargin) == 2
     Tf = varargin{1};
     Th = varargin{2};
-    
+
     Tw_sz = size(Th);
-    
+
     if length(Tw_sz) > 2
         x = prod(Tw_sz(3:end));
     else
         x = 1;
     end
-    
+
     fRh = zeros(3,3,x);
     for i = 1:x
         fRh(:,:,i) = Tf(1:3,1:3,i)' * Th(1:3,1:3,i);
-    end 
+    end
 else
     fRh = varargin{1}(1:3,1:3,:);
 end

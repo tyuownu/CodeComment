@@ -24,7 +24,7 @@
 % 'framelabel',F     The coordinate frame is named {F}, axes have no subscripts.
 % 'text_opts', opt   A cell array of Matlab text properties
 % 'axhandle',A       Draw in the MATLAB axes specified by A
-% 'view',V           Set plot view parameters V=[az el] angles, or 'auto' 
+% 'view',V           Set plot view parameters V=[az el] angles, or 'auto'
 %                    for view toward origin of coordinate frame
 % 'length',s         Length of the coordinate frame arms (default 1)
 % 'arrow'            Use arrows rather than line segments for the axes
@@ -40,7 +40,7 @@
 % - Multiple frames can be added using the HOLD command
 % - The arrow option requires the third party package arrow3 from File
 %   Exchange.
-% - When using the form TRPLOT(H, ...) to animate a frame it is best to set 
+% - When using the form TRPLOT(H, ...) to animate a frame it is best to set
 %   the axis bounds.
 % - The 'arrow' option requires arrow3 from FileExchange.
 %
@@ -52,17 +52,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -79,7 +79,7 @@ function hout = trplot2(T, varargin)
     if nargin == 0
         T = eye(2,2);
     end
-    
+
     opt.color = 'b';
     opt.textcolor = [];
     opt.axes = true;
@@ -103,18 +103,18 @@ function hout = trplot2(T, varargin)
         opt.arrow = false;
         warning('RTB:trplot:badarg', 'arrow option requires arrow3 from FileExchange');
     end
-    
+
     if isscalar(T) && ishandle(T)
         warning('RTB:trplot2:deprecated', 'Use ''handle'' option');
         % trplot(H, T)
         opt.handle = T; T = args{1};
     end
-    
+
     % ensure it's SE(2)
     if all(size(T) == [2 2])
         T = [T [0; 0]; 0 0 1];
     end
-    
+
     if ~isempty(opt.handle)
         set(opt.handle, 'Matrix', se2t3(T));
         if nargout > 0
@@ -122,15 +122,15 @@ function hout = trplot2(T, varargin)
         end
         return;
     end
-    
+
     if isempty(opt.textcolor)
         opt.textcolor = opt.color;
     end
-   
+
     if isempty(opt.text_opts)
         opt.text_opts = {};
     end
-    
+
     % figure the dimensions of the axes, if not given
     if isempty(opt.axis)
         if all(size(T) == [3 3]) || norm(transl(T)) < eps
@@ -153,7 +153,7 @@ function hout = trplot2(T, varargin)
             end
             %axis equal
             daspect([1 1 1])
-            
+
             if opt.axes
                 xlabel( 'X');
                 ylabel( 'Y');
@@ -162,25 +162,25 @@ function hout = trplot2(T, varargin)
         hax = gca;
         hold on
     end
-    
+
     % create unit vectors
     o =  opt.length*[0 0 1]'; o = o(1:2);
     x1 = opt.length*[1 0 1]'; x1 = x1(1:2);
-    
+
     if opt.lefty
         y1 = opt.length*[0 -1 1]'; y1 = y1(1:2);
     else
         y1 = opt.length*[0 1 1]'; y1 = y1(1:2);
     end
-    
+
     opt.text_opts = [opt.text_opts, 'Color', opt.color];
-    
-    
+
+
     % draw the axes
-    
+
     mstart = [o o]';
     mend = [x1 y1]';
-    
+
     hg = hgtransform('Parent', hax);
     if opt.arrow
         % draw the 2 arrows
@@ -202,7 +202,7 @@ function hout = trplot2(T, varargin)
     else
         fmt = sprintf('%%c_{%s}', opt.frame);
     end
-    
+
     % add the labels to each axis
     h = text(x1(1), x1(2), sprintf(fmt, 'X'), 'Parent', hg);
     if ~isempty(opt.text_opts)
@@ -235,14 +235,14 @@ function hout = trplot2(T, varargin)
         e(1:2) = e(1:2) - opt.framelabeloffset * d;
         set(h, 'Position', e(1:2));
     end
-    
+
     if ~opt.axes
         set(gca, 'visible', 'off');
     end
     if ~ih
         hold off
     end
-    
+
     % now place the frame in the desired pose
     set(hg, 'Matrix', se2t3(T));
 

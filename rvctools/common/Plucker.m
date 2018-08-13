@@ -34,17 +34,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -57,16 +57,16 @@
 % .L method to skew
 
 classdef Plucker < handle
-    
+
     properties
         w  % direction vector
         v  % moment vector
     end
-    
-    
+
+
     methods
-        
-        
+
+
         function pl = Plucker(varargin)
             %Plucker.Plucker Create Plucker object
             %
@@ -86,14 +86,14 @@ classdef Plucker < handle
 
             opt.type = {'points', 'planes', 'Pw', 'wv', 'UQ'};
             [opt,args] = tb_optparse(opt, varargin);
-            
+
             assert(length(args) == 2, 'RTB:Plucker:badarg', 'expecting two vectors');
 
             % get the two arguments
             A = args{1}; A = A(:);
             B = args{2}; B = B(:);
-            
-            
+
+
             % handle various options
             switch opt.type
                 case 'points'
@@ -119,7 +119,7 @@ classdef Plucker < handle
                     error('RTB:Plucker:badarg', 'unknown argument type');
             end
         end
-        
+
         function p = origin_closest(pl)
             %Plucker.origin_closest  Point on line closest to the origin
             %
@@ -127,10 +127,10 @@ classdef Plucker < handle
             % closest to the origin.
             %
             % See also Plucker.origin_distance.
-            
+
             p = cross(pl.v, pl.w) / dot(pl.w, pl.w);
         end
-        
+
         function d = origin_distance(pl)
             %Plucker.origin_distance  Smallest distance from line to the origin
             %
@@ -140,7 +140,7 @@ classdef Plucker < handle
             % See also Plucker.origin_closest.
             d = sqrt( dot(pl.v, pl.v) / dot(pl.w, pl.w) );
         end
-        
+
         function [p,dist] = closest(pl, x)
             %Plucker.closest  Point on line closest to given point
             %
@@ -149,30 +149,30 @@ classdef Plucker < handle
             %
             % [P,D] = PL.closest(X) as above but also returns the closest distance.
             %
-            % See also Plucker.origin_closest.            
-            
+            % See also Plucker.origin_closest.
+
             % http://www.ahinson.com/algorithms_general/Sections/Geometry/PluckerLine.pdf
             % has different equation for moment, the negative
             w = unit(pl.w);
             pp = pl.pp;
-            
+
             d = dot(x.w, w);
             p = pp + d*w;
-            
+
             if nargout == 2
                 dist = norm(p - x.w);
             end
         end
-        
+
         function d = mindist(pl1, pl2)
             %Plucker.mindist  Minimum distance between two lines
             %
             % D = PL1.mindist(PL2) is the minimum distance between two Plucker lines
             % PL1 and PL2.
-            
+
             d = dot(pl1.w, pl2.v) + dot(pl2.w, pl1.v);
         end
-        
+
         function P = point(L, lambda)
             %Plucker.point Point on line
             %
@@ -180,11 +180,11 @@ classdef Plucker < handle
             % distance along the line from the principal point of the line.
             %
             % See also Plucker.pp.
-            
+
             P = cross(L.w, L.v) / dot(L.w, L.w) + L.w*lambda(:)';
             %P = bsxfun(@plus, L.P, L.U*lambda(:)');
         end
-        
+
         function x = pp(pl)
             %Plucker.pp Principal point of the line
             %
@@ -194,11 +194,11 @@ classdef Plucker < handle
             % - Same as Plucker.point(0)
             %
             % See also Plucker.point.
-            
+
             % principal point, for lambda = 0
             x = cross( pl.v, unit(pl.w) );
         end
-        
+
         function z = L(pl)
             %Plucker.L Skew matrix form of the line
             %
@@ -209,9 +209,9 @@ classdef Plucker < handle
             % -  For two homogeneous points P and Q on the line, PQ'-QP' is also skew
             %    symmetric.
 
-            
+
             v = pl.v; w = pl.w;
-            
+
             % the following matrix is at odds with H&Z pg. 72
             z = [
                      0     v(3) -v(2) w(1)
@@ -219,7 +219,7 @@ classdef Plucker < handle
                      v(2) -v(1)  0    w(3)
                     -w(1) -w(2) -w(3) 0    ];
         end
-        
+
         function v = line(pl)
             %Plucker.double Plucker line coordinates
             %
@@ -227,21 +227,21 @@ classdef Plucker < handle
             % coordinates of the line.
             %
             % See also Plucker.v, Plucker.w.
-            
+
             %             L = pl.L;
             %             v = [L(2,1) L(3,1) L(4,1) L(4,3) L(2,4) L(3,2)];
             v = [pl.w; pl.v]';
         end
-        
-        
-        
+
+
+
         function z = mtimes(a1, a2)
             %Plucker.mtimes Plucker composition
             %
             % PL * M is the product of the Plucker matrix and M (4xN).
             %
             % M * PL is the product of M (Nx4) and the Plucker matrix.
-            
+
             if isa(a1, 'Plucker')
                 assert(numrows(a2) == 4, 'RTB:Plucker:badarg', 'must postmultiply by 4xN matrix');
                 z = a1.L * a2;
@@ -250,7 +250,7 @@ classdef Plucker < handle
                 z = a1 * a2.L;
             end
         end
-        
+
         function z = or(pl1, pl2)
             %Plucker.or Operator form of side operator
             %
@@ -258,10 +258,10 @@ classdef Plucker < handle
             % the lines P1 and P2 intersect or are parallel.
             %
             % See also Plucker.side.
-            
+
             z = side(pl1, pl2);
         end
-        
+
         function z = side(pl1, pl2)
             %Plucker.side Plucker side operator
             %
@@ -269,15 +269,15 @@ classdef Plucker < handle
             % the lines P1 and P2 intersect or are parallel.
             %
             % See also Plucker.or.
-            
+
             if ~isa(pl2, 'Plucker')
                 error('RTB:Plucker:badarg', 'both arguments to | must be Plucker objects');
             end
             L1 = pl1.line(); L2 = pl2.line();
-            
+
             z = L1([1 5 2 6 3 4]) * L2([5 1 6 2 4 3])';
         end
-        
+
         function z = intersect(pl1, pl2)
             %Plucker.intersect  Line intersection
             %
@@ -289,10 +289,10 @@ classdef Plucker < handle
             %                o                o
             %           ---------->
             %          counterclockwise    clockwise
-            
+
             z = dot(pl1.w, pl1.v) + dot(pl2.w, pl2.v);
         end
-        
+
         % operator tests for
         % identical ==
         % parallel ||
@@ -300,22 +300,22 @@ classdef Plucker < handle
         % intersecting - find
         % distance from origin  d^2 = (V.V)/U.U
         % closest pnt to origin (VxU:U.U)
-        
+
         % planes E.P + e = 0, F.P +f = 0
         % L = ExF : fE - eF
-        
+
         % line plane intersection
         %(VxN-nU:U.N)
-        
+
         % common plane
         % (UxN
-        
+
         function p = plane_intersect(pl, P)
             P = P(:);
             p = (cross(pl.v, P(1:3)) - P(4)*pl.w) / dot(pl.w, P(1:3));
         end
-        
-        
+
+
         function [p,t] = intersect_plane(L, plane)
             %Plucker.intersect_plane  Line intersection with plane
             %
@@ -327,14 +327,14 @@ classdef Plucker < handle
             % line parameters (1xN) at the intersection points.
             %
             % See also Plucker.point.
-            
+
             % Line U, V
             % Plane N n
             % (VxN-nU:U.N)
             % Note that this is in homogeneous coordinates.
             %    intersection of plane (n,p) with the line (v,p)
             %    returns point and line parameter
-            
+
             if isstruct(plane)
                 N = plane.n;
                 n = -dot(plane.n, plane.p);
@@ -343,21 +343,21 @@ classdef Plucker < handle
                 n = plane(4);
             end
             N= N(:);
-            
+
             den = dot(L.w, N);
-            
+
             if abs(den) > (100*eps)
                 %p = -(cross(L.v, N) + n*L.w) / den;
                 p = (-cross(L.v, N) - n*L.w) / den;
-                
+
                 P = L.point(0);
                 t = dot( p-P, N);
             else
                 p = [];
                 t = [];
             end
-            
-            
+
+
             %             if abs(dvn) > (100*eps)
             %                 t = dot( p-L.P, n) / dot(L.v, n);
             %                 p = L.P + t*L.v;
@@ -381,26 +381,26 @@ classdef Plucker < handle
             % line parameters (1xN) at the intersection points.
             %
             % See also Plucker.point.
-            
+
             tt = [];
-            
+
             % reshape, top row is minimum, bottom row is maximum
             bounds = reshape(bounds, [2 3]);
-            
+
             for face=1:6
                 % for each face of the bounding volume
-                
+
                 i = ceil(face/2);  % 1,2,3
                 I = eye(3,3);
                 plane.n = I(:,i);
                 plane.p = [0 0 0]';
                 plane.p(i) = bounds(face);
                 [p,t] = line.intersect_plane(plane);
-                
+
                 if isempty(p)
                     continue;  % no intersection
                 end
-                
+
                 k = (p' > bounds(1,:)) & (p' < bounds(2,:));
                 k(i) = [];
                 if all(k)
@@ -409,19 +409,19 @@ classdef Plucker < handle
             end
             % put them in ascending order
             tt = sort(tt);
-            
+
             % determine the intersection points from the parameter values
             P = bsxfun(@plus, line.point(0), line.w*tt);
-            
+
                 end
-        
+
         function x = double(pl)
             %Plucker.double  Convert Plucker coordinates to real vector
             %
             % PL.double() is a 6x1 vector comprising the moment and direction vectors.
             x = [pl.v; pl.w];
         end
-        
+
         function plot(pl, varargin)
             %Plucker.plot Plot a line
             %
@@ -441,19 +441,19 @@ classdef Plucker < handle
                     varargin = varargin{2:end};
                 end
             end
-            
+
             if isempty(bounds)
                 bounds = [ get(gca, 'XLim') get(gca, 'YLim') get(gca, 'ZLim')];
             else
                 axis(bounds);
             end
-            
+
             %U = pl.Q - pl.P;
             %line.p = pl.P; line.v = unit(U);
             P = pl.intersect_volume(bounds);
-            
+
             plot3(P(1,:), P(2,:), P(3,:), varargin{:})
-            
+
             %             plot3(P(1,1), P(2,1), P(3,1), 'bx')
             %             plot3(P(1,2), P(2,2), P(3,2), 'bx')
             %             %U = U/2; V = V/2;
@@ -462,7 +462,7 @@ classdef Plucker < handle
             %             plot3(LL(1), LL(2), LL(3), 'o');
             %             plot3([0 LL(1)], [0 LL(2)], [0 LL(3)], 'r');
         end
-        
+
         %         @ L = {U:V}, with 3-tuples U and V, with U.V = 0, and with U non-null.
         %   @ L = {P-Q:PxQ}, for P and Q distinct points on L, and line is directed Q->P.
         %   @ L = {U:UxQ}, for U the direction of L and Q a point on L.
@@ -475,7 +475,7 @@ classdef Plucker < handle
         %
         %    @ (VxN-Un:U.N) is the point where L intersects plane [N:n] not parallel to L.
         %   @ [UxP-Vw:V.P] is the plane containing L and point (P:w) not on L.
-        
+
         function display(pl)
             %Plucker.display Display parameters
             %
@@ -494,7 +494,7 @@ classdef Plucker < handle
             disp([inputname(1), ' = '])
             disp( char(pl) );
         end % display()
-        
+
         function s = char(pl)
             %Plucker.char Convert to string
             %
@@ -504,7 +504,7 @@ classdef Plucker < handle
             % See also Plucker.display.
             s = '';
             for i=1:length(pl)
-                
+
                 ps = '{ ';
                 ps = [ ps, sprintf('%0.5g  ', pl.v) ];
                 ps = [ ps(1:end-2), '; '];
@@ -517,9 +517,9 @@ classdef Plucker < handle
                 end
             end
         end
-        
 
-        
+
+
     end % methods
 end % class
 

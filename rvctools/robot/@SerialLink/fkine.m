@@ -8,7 +8,7 @@
 % j'th joint parameter for the i'th trajectory point.  In this case T is a
 % an array of SE3 objects (K) where the subscript is the index along the path.
 %
-% [T,ALL] = R.fkine(Q) as above but ALL (N) is a vector of SE3 objects describing 
+% [T,ALL] = R.fkine(Q) as above but ALL (N) is a vector of SE3 objects describing
 % the pose of the link frames 1 to N.
 %
 % Options::
@@ -29,24 +29,24 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 function [t,allt] = fkine(robot, q, varargin)
-    
+
 %
 % evaluate fkine for each point on a trajectory of
 % theta_i or q_i data
@@ -73,7 +73,7 @@ if numel(q) == n
     t = SE3(robot.base);
     for i=1:n
         t = t * L(i).A(q(i));
-        
+
         if nargout > 1
             allt(i) = t; % intermediate transformations
         end
@@ -84,7 +84,7 @@ else
         error('q must have %d columns', n)
     end
     t(numrows(q)) = SE3;  % preallocate storage
-    for k=1:numrows(q)		% for each trajectory point
+    for k=1:numrows(q)        % for each trajectory point
         qk = q(k,:);
         tt = SE3(robot.base);
         for i=1:n

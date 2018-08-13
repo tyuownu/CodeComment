@@ -33,9 +33,9 @@ classdef btBrickIO < BrickIO
         % bluetooth serial port
         serialPort = '/dev/rfcomm0'
     end
-    
+
     methods
-        
+
         function brickIO = btBrickIO(debug,serialPort)
             %btBrickIO.btBrickIO Create a btBrickIO object
             %
@@ -45,7 +45,7 @@ classdef btBrickIO < BrickIO
             %
             % Notes::
             % - debug is a flag specifying output printing (0 or 1).
-            
+
             if nargin > 1
                 brickIO.debug = debug;
                 brickIO.serialPort = serialPort;
@@ -58,7 +58,7 @@ classdef btBrickIO < BrickIO
             % open the conneciton handle
             brickIO.open;
         end
-        
+
         function delete(brickIO)
             %btBrickIO.delete Delete the btBrickIO object
             %
@@ -66,16 +66,16 @@ classdef btBrickIO < BrickIO
             if brickIO.debug > 0
                 fprintf('btBrickIO delete\n');
             end
-            % delete the bt handle 
+            % delete the bt handle
             brickIO.close;
         end
-        
+
         function open(brickIO)
             %btBrickIO.open Open the btBrickIO object
             %
             % btBrickIO.open() opens the bluetooth connection to the brick
             % using fopen.
-            
+
             if brickIO.debug > 0
                 fprintf('btBrickIO open\n');
             end
@@ -88,23 +88,23 @@ classdef btBrickIO < BrickIO
             %
             % btBrickIO.close() closes the bluetooth connection the brick
             % using fclose.
-            
+
             if brickIO.debug > 0
                 fprintf('btBrickIO close\n');
-            end 
+            end
             % close the close handle
             fclose(brickIO.handle);
         end
-        
+
         function rmsg = read(brickIO)
             %btBrickIO.read Read data from the btBrickIO object
             %
             % rmsg = btBrickIO.read() reads data from the brick through
             % bluetooth via fread and returns the data in uint8 format.
-            
+
             if brickIO.debug > 0
                 fprintf('btBrickIO read\n');
-            end 
+            end
             % get the number of bytes to be read from the bt handle
             nLength = fread(brickIO.handle,2);
             % read the remaining bytes
@@ -112,7 +112,7 @@ classdef btBrickIO < BrickIO
             % append the reply size to the return message
             rmsg = uint8([nLength' rmsg']);
         end
-        
+
         function write(brickIO,wmsg)
             %btBrickIO.write Write data to the btBrickIO object
             %
@@ -122,11 +122,11 @@ classdef btBrickIO < BrickIO
             % Notes::
             % - wmsg is the data to be written to the brick via bluetooth
             % in uint8 format.
-            
+
             if brickIO.debug > 0
                 fprintf('btBrickIO write\n');
-            end 
+            end
             fwrite(brickIO.handle,wmsg);
         end
-    end 
+    end
 end

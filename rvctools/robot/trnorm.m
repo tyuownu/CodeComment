@@ -15,7 +15,7 @@
 %
 % Notes::
 % - Only the direction of A (the z-axis) is unchanged.
-% - Used to prevent finite word length arithmetic causing transforms to 
+% - Used to prevent finite word length arithmetic causing transforms to
 %   become `unnormalized'.
 %
 % See also OA2TR, SO3.trnorm, SE3.trnorm.
@@ -25,17 +25,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -44,7 +44,7 @@
 function TR = trnorm(T)
 
     assert(ishomog(T) || isrot(T), 'RTB:trnorm:badarg', 'expecting 3x3xN or 4x4xN hom xform');
-    
+
     if ndims(T) == 3
         % recurse for transform sequence
         nd = size(T, 3);
@@ -54,12 +54,12 @@ function TR = trnorm(T)
         end
         return
     end
-    
+
     n = T(1:3,1); o = T(1:3,2); a = T(1:3,3);
     n = cross(o, a);         % N = O x A
     o = cross(a, n);         % O = A x N
     R = [unit(n) unit(o) unit(a)];
-    
+
     if ishomog(T)
         TR = rt2tr( R, T(1:3,4) );
     elseif isrot(T)

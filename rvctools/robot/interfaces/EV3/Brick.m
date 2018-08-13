@@ -5,7 +5,7 @@
 % delete             Destructor, closes connection
 % send               Send data to the brick
 % receive            Receive data from the brick
-% 
+%
 % uiReadVBatt        Returns battery level as a voltage
 % uiReadLBatt        Returns battery level as a percentage
 %
@@ -38,13 +38,13 @@
 %
 % fileUpload         Upload a file to the brick
 % fileDownload       Download a file from the brick
-% listFiles          List files on the brick from a directory  
+% listFiles          List files on the brick from a directory
 % createDir          Create a directory on the brick
 % deleteFile         Delete a file from the brick
 % writeMailBox       Write a mailbox message to the brick
 % readMailBox        Read a mailbox message sent from the brick
 %
-% threeToneByteCode  Generate the bytecode for the playThreeTone function 
+% threeToneByteCode  Generate the bytecode for the playThreeTone function
 %
 % Example::
 %           b = Brick('ioType','usb')
@@ -52,7 +52,7 @@
 %           b = Brick('ioType','bt','serPort','/dev/rfcomm0')
 
 classdef Brick < handle
-    
+
     properties
         % connection handle
         conn;
@@ -67,15 +67,15 @@ classdef Brick < handle
         % wifi brick IP address
         wfAddr;
         % wifi brick TCP port
-        wfPort; 
+        wfPort;
         % brick serial number
-        wfSN; 
+        wfSN;
         % bluetooth serial port
         serPort;
     end
 
     methods
-        function brick = Brick(varargin) 
+        function brick = Brick(varargin)
              % Brick.Brick Create a Brick object
              %
              % b = Brick(OPTIONS) is an object that represents a connection
@@ -104,7 +104,7 @@ classdef Brick < handle
              %      b = Brick('ioType','instrwifi','wfAddr','192.168.1.104','wfPort',5555,'wfSN','0016533dbaf5')
              % - For instrBrickIO (bluetooth)
              %      b = Brick('ioType','instrbt','btDevice','EV3','btChannel',1)
-             
+
              % init the properties
              opt.debug = 0;
              opt.btDevice = 'EV3';
@@ -143,7 +143,7 @@ classdef Brick < handle
                 brick.conn = btBrickIO(brick.debug,brick.serPort);
                 connect = 1;
              end
-             % instrumentation and control wifi 
+             % instrumentation and control wifi
              if(strcmp(opt.ioType,'instrwifi'))
                 brick.debug = opt.debug;
                 brick.ioType = opt.ioType;
@@ -153,7 +153,7 @@ classdef Brick < handle
                 brick.conn = instrBrickIO(brick.debug,'wf',brick.wfAddr,brick.wfPort,brick.wfSN);
                 connect = 1;
              end
-             % instrumentation and control bluetooth 
+             % instrumentation and control bluetooth
              if(strcmp(opt.ioType,'instrbt'))
                 brick.debug = opt.debug;
                 brick.ioType = opt.ioType;
@@ -167,15 +167,15 @@ classdef Brick < handle
                  fprintf('Please specify a serConn option: ''usb'',''wifi'',''bt'',''instrwifi'' or ''instrbt''.\n');
              end
         end
-        
+
         function delete(brick)
             % Brick.delete Delete the Brick object
             %
             % delete(b) closes the connection to the brick
-            
+
             brick.conn.close();
-        end  
-        
+        end
+
         function send(brick, cmd)
             % Brick.send Send data to the brick
             %
@@ -187,9 +187,9 @@ classdef Brick < handle
             %
             % Example::
             %           b.send(cmd)
-            
+
             % send the message through the brickIO write function
-            
+
             brick.conn.write(cmd.msg);
             if brick.debug > 0
                fprintf('sent:    [ ');
@@ -199,7 +199,7 @@ classdef Brick < handle
                fprintf(']\n');
             end
         end
-       
+
         function rmsg = receive(brick)
             % Brick.receive Receive data from the brick
             %
@@ -208,9 +208,9 @@ classdef Brick < handle
             %
             % Example::
             %           rmsg = b.receive()
- 
+
             % read the message through the brickIO read function
-            
+
             rmsg = brick.conn.read();
             if brick.debug > 0
                fprintf('received:    [ ');
@@ -220,15 +220,15 @@ classdef Brick < handle
                fprintf(']\n');
             end
         end
-        
+
         function voltage = uiReadVbatt(brick)
             % Brick.uiReadVbatt Return battery level (voltage)
-            % 
+            %
             % voltage = uiReadVbatt returns battery level as a voltage.
             %
             % Example::
             %           voltage = b.uiReadVbatt()
-            
+
             cmd = Command();
             cmd.addHeaderDirectReply(42,4,0);
             cmd.opUI_READ_GET_VBATT(0);
@@ -236,21 +236,21 @@ classdef Brick < handle
             brick.send(cmd);
             % receive the command
             msg = brick.receive()';
-            voltage = typecast(uint8(msg(6:9)),'single');           
+            voltage = typecast(uint8(msg(6:9)),'single');
             if brick.debug > 0
                 fprintf('Battery voltage: %.02fV\n', voltage);
             end
         end
-        
+
         function level = uiReadLbatt(brick)
             % Brick.uiReadLbatt Return battery level (percentage)
-            % 
+            %
             % level = Brick.uiReadLbatt() returns battery level as a
             % percentage from 0 to 100%.
             %
             % Example::
             %           level = b.uiReadLbatt()
-          
+
             cmd = Command();
             cmd.addHeaderDirectReply(42,1,0);
             cmd.opUI_READ_GET_LBATT(0);
@@ -263,8 +263,8 @@ classdef Brick < handle
                 fprintf('Battery level: %d%%\n', level);
             end
         end
-        
-        function playTone(brick, volume, frequency, duration)  
+
+        function playTone(brick, volume, frequency, duration)
             % Brick.playTone Play a tone on the brick
             %
             % Brick.playTone(volume,frequency,duration) plays a tone at a
@@ -275,7 +275,7 @@ classdef Brick < handle
             % - frequency is the tone frequency in Hz.
             % - duration is the tone duration in ms.
             %
-            % Example:: 
+            % Example::
             %           b.playTone(5,400,500)
 
             cmd = Command();
@@ -284,7 +284,7 @@ classdef Brick < handle
             cmd.addLength();
             brick.send(cmd);
         end
-                 
+
         function beep(brick,volume,duration)
             % Brick.beep Play a beep on the brick
             %
@@ -295,9 +295,9 @@ classdef Brick < handle
             % - volume is the beep volume from 0 to 100.
             % - duration is the beep duration in ms.
             %
-            % Example:: 
+            % Example::
             %           b.beep(5,500)
-            
+
             if nargin < 2
                 volume = 10;
             end
@@ -306,7 +306,7 @@ classdef Brick < handle
             end
             brick.playTone(volume, 1000, duration);
         end
-        
+
         function playThreeTones(brick)
             % Brick.playThreeTones Play three tones on the brick
             %
@@ -315,7 +315,7 @@ classdef Brick < handle
             %
             % Example::
             %           b.playThreeTones();
-            
+
             cmd = Command();
             cmd.addHeaderDirect(42,0,0);
             cmd.opSOUND_TONE(5,440,500);
@@ -327,9 +327,9 @@ classdef Brick < handle
             cmd.addLength();
             % print message
             fprintf('Sending three tone message ...\n');
-            brick.send(cmd);    
+            brick.send(cmd);
         end
-        
+
         function name = inputDeviceGetName(brick,layer,no)
             % Brick.inputDeviceGetName Get the input device name
             %
@@ -343,7 +343,7 @@ classdef Brick < handle
             %
             % Example::
             %           name = b.inputDeviceGetName(0,Device.Port1)
-            
+
             cmd = Command();
             cmd.addHeaderDirectReply(42,12,0);
             cmd.opINPUT_DEVICE_GET_NAME(layer,no,12,0);
@@ -354,7 +354,7 @@ classdef Brick < handle
             % return the device name
             name = sscanf(char(msg(6:end)),'%s');
         end
-        
+
         function name = inputDeviceSymbol(brick,layer,no)
             % Brick.inputDeviceSymbol Get the input device symbol
             %
@@ -368,7 +368,7 @@ classdef Brick < handle
             %
             % Example::
             %           name = b.inputDeviceGetName(0,Device.Port1)
-            
+
             cmd = Command();
             cmd.addHeaderDirectReply(42,5,0);
             cmd.opINPUT_DEVICE_GET_SYMBOL(layer,no,5,0);
@@ -379,7 +379,7 @@ classdef Brick < handle
             % return the symbol name
             name = sscanf(char(msg(6:end)),'%s');
         end
-        
+
         function inputDeviceClrAll(brick,layer)
             % Brick.inputDeviceClrAll Clear the sensors
             %
@@ -391,18 +391,18 @@ classdef Brick < handle
             %
             % Example::
             %           name = b.inputDeviceClrAll(0)
-            
+
             cmd = Command();
             cmd.addHeaderDirectReply(42,5,0);
             cmd.opINPUT_DEVICE_CLR_ALL(layer);
             cmd.addLength();
             brick.send(cmd);
         end
-        
+
         function reading = inputReadSI(brick,layer,no,mode)
             % Brick.inputReadSI Input read in SI units
-            % 
-            % reading = Brick.inputReadSI(layer,no,mode) reads a 
+            %
+            % reading = Brick.inputReadSI(layer,no,mode) reads a
             % connected sensor at a layer, NO and mode in SI units.
             %
             % Notes::
@@ -415,7 +415,7 @@ classdef Brick < handle
             % Example::
             %            reading = b.inputReadSI(0,Device.Port1,Device.USDistCM)
             %            reading = b.inputReadSI(0,Device.Port1,Device.Pushed)
-           
+
             cmd = Command();
             cmd.addHeaderDirectReply(42,4,0);
             cmd.opINPUT_READSI(layer,no,0,mode,0);
@@ -428,12 +428,12 @@ classdef Brick < handle
                  fprintf('Sensor reading: %.02f\n', reading);
             end
         end
-        
+
         function plotSensor(brick,layer,no,mode)
-            % Brick.plotSensor plot the sensor output 
+            % Brick.plotSensor plot the sensor output
             %
             % Brick.plotSensor(layer,no,mode) plots the sensor output
-            % to MATLAB. 
+            % to MATLAB.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0).
@@ -444,7 +444,7 @@ classdef Brick < handle
             % Example::
             %           b.plotSensor(0,Device.Port1,Device.USDistCM)
             %           b.plotSensor(0,Device.Port1,Device.GyroAng)
-            
+
             % start timing
             tic;
             % create figure
@@ -483,9 +483,9 @@ classdef Brick < handle
                 end
             end
         end
-            
+
         function displayColor(brick,layer,no)
-            % Brick.dispalyColor display sensor color 
+            % Brick.dispalyColor display sensor color
             %
             % Brick.dispalyColor(layer,no) displays the color read from the
             % color sensor in a MATLAB figure.
@@ -497,7 +497,7 @@ classdef Brick < handle
             %
             % Example::
             %           b.displayColor(0,Device.Port1)
-            
+
             % create figure
             hfig = figure('name','EV3 Color Sensor');
             % wait until the figure is closed
@@ -528,11 +528,11 @@ classdef Brick < handle
                 drawnow
             end
         end
-        
+
         function outputStop(brick,layer,nos,brake)
             % Brick.outputPower Stops a motor
             %
-            % Brick.outputPower(layer,nos,brake) stops motor at a layer 
+            % Brick.outputPower(layer,nos,brake) stops motor at a layer
             % NOS and brake.
             %
             % Notes::
@@ -542,14 +542,14 @@ classdef Brick < handle
             %
             % Example::
             %           b.outputStop(0,Device.MotorA,Device.Brake)
-            
+
             cmd = Command();
             cmd.addHeaderDirect(42,0,0);
             cmd.opOUTPUT_STOP(layer,nos,brake)
             cmd.addLength();
             brick.send(cmd);
         end
-        
+
         function outputStopAll(brick)
             % Brick.outputStopAll Stops all motors
             %
@@ -561,17 +561,17 @@ classdef Brick < handle
             %
             % Example::
             %           b.outputStopAll(0)
-            
+
             cmd = Command();
             cmd.addHeaderDirect(42,0,0);
             cmd.opOUTPUT_STOP(0,15,Device.Brake);
             cmd.addLength();
             brick.send(cmd);
         end
-        
+
         function outputPower(brick,layer,nos,power)
             % Brick.outputPower Set the motor output power
-            % 
+            %
             % Brick.outputPower(layer,nos,power) sets motor output power at
             % a layer, NOS and power.
             %
@@ -582,14 +582,14 @@ classdef Brick < handle
             %
             % Example::
             %           b.outputPower(0,Device.MotorA,50)
-            
+
             cmd = Command();
             cmd.addHeaderDirect(42,0,0);
             cmd.opOUTPUT_POWER(layer,nos,power);
             cmd.addLength();
             brick.send(cmd);
         end
-        
+
         function outputStart(brick,layer,nos)
             % Brick.outputStart Starts a motor
             %
@@ -602,14 +602,14 @@ classdef Brick < handle
             %
             % Example::
             %           b.outputStart(0,Device.MotorA)
-          
+
             cmd = Command();
             cmd.addHeaderDirect(42,0,0);
             cmd.opOUTPUT_START(layer,nos);
             cmd.addLength();
             brick.send(cmd);
         end
-        
+
         function state = outputTest(brick,layer,nos)
             % Brick.outputTest Test a motor
             %
@@ -623,7 +623,7 @@ classdef Brick < handle
             %
             % Example::
             %           state = b.outputTest(0,Device.MotorA)
-          
+
             cmd = Command();
             cmd.addHeaderDirectReply(42,1,0);
             cmd.opOUTPUT_TEST(layer,nos,0);
@@ -634,9 +634,9 @@ classdef Brick < handle
             % motor state is the final byte
             state = msg(end);
         end
-        
+
         function outputStepSpeed(brick,layer,nos,speed,step1,step2,step3,brake)
-            % Brick.outputStepSpeed Output a step speed 
+            % Brick.outputStepSpeed Output a step speed
             %
             % Brick.outputStepSpeed(layer,nos,speed,step1,step2,step3,brake)
             % moves a motor to set position with layer, NOS, speed, ramp up
@@ -653,17 +653,17 @@ classdef Brick < handle
             %
             % Example::
             %           b.outputStepSpeed(0,Device.MotorA,50,50,360,50,Device.Coast)
-            
+
             cmd = Command();
             cmd.addHeaderDirect(42,0,0);
             cmd.opOUTPUT_STEP_SPEED(layer,nos,speed,step1,step2,step3,brake);
             cmd.addLength();
             brick.send(cmd);
         end
-        
+
         function outputClrCount(brick,layer,nos)
             % Brick.outputClrCount Clear output count
-            % 
+            %
             % Brick.outputClrCount(layer,nos) clears a motor tachometer at a
             % layer and NOS.
             %
@@ -673,18 +673,18 @@ classdef Brick < handle
             %
             % Example::
             %            b.outputClrCount(0,Device.MotorA)
-            
+
             cmd = Command();
             cmd.addHeaderDirect(42,0,0);
             cmd.opOUTPUT_CLR_COUNT(layer,nos);
             cmd.addLength();
             brick.send(cmd);
         end
-        
+
         function tacho = outputGetCount(brick,layer,nos)
             % Brick.outputGetCount(layer,nos) Get output count
-            % 
-            % tacho = Brick.outputGetCount(layer,nos) returns the tachometer 
+            %
+            % tacho = Brick.outputGetCount(layer,nos) returns the tachometer
             % at a layer and NOS.
             %
             % Notes::
@@ -709,7 +709,7 @@ classdef Brick < handle
                 fprintf('Tacho: %d degrees\n', tacho);
             end
         end
-        
+
         function drawTest(brick)
             % Brick.drawTest Draw test shapes
             %
@@ -717,7 +717,7 @@ classdef Brick < handle
             %
             % Example::
             %           b.drawTest()
-            
+
             cmd = Command();
             cmd.addHeaderDirect(42,4,1);
             % save the UI screen
@@ -777,7 +777,7 @@ classdef Brick < handle
             cmd.addLength();
             brick.send(cmd)
         end
-        
+
         function name = getBrickName(brick)
             % Brick.getBrickName Get brick name
             %
@@ -785,7 +785,7 @@ classdef Brick < handle
             %
             % Example::
             %           name = b.getBrickName()
-          
+
             cmd = Command();
             cmd.addHeaderDirectReply(42,10,0);
             cmd.opCOMGET_GET_BRICKNAME(10,0);
@@ -796,7 +796,7 @@ classdef Brick < handle
             % return the brick name
             name = sscanf(char(msg(6:end)),'%s');
         end
-        
+
         function setBrickName(brick,name)
             % Brick.setBrickName Set brick name
             %
@@ -804,14 +804,14 @@ classdef Brick < handle
             %
             % Example::
             %           b.setBrickName('EV3')
-          
+
             cmd = Command();
             cmd.addHeaderDirectReply(42,0,0);
             cmd.opCOMSET_SET_BRICKNAME(name);
             cmd.addLength();
             brick.send(cmd);
         end
-        
+
         function mailBoxWrite(brick,brickname,boxname,type,msg)
             % Brick.mailBoxWrite Write a mailbox message
             %
@@ -829,13 +829,13 @@ classdef Brick < handle
             %           b.mailBoxWrite('T500','abc','logic',1)
             %           b.mailBoxWrite('T500','abc','numeric',4.24)
             %           b.mailBoxWrite('T500','abc','text','hello!')
-            
+
             cmd = Command();
             cmd.addHeaderDirect(42,0,0);
             cmd.opMAILBOX_WRITE(brickname,boxname,type,msg);
             cmd.addLength();
             brick.send(cmd);
-        end      
+        end
 
         function fileUpload(brick,filename,dest)
             % Brick.fileUpload Upload a file to the brick
@@ -851,11 +851,11 @@ classdef Brick < handle
             %
             % Example::
             %           b.fileUpload('prg.rbf','../apps/tst/tst.rbf')
-            
+
             fid = fopen(filename,'r');
             % read in the file in and convert to uint8
             input = fread(fid,inf,'uint8=>uint8');
-            fclose(fid); 
+            fclose(fid);
             % begin upload
             cmd = Command();
             cmd.addHeaderSystemReply(10);
@@ -874,14 +874,14 @@ classdef Brick < handle
             brick.send(cmd);
             % receive the sent response
             rmsg = brick.receive();
-            % print message 
+            % print message
             fprintf('%s uploaded\n',filename);
         end
-        
+
         function fileDownload(brick,dest,filename,maxlength)
             % Brick.fileDownload Download a file from the brick
             %
-            % Brick.fileDownload(dest,filename,maxlength) downloads a file 
+            % Brick.fileDownload(dest,filename,maxlength) downloads a file
             % from the brick to the PC.
             %
             % Notes::
@@ -890,10 +890,10 @@ classdef Brick < handle
             % - filename is the local PC file name for download e.g.
             % 'prg.rbf'.
             % - maxlength is the max buffer size used for download.
-            % 
+            %
             % Example::
             %           b.fileDownload('../apps/tst/tst.rbf','prg.rbf',59)
-            
+
             % begin download
             cmd = Command();
             cmd.addHeaderSystemReply(12);
@@ -908,13 +908,13 @@ classdef Brick < handle
             fid = fopen(filename,'w');
             % read in the file in and convert to uint8
             fwrite(fid,payload,'uint8');
-            fclose(fid); 
+            fclose(fid);
         end
-        
+
         function listFiles(brick,pathname,maxlength)
             % Brick.listFiles List files on the brick
             %
-            % Brick.listFiles(brick,pathname,maxlength) list files in a 
+            % Brick.listFiles(brick,pathname,maxlength) list files in a
             % given directory.
             %
             % Notes::
@@ -927,7 +927,7 @@ classdef Brick < handle
             %
             % Example::
             %           b.listFiles('/home/root/lms2012/',100)
-            
+
             cmd = Command();
             cmd.addHeaderSystemReply(13);
             cmd.LIST_FILES(maxlength,pathname);
@@ -936,12 +936,12 @@ classdef Brick < handle
             rmsg = brick.receive();
             % print
             fprintf('%s',rmsg(13:end));
-        end    
-        
+        end
+
         function createDir(brick,pathname)
             % Brick.createDir Create a directory on the brick
-            % 
-            % Brick.createDir(brick,pathname) creates a diretory on the 
+            %
+            % Brick.createDir(brick,pathname) creates a diretory on the
             % brick from the given pathname.
             %
             % Notes::
@@ -949,7 +949,7 @@ classdef Brick < handle
             %
             % Example::
             %           b.createDir('/home/root/lms2012/newdir')
-            
+
             cmd = Command();
             cmd.addHeaderSystemReply(14);
             cmd.CREATE_DIR(pathname);
@@ -957,12 +957,12 @@ classdef Brick < handle
             brick.send(cmd);
             rmsg = brick.receive();
         end
-        
+
         function deleteFile(brick,pathname)
             % Brick.deleteFile Delete file on the brick
-            % 
+            %
             % Brick.deleteFile(brick,pathname) deletes a file from the
-            % brick with the given pathname. 
+            % brick with the given pathname.
             %
             % Notes::
             % - pathname is the absolute file path for deletion.
@@ -970,7 +970,7 @@ classdef Brick < handle
             %
             % Example::
             %           b.deleteFile('/home/root/lms2012/newdir')
-            
+
             cmd = Command();
             cmd.addHeaderSystemReply(15);
             cmd.DELETE_FILE(pathname);
@@ -978,7 +978,7 @@ classdef Brick < handle
             brick.send(cmd);
             rmsg = brick.receive();
         end
-        
+
         function writeMailBox(brick,title,type,msg)
             % Brick.writeMailBox Write a mailbox message
             %
@@ -993,14 +993,14 @@ classdef Brick < handle
             %
             % Example::
             %           b.writeMailBox('abc','text','hello!')
-            
+
             cmd = Command();
             cmd.addHeaderSystem(16);
             cmd.WRITEMAILBOX(title,type,msg);
             cmd.addLength();
             brick.send(cmd);
         end
-        
+
         function [title,msg] = readMailBox(brick,type)
             % Brick.readMailBox Read a mailbox message
             %
@@ -1015,7 +1015,7 @@ classdef Brick < handle
             %
             % Example::
             %           [title,msg] = b.readMailBox('text')
-            
+
             mailmsg = brick.receive();
             % extract message title (starts at pos 8, pos 7 is the size)
             title = char(mailmsg(8:7+mailmsg(7)));
@@ -1032,7 +1032,7 @@ classdef Brick < handle
                     msg = '';
             end
         end
-            
+
         function threeToneByteCode(brick,filename)
             % Brick.threeToneByteCode Create three tone byte code
             %
@@ -1046,7 +1046,7 @@ classdef Brick < handle
             %
             % Example::
             %           b.threeToneByteCode('threetone')
-            
+
             cmd = Command();
             % program header
             cmd.PROGRAMHeader(0,1,0);                   % VersionInfo,NumberOfObjects,GlobalBytes

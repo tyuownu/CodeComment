@@ -39,17 +39,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -61,7 +61,7 @@ classdef ETS2
         qvar     % the integer joint index 1..N (if joint)
         qlim     % for prismatic joint, a 2 vector [min,max]
     end
-    
+
     methods
         function obj = ETS2(what, x, varargin)
             %ETS2.ETS2  Create an ETS2 object
@@ -74,20 +74,20 @@ classdef ETS2
             % E = ETS2(E1) is a new ETS2 object that is a clone of the ETS2 object E1.
             %
             % See also ETS2.Rz, ETS2.Tx, ETS2.Ty.
-            
+
             assert(nargin > 0, 'RTB:ETS2:ETS2:badarg', 'no arguments given');
-            
+
             opt.qlim = [];
             opt = tb_optparse(opt, varargin);
-            
+
             obj.qvar = NaN;
             obj.param = 0;
-            
+
             if ~isempty(opt.qlim)
                 assert(length(opt.qlim) == 2, 'ETS2: qlim must be a 2-vector');
             end
             obj.qlim = opt.qlim;
-            
+
             if nargin > 1
                 if isa(x, 'ETS2')
                     % clone it
@@ -109,7 +109,7 @@ classdef ETS2
                 end
             end
         end
-        
+
         function r = fkine(ets, q, varargin)
             %ETS2.fkine Forward kinematics
             %
@@ -122,22 +122,22 @@ classdef ETS2
             % Options::
             %  'deg'     Angles are given in degrees.
             r = SE2;
-            
+
             opt.deg = false;
             [opt,args] = tb_optparse(opt, varargin);
-            
+
             if opt.deg
                 opt.deg = pi/180;
             else
                 opt.deg = 1;
             end
-            
+
             n = length(ets);
             if ~isempty(args) && isreal(args{1})
                 n = args{1};
             end
             assert(n>0 && n <= length(ets), 'RTB:ETS2:badarg', 'bad value of n given');
-            
+
             for i=1:n
                 e = ets(i);
                 if e.isjoint
@@ -156,7 +156,7 @@ classdef ETS2
             end
             r = r.simplify();  % simplify it if symbolic
         end
-        
+
         function b = isjoint(ets)
             %ETS2.isjoint  Test if transform is a joint
             %
@@ -164,7 +164,7 @@ classdef ETS2
             % parameter is of the form 'qN'.
             b = ~isnan(ets.qvar);
         end
-        
+
         function v = isprismatic(ets)
             %ETS2.isprismatic  Test if transform is prismatic joint
             %
@@ -172,7 +172,7 @@ classdef ETS2
             % parameter is of the form 'qN' and it controls a translation.
             v = isjoint(ets) && (ets.what(1) == 'T');
         end
-        
+
         function k = find(ets, j)
             %ETS2.find  Find joints in transform sequence
             %
@@ -180,7 +180,7 @@ classdef ETS2
             % to the J'th joint.
             [~,k] = find([ets.qvar] == j);
         end
-        
+
         function n = njoints(ets)
             %ETS2.njoints  Number of joints in transform sequence
             %
@@ -189,7 +189,7 @@ classdef ETS2
             % See also ETS2.n.
             n = max([ets.qvar]);
         end
-        
+
         function v = n(ets)
             %ETS2.n  Number of joints in transform sequence
             %
@@ -200,8 +200,8 @@ classdef ETS2
             % See also ETS2.n.
             v = ets.njoints;
         end
-        
-        
+
+
         function s = string(ets)
             %ETS2.string  Convert to string with symbolic variables
             %
@@ -224,7 +224,7 @@ classdef ETS2
                 end
             end
         end
-                
+
         function out = mtimes(ets1, ets2)
             %ETS2.mtimes Compound transforms
             %
@@ -234,7 +234,7 @@ classdef ETS2
             assert( strcmp(superclasses(ets1), superclasses(ets2)), 'ETS2: both operands must have superclass ETS2, perhaps run ''clear import'', and start over');
             out = [ets1 ets2];
         end
-        
+
         function out = plus(ets1, ets2)
             %ETS2.plus Compound transforms
             %
@@ -245,8 +245,8 @@ classdef ETS2
 
             out = [ets1 ets2];
         end
-        
-        
+
+
         function s = structure(ets)
             %ETS2.structure  Show joint type structure
             %
@@ -269,7 +269,7 @@ classdef ETS2
                 end
             end
         end
-        
+
         function display(ets)
             %ETS2.display Display parameters
             %
@@ -283,14 +283,14 @@ classdef ETS2
             %
             % See also ETS2.char.
             loose = strcmp( get(0, 'FormatSpacing'), 'loose');
-            
+
             if loose
                 disp(' ');
             end
             disp([inputname(1), ' = '])
             disp( char(ets) );
         end % display()
-        
+
         function s = char(ets)
             %ETS2.char Convert to string
             %
@@ -299,7 +299,7 @@ classdef ETS2
             %
             % See also ETS2.display.
             s = '';
-            
+
             function s = render(z)
                 if isa(z, 'sym')
                     s = char(z);
@@ -307,17 +307,17 @@ classdef ETS2
                     s = sprintf('%g', z);
                 end
             end
-            
+
             for e = ets
                 if e.isjoint
                     s = [s sprintf('%s(q%d)', e.what, e.qvar) ];
                 else
                     s = [s sprintf('%s(%s)', e.what, render(e.param))];
-                    
+
                 end
             end
         end
-        
+
         function teach(robot, varargin)
             %ETS2.teach Graphical teach pendant
             %
@@ -346,21 +346,21 @@ classdef ETS2
             %   - a prismatic joint they are assumed unknown and an error occurs.
             %
             % See also ETS2.plot.
-            
+
             %-------------------------------
             % parameters for teach panel
             bgcol = [135 206 250]/255;  % background color
             height = 0.06;  % height of slider rows
             %-------------------------------
-            
-            
+
+
             %---- handle options
             opt.deg = true;
             opt.orientation = {'rpy', 'eul', 'approach'};
             opt.d_2d = true;
             opt.callback = [];
             [opt,args] = tb_optparse(opt, varargin);
-            
+
             if nargin == 1
                 q = zeros(1,robot.n);
             else
@@ -371,8 +371,8 @@ classdef ETS2
 
             RTBPlot.install_teach_panel('ETS2', robot, q, opt);
         end
-        
-        
+
+
         function plot(ets, qq, varargin)
             %ETS2.plot Graphical display and animation
             %
@@ -474,8 +474,8 @@ classdef ETS2
             %   robot.  If a prismatic joint is present the 'workspace' option is
             %   required.  The 'zoom' option can reduce the size of this workspace.
             %
-            % See also ETS2.teach, SerialLink.plot3d. 
-            
+            % See also ETS2.teach, SerialLink.plot3d.
+
             % heuristic to figure robot size
             reach = 0;
             for e=ets
@@ -488,23 +488,23 @@ classdef ETS2
                         end
                 end
             end
-            
+
             opt = RTBPlot.plot_options([], [varargin 'reach', 3, 'top']);
             h = draw_ets(ets, qq, opt);
-            
+
             set(gca, 'Tag', 'RTB.plot');
             set(gcf, 'Units', 'Normalized');
             pf = get(gcf, 'Position');
-            
+
             if opt.raise
                 % note this is a very time consuming operation
                 figure(gcf);
             end
-            
+
             if strcmp(opt.projection, 'perspective')
                 set(gca, 'Projection', 'perspective');
             end
-            
+
             if isstr(opt.view)
                 switch opt.view
                     case 'top'
@@ -519,22 +519,22 @@ classdef ETS2
             elseif isnumeric(opt.view) && length(opt.view) == 2
                 view(opt.view)
             end
-            
+
             % enable mouse-based 3D rotation
             rotate3d on
-            
+
             ets.animate(qq);
         end
-        
+
         function animate(ets, qq)
             handles = findobj('Tag', 'ETS2');
             h = handles.UserData;
             opt = h.opt;
-            
+
             ets = h.ets;
             for q = qq'
                 for i=1:length(ets)
-                    
+
                     % create the transform for displaying this element (joint cylinder + link)
                     e = ets(i);
                     if i == 1
@@ -542,10 +542,10 @@ classdef ETS2
                     else
                         T = ets.fkine(q, i-1, 'setopt', opt);
                     end
-                    
+
                     % update the pose of the corresponding graphical element (joint cylinder + link)
                     set(h.element(i), 'Matrix', T.SE3.T);
-                    
+
                     if isprismatic(e)
                         % for prismatic joints, scale the box
                         switch e.what
@@ -556,13 +556,13 @@ classdef ETS2
                         end
                     end
                 end
-                
+
                 % update the wrist frame
                 T = ets.fkine(q, 'setopt', opt);
                 if ~isempty(h.wrist)
                     trplot2(T, 'handle', h.wrist);
                 end
-                
+
                 % render and pause
                 if opt.delay > 0
                     pause(opt.delay);
@@ -570,20 +570,20 @@ classdef ETS2
                 end
             end
         end
-        
-        
+
+
    end
-    
+
    methods (Access=private)
-        
+
             function h_ = draw_ets(ets, q, opt)
-                
+
                 clf
                 disp('creating new ETS plot');
-                
-                
+
+
                 axis(opt.workspace);
-                
+
                 s = opt.scale;
                 % create an axis
                 ish = ishold();
@@ -592,30 +592,30 @@ classdef ETS2
                     axis(opt.workspace);
                     hold on
                 end
-                
+
                 group = hggroup('Tag', 'ETS2');
                 h.group = group;
-                
+
                 % create the graphical joint and link elements
                 for i=1:length(ets)
                     e = ets(i);
-                    
+
                     if opt.debug
                         fprintf('create graphics for %s\n', e.char );
                     end
-                    
+
                     % create a graphical depiction of the transform element
                     % This is drawn to resemble orthogonal plumbing.
-                    
+
                     if i == 1
                         T = SE2;
                     else
                         T = ets.fkine(q, i-1, 'setopt', opt);
                     end
-                    
+
                     % create the transform for displaying this element (joint cylinder + link)
                     h.element(i) = hgtransform('Tag', sprintf('element%d', i), 'Matrix', T.SE3.T, 'Parent', h.group);
-                    
+
                     if isjoint(e)
                         % it's a joint element: revolute or prismatic
                         switch e.what
@@ -639,9 +639,9 @@ classdef ETS2
                                 RTBPlot.cyl('z', opt.jointdiam*s, opt.jointlen*s*[-1 1], opt.linkcolor, [], 'Parent', h.element(i));
                         end
                     end
-                    
+
                     assert( ~(opt.jaxes && opt.jvec), 'RTB:ETS2:plot:badopt', 'Can''t specify ''jaxes'' and ''jvec''')
-                    
+
                     % create the joint axis line
                     if opt.jaxes
                         if e.isjoint
@@ -649,26 +649,26 @@ classdef ETS2
                                 'YData', [0 0], ...
                                 'ZData', 14*s*[-1 1], ...
                                 'LineStyle', ':', 'Parent', h.element(i));
-                            
+
                             % create the joint axis label
                             text(0, 0, 14*s, sprintf('q%d', e.qvar), 'Parent', h.element(i))
                         end
                     end
-                    
+
                     % create the joint axis vector
                     if opt.jvec
                         if e.isjoint
                             daspect([1 1 1]);
                             ha = arrow3([0 0 -12*s], [0 0 15*s], 'c');
                             set(ha, 'Parent', h.element(i));
-                            
+
                             % create the joint axis label
                             text(0, 0, 20*s, sprintf('q%d', e.qvar), 'Parent', h.element(i))
                         end
                     end
-                    
+
                 end
-                
+
                 % display the wrist coordinate frame
                 if opt.wrist
                     if opt.arrow
@@ -688,32 +688,32 @@ classdef ETS2
                 else
                     h.wrist = [];
                 end
-                
+
                 xlabel('X')
                 ylabel('Y')
                 zlabel('Z')
                 grid on
-                
+
                 % restore hold setting
                 if ~ish
                     hold off
                 end
-                
+
                 h.opt = opt;
                 h.ets = ets;
-                
+
                 if nargout > 0
                     h_ = h;
                 end
-                
+
                 % attach the handle structure to the top graphical element
-                
+
                 h.q = q;
                 handles.opt = opt;
-                
+
                 set(group, 'UserData', h);
             end
-            
+
          end
-        
+
 end

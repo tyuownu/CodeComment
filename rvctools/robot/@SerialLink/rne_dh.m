@@ -17,17 +17,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -58,7 +58,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
         Qd = a1(:,n+1:2*n);
         Qdd = a1(:,2*n+1:3*n);
         np = numrows(Q);
-        if nargin >= 3, 
+        if nargin >= 3,
             grav = a2(:);
         end
         if nargin == 4
@@ -73,14 +73,14 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
             numrows(Qd) ~= np || numrows(Qdd) ~= np
             error('bad data');
         end
-        if nargin >= 5, 
+        if nargin >= 5,
             grav = a4(:);
         end
         if nargin == 6
             fext = a5;
         end
     end
-    
+
     if robot.issym || any([isa(Q,'sym'), isa(Qd,'sym'), isa(Qdd,'sym')])
         tau = zeros(np,n, 'sym');
     else
@@ -91,7 +91,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
         q = Q(p,:).';
         qd = Qd(p,:).';
         qdd = Qdd(p,:).';
-    
+
         Fm = [];
         Nm = [];
         if robot.issym
@@ -100,7 +100,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
             pstarm = [];
         end
         Rm = [];
-        
+
         % rotate base velocity and acceleration into L1 frame
         Rb = t2r(robot.base)';
         w = Rb*zeros(3,1);
@@ -153,7 +153,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
                     %v = cross(w,pstar) + Rt*v;
                     vd = cross(wd,pstar) + ...
                         cross(w, cross(w,pstar)) +Rt*vd;
-                    
+
                 case 'P'
                     % prismatic axis
                     w = Rt*w;
@@ -192,7 +192,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
         for j=n:-1:1
             link = robot.links(j);
             pstar = pstarm(:,j);
-            
+
             %
             % order of these statements is important, since both
             % nn and f are functions of previous f.
@@ -235,7 +235,7 @@ function [tau,wbase] = rne_dh(robot, a1, a2, a3, a4, a5)
         f = R*f;
         wbase = [f; nn];
     end
-    
+
     if isa(tau, 'sym')
         tau = simplify(tau);
     end

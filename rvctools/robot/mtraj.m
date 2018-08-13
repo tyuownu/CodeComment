@@ -1,9 +1,9 @@
 %MTRAJ Multi-axis trajectory between two points
 %
 % [Q,QD,QDD] = MTRAJ(TFUNC, Q0, QF, M) is a multi-axis trajectory (MxN) varying
-% from configuration Q0 (1xN) to QF (1xN) according to the scalar trajectory function 
-% TFUNC in M steps. Joint velocity and acceleration can be optionally returned as 
-% QD (MxN) and QDD (MxN) respectively.  The trajectory outputs have one row per 
+% from configuration Q0 (1xN) to QF (1xN) according to the scalar trajectory function
+% TFUNC in M steps. Joint velocity and acceleration can be optionally returned as
+% QD (MxN) and QDD (MxN) respectively.  The trajectory outputs have one row per
 % time step, and one column per axis.
 %
 % The shape of the trajectory is given by the scalar trajectory function
@@ -17,7 +17,7 @@
 %
 % Notes::
 % - If no output arguments are specified Q, QD, and QDD are plotted.
-% - When TFUNC is @tpoly the result is functionally equivalent to JTRAJ except 
+% - When TFUNC is @tpoly the result is functionally equivalent to JTRAJ except
 %   that no initial velocities can be specified. JTRAJ is computationally a little
 %   more efficient.
 %
@@ -28,17 +28,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -67,7 +67,7 @@ function [S,Sd,Sdd] = mtraj(tfunc, q0, qf, M)
         [s(:,i),sd(:,i),sdd(:,i)] = tfunc(q0(i), qf(i), M);
     end
 
-% - If no output arguments are specified S, SD, and SDD are plotted 
+% - If no output arguments are specified S, SD, and SDD are plotted
 %   against time.
 
     switch nargout
@@ -84,7 +84,7 @@ function [S,Sd,Sdd] = mtraj(tfunc, q0, qf, M)
 
             subplot(312)
             plot(t, sd); grid; ylabel('sd');
-            
+
             subplot(313)
             plot(t, sdd); grid; ylabel('sdd');
             if ~isscalar(M0)

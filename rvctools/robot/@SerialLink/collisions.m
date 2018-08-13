@@ -39,10 +39,10 @@
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
-% 
+%
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -50,15 +50,15 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 
 function c = collisions(robot, q, cmdl, dyn_cmdl, dyn_T)
-    
+
     if ~exist('pHRIWARE')
         error('rtb:collisions:nosupport', 'You need to install pHRIWARE in order to use this functionality');
     end
-    
+
     % VERSION WITH BASE CHECKING
     % pts = robot.points;
     pts = robot.points(end-robot.n+1:end);
@@ -67,7 +67,7 @@ function c = collisions(robot, q, cmdl, dyn_cmdl, dyn_T)
         pts{i}(:,4) = 1;
         pts{i} = pts{i}';
     end
-    
+
     if isempty(cmdl), checkfuns = []; else checkfuns = cmdl.checkFuns; end
     if nargin > 3
         dyn_checkfuns = dyn_cmdl.checkFuns;
@@ -78,7 +78,7 @@ function c = collisions(robot, q, cmdl, dyn_cmdl, dyn_T)
     else
         dyn_checkfuns = [];
     end
-    
+
     % VERSION WITH BASE CHECKING
     % base = length(pts) - robot.n;
     % switch base
@@ -96,16 +96,16 @@ function c = collisions(robot, q, cmdl, dyn_cmdl, dyn_T)
     %     otherwise
     %         error('robot has missing or extra points');
     % end
-    
+
     poses = size(q,1);
     c = false(poses, 1);
-    
+
     nan = any(isnan(q),2);
     c(nan) = true;
     notnan = find(~nan)';
-    
+
     T0 = robot.base;
-    
+
     for p = notnan
         T = T0;
         prevPts = 0;
@@ -120,7 +120,7 @@ function c = collisions(robot, q, cmdl, dyn_cmdl, dyn_T)
                 prevPts = nextPts;
             end
         end
-        
+
         % Does same thing as cmdl.collision(trPoints(1:3,:)'), but
         % Does not have to access object every time - quicker
         for i = 1: length(checkfuns)
@@ -129,7 +129,7 @@ function c = collisions(robot, q, cmdl, dyn_cmdl, dyn_T)
                 break;
             end
         end
-        
+
         % Then check the dynamic collision models, if any
         for i = 1: length(dyn_checkfuns)
             if isempty(dyn_T)
@@ -143,6 +143,6 @@ function c = collisions(robot, q, cmdl, dyn_cmdl, dyn_T)
                 break;
             end
         end
-        
+
     end
 end

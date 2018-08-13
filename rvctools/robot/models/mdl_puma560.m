@@ -2,7 +2,7 @@
 %
 % MDL_PUMA560 is a script that creates the workspace variable p560 which
 % describes the kinematic and dynamic characteristics of a Unimation Puma
-% 560 manipulator using standard DH conventions. 
+% 560 manipulator using standard DH conventions.
 %
 % Also define the workspace vectors:
 %   qz         zero joint angle configuration
@@ -16,8 +16,8 @@
 %
 % Reference::
 % - "A search for consensus among model parameters reported for the PUMA 560 robot",
-%   P. Corke and B. Armstrong-Helouvry, 
-%   Proc. IEEE Int. Conf. Robotics and Automation, (San Diego), 
+%   P. Corke and B. Armstrong-Helouvry,
+%   Proc. IEEE Int. Conf. Robotics and Automation, (San Diego),
 %   pp. 1608-1613, May 1994.
 %
 % See also SerialRevolute, mdl_puma560akb, mdl_stanford.
@@ -43,7 +43,7 @@
 %  caused torque.
 %
 % 8/95 fix bugs in COG data for Puma 560. This led to signficant errors in
-%  inertia of joint 1. 
+%  inertia of joint 1.
 % $Log: not supported by cvs2svn $
 % Revision 1.4  2008/04/27 11:36:54  cor134
 % Add nominal (non singular) pose qn
@@ -52,17 +52,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -71,7 +71,7 @@
 clear L
 deg = pi/180;
 
-% joint angle limits from 
+% joint angle limits from
 % A combined optimization method for solving the inverse kinematics problem...
 % Wang & Chen
 % IEEE Trans. RA 7(4) 1991 pp 489-

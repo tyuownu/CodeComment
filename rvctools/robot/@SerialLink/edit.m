@@ -7,41 +7,41 @@
         %
         % Notes::
         % - The 'Save' button copies the values from the table to the SerialLink
-        %   manipulator object.  
+        %   manipulator object.
         % - To exit the editor without updating the object just
         %   kill the figure window.
 
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
         function edit(r, dyn)
-        
+
             isdyn = nargin > 1 && strcmp(dyn, 'dyn') == 1;
 
             f = figure('Position',[100 100 600 220], ...
                 'Menubar', 'none', ...
                 'Name', r.name);
             dh = zeros(r.n,0);
-            
+
             % get the parameters out of the Link structures into a matrix that we can edit
             for j=1:r.n
                 L = r.links(j);
-               
+
                 %dh(j,1) = L.theta;
                 dh(j,2) = L.d;
                 dh(j,3) = L.a;
@@ -95,19 +95,19 @@
                 'String', 'Save', ...
                 'Callback', {@edit_save, t});
         end
-        
+
         function edit_save(button, event, table)
-            
+
             dh = get(table, 'Data');
             r = get(table, 'UserData');
-            
+
             % put the parameters back into the Link objects
             for j=1:r.n
                 L = r.links(j);
-               
+
                 %dh(j,1) = L.theta;
                 L.d = dh(j,2);
-                L.a = dh(j,3); 
+                L.a = dh(j,3);
                 L.alpha = dh(j,4);
                 if dh(j,5) > 0
                     L.jointtype = 'P';
@@ -139,4 +139,4 @@
                 end
             end
         end
-        
+

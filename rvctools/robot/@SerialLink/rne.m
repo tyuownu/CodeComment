@@ -16,8 +16,8 @@
 %
 % Trajectory operation::
 %
-% If Q,QD and QDD (MxN), or X (Mx3N) are matrices with M rows representing a 
-% trajectory then TAU (MxN) is a matrix with rows corresponding to each trajectory 
+% If Q,QD and QDD (MxN), or X (Mx3N) are matrices with M rows representing a
+% trajectory then TAU (MxN) is a matrix with rows corresponding to each trajectory
 % step.
 %
 % MEX file operation::
@@ -31,16 +31,16 @@
 % Notes::
 % - The torque computed contains a contribution due to armature
 %   inertia and joint friction.
-% - See the README file in the mex folder for details on how to configure 
+% - See the README file in the mex folder for details on how to configure
 %   MEX-file operation.
-% - The M-file is a wrapper which calls either RNE_DH or RNE_MDH depending on 
+% - The M-file is a wrapper which calls either RNE_DH or RNE_MDH depending on
 %   the kinematic conventions used by the robot object, or the MEX file.
 % - If a model has no dynamic parameters set the result is zero.
 %
 % See also SerialLink.accel, SerialLink.gravload, SerialLink.inertia.
 
 % TODO:
-%  fix base transform 
+%  fix base transform
 %
 % verified against MAPLE code, which is verified by examples
 %
@@ -50,17 +50,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -68,14 +68,14 @@
 
 
 function varargout = rne(robot, varargin)
-    
+
     % allow more descriptive arguments
     opt.gravity = [];
     opt.fext = [];
     opt.slow = false;
-    
+
     [opt,args] = tb_optparse(opt, varargin);
-    
+
     narg0 = length(args);
     if ~isempty(opt.gravity)
         assert( isvec(opt.gravity, 3), 'RTB:rne:badarg', 'gravity must be a 3-vector');
@@ -88,7 +88,7 @@ function varargout = rne(robot, varargin)
         end
         args = [args opt.fext];
     end
-    
+
     if robot.fast && ~opt.slow && (nargout < 2) && ~robot.issym() && ~any(cellfun( @(x) isa(x, 'sym'), args))
         % use the MEX-file implementation if:
         % * the fast property is set at constructor time
@@ -98,13 +98,13 @@ function varargout = rne(robot, varargin)
         % * joint state has no symbolic values
         %
         % the mex-file handles DH and MDH variants
-        
+
         % the MEX file doesn't handle base rotation, so we need to hack the gravity
         % vector instead.  It lives in the 4th element of args.
-        
+
         if ~robot.base.isidentity()
             % ok, a non-identity transform, we need to fix it
-            if length(args) == narg0 
+            if length(args) == narg0
                 grav = robot.gravity;  % no gravity option provided, take default
             else
                 grav = args{narg0+1}; % else take value from option processed above

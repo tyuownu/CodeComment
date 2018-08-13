@@ -1,8 +1,8 @@
 %PLOT_SPHERE Draw sphere
 %
-% PLOT_SPHERE(C, R, LS) draws spheres in the current plot.  C is the 
-% centre of the sphere (3x1), R is the radius and LS is an optional MATLAB 
-% ColorSpec, either a letter or a 3-vector.  
+% PLOT_SPHERE(C, R, LS) draws spheres in the current plot.  C is the
+% centre of the sphere (3x1), R is the radius and LS is an optional MATLAB
+% ColorSpec, either a letter or a 3-vector.
 %
 % H = PLOT_SPHERE(C, R, COLOR) as above but returns the handle(s) for the
 % spheres.
@@ -29,17 +29,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -56,7 +56,7 @@ function out = plot_sphere(c, r, varargin)
     opt.n = 40;
 
     [opt,args] = tb_optparse(opt, varargin);
-    
+
     % backward compatibility with RVC
     if length(args) > 0
         opt.color = args{1};
@@ -64,7 +64,7 @@ function out = plot_sphere(c, r, varargin)
     if length(args) > 1
         opt.alpha = args{2};
     end
-    
+
     daspect([1 1 1])
     hold_on = ishold;
     hold on
@@ -86,7 +86,7 @@ function out = plot_sphere(c, r, varargin)
         x = r(i)*xs + c(1,i);
         y = r(i)*ys + c(2,i);
         z = r(i)*zs + c(3,i);
-                
+
         % the following displays a nice smooth sphere with glint!
         h = surf(x,y,z, ones(size(z)), 'FaceColor', opt.color, 'EdgeColor', opt.mesh, 'FaceAlpha', opt.alpha);
         % camera patches disappear when shading interp is on

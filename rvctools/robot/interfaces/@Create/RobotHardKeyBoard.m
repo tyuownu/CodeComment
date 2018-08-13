@@ -17,7 +17,7 @@ function [keyPresses , elapsedTime] = RobotHardKeyBoard(CommPort)
 %j-turns Roomba right 15 degrees
 %u-slightly turns Roomba right 5 degrees
 %
-% q quits 
+% q quits
 %
 % input is a number for the comm port ex.   use 1, for COM1
 % if omitted, set to default to 9.
@@ -25,7 +25,7 @@ function [keyPresses , elapsedTime] = RobotHardKeyBoard(CommPort)
 % all other keys, including inactive ones ex 'a' do
 % elapsedTime time in seconds since first keypress. can be 0 if q pressed
 % immediately
-disp('Wait for robot beep...') 
+disp('Wait for robot beep...')
 a = instrfind();
 if ~isempty(a)
     fclose(a);
@@ -37,7 +37,7 @@ end
 if nargin==0
     CommPort = 9;
 end
-    
+
 ser = RoombaInit(CommPort);
 
 im = imread('KeyBoardControl.png');
@@ -59,9 +59,9 @@ elapsedTime = [];
 %
 % speeds and angles
 sV = .1; sD = 0.05; % vel in m/s angles in deg W is angluar speed but in m/s?
-bV = .2; bD = 0.1; 
-sW = .05; sA = 5; 
-bW = .1; bA = 15; 
+bV = .2; bD = 0.1;
+sW = .05; sA = 5;
+bW = .1; bA = 15;
 
 % set up hidden key logger window
 callstr = ['set(gcbf,''Userdata'',double(get(gcbf,''Currentcharacter''))) ; uiresume '];
@@ -77,11 +77,11 @@ disp('Starting Keyboard Mode.   Press q to quit.   ')
 
 while(1)
   uiwait ;
-  try      
+  try
       %disp('here');  why does a single keypress appear to trigger two
       %events.   First with empty, then actual character????   JME 5/26
       k = char( get(fh,'Userdata') );
-    
+
   catch
     k = nan ;
   end
@@ -127,5 +127,5 @@ switch k
         disp('Otherwise')
         keyPresses(2) = keyPresses(2) +1;
 end % end switch k
-end % if ~isempty(k)        
+end % if ~isempty(k)
 end % end while(1)

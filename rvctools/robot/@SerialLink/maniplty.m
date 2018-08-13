@@ -7,7 +7,7 @@
 % is high when the manipulator is capable of equal motion in all directions
 % and low when the manipulator is close to a singularity.
 %
-% If Q is a matrix (MxN) then M (Mx1) is a vector of  manipulability 
+% If Q is a matrix (MxN) then M (Mx1) is a vector of  manipulability
 % indices for each joint configuration specified by a row of Q.
 %
 % [M,CI] = R.maniplty(Q, OPTIONS) as above, but for the case of the Asada
@@ -20,8 +20,8 @@
 %   ellipsoid and depends only on kinematic parameters (default).
 % - Asada's manipulability measure is based on the shape of the acceleration
 %   ellipsoid which in turn is a function of the Cartesian inertia matrix and
-%   the dynamic parameters.  The scalar measure computed here is the ratio of 
-%   the smallest/largest ellipsoid axis.  Ideally the ellipsoid would be 
+%   the dynamic parameters.  The scalar measure computed here is the ratio of
+%   the smallest/largest ellipsoid axis.  Ideally the ellipsoid would be
 %   spherical, giving a ratio of 1, but in practice will be less than 1.
 %
 % Options::
@@ -45,9 +45,9 @@
 %   T. Yoshikawa,
 %   Robotics Research: The First International Symposium (M. Brady and R. Paul, eds.),
 %   pp. 735-747, The MIT press, 1984.
-% - A geometrical representation of manipulator dynamics and its application to 
+% - A geometrical representation of manipulator dynamics and its application to
 %   arm design,
-%   H. Asada, 
+%   H. Asada,
 %   Journal of Dynamic Systems, Measurement, and Control,
 %   vol. 105, p. 131, 1983.
 % - Robotics, Vision & Control, P. Corke, Springer 2011.
@@ -61,17 +61,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -81,15 +81,15 @@
 % return the ellipsoid?
 
 function [w,mx] = maniplty(robot, q, varargin)
-    
+
 
 
     opt.method = {'yoshikawa', 'asada'};
     opt.axes = {'all', 'trans', 'rot'};
     opt.dof = [];
-    
+
     opt = tb_optparse(opt, varargin);
-    
+
     if nargout == 0
         opt.axes = 'trans';
         mt = maniplty(robot, q, 'setopt', opt);
@@ -100,7 +100,7 @@ function [w,mx] = maniplty(robot, q, varargin)
         end
         return;
     end
-    
+
     if isempty(opt.dof)
         switch opt.axes
             case 'trans'
@@ -113,7 +113,7 @@ function [w,mx] = maniplty(robot, q, varargin)
     else
         dof = opt.dof;
     end
-    
+
     opt.dof = logical(dof);
 
     if strcmp(opt.method, 'yoshikawa')
@@ -144,7 +144,7 @@ function [w,mx] = maniplty(robot, q, varargin)
 
 function m = yoshi(robot, q, opt)
     J = robot.jacob0(q);
-    
+
     J = J(opt.dof,:);
     m2 = det(J * J');
     m2 = max(0, m2);    % clip it to positive
@@ -152,7 +152,7 @@ function m = yoshi(robot, q, opt)
 
 function [m, mx] = asada(robot, q, opt)
     J = robot.jacob0(q);
-    
+
     if rank(J) < 6
         warning('robot is in degenerate configuration')
         m = 0;

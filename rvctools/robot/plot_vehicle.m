@@ -17,10 +17,10 @@
 % PLOT_VEHICLE(X, 'image', IMG) where IMG is an RGB image that is scaled
 % and centered on the robot's position.  The vertical axis of the image
 % becomes the x-axi in the plot, ie. it is rotated.  If you wish to specify
-% the rotation then use 
+% the rotation then use
 %
 % PLOT_VEHICLE(X, 'image', {IMG,R}) where R is the counterclockwise rotation angle in degrees.
-% 
+%
 % Options::
 %  'scale',S       draw vehicle with length S x maximum axis dimension (default
 %                  1/60)
@@ -50,17 +50,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -69,7 +69,7 @@
 % TODO needs to work for 3D point
 
 function h_ = plot_vehicle(x, varargin)
-    
+
     opt.scale = 1/60;
     opt.size = [];
     opt.shape = {'triangle', 'box'};
@@ -78,13 +78,13 @@ function h_ = plot_vehicle(x, varargin)
     opt.image = [];
     opt.model = [];
     opt.retain = false;
-    
+
     [opt,args] = tb_optparse(opt, varargin);
-        
+
     if ~isempty(opt.handle)
         % animation mode
         opt.handle.Matrix = SE2(x).SE3.T;
-        
+
         pause(1/opt.fps)
         return
     end
@@ -92,7 +92,7 @@ function h_ = plot_vehicle(x, varargin)
     % compute some default dimensions based on axis scaling
     a = axis;
     d = (a(2)+a(4) - a(1)-a(3)) * opt.scale;
-    
+
     % trajectory mode
 
     for i=1:numrows(x)
@@ -102,7 +102,7 @@ function h_ = plot_vehicle(x, varargin)
 
         % animate the robot
         h.Matrix = SE2(x(i,:)).SE3.T;  % convert (x,y,th) to SE(3)
-        
+
         pause(1/opt.fps)
     end
         if nargout > 0
@@ -112,7 +112,7 @@ function h_ = plot_vehicle(x, varargin)
 end
 
 function h = draw_robot(d, opt, args)
-    
+
     if ~isempty(opt.model)
         % display an image of a vehicle, pass in a struct
         if isstruct(opt.model)

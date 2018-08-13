@@ -38,17 +38,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -59,7 +59,7 @@ classdef Twist
         v
         w
     end
-    
+
     methods
         function tw = Twist(T, varargin)
         %Twist.Twist Create Twist object
@@ -97,7 +97,7 @@ classdef Twist
                     case 'R'
                         if nargin == 2
                             % 2D case
-                            
+
                             point = varargin{1};
                             v = -cross([0 0 1]', [point(:); 0]);
                             w = 1;
@@ -109,19 +109,19 @@ classdef Twist
                                 error('RTB:Twist:badarg', 'For 2d case can only specify position');
                             end
                             point = varargin{2};
-                            
+
                             w = unit(dir(:));
-                            
+
                             v = -cross(w, point(:));
                             if nargin >= 4
                                 pitch = varargin{3};
                                 v = v + pitch * w;
                             end
                         end
-                        
+
                     case {'P', 'T'}
                         dir = varargin{1};
-                        
+
                         if length(dir) == 2
                             w = 0;
                         else
@@ -129,7 +129,7 @@ classdef Twist
                         end
                         v = unit(dir(:));
                 end
-                
+
                 tw.v = v;
                 tw.w = w;
             elseif numrows(T) == numcols(T)
@@ -155,16 +155,16 @@ classdef Twist
                 switch length(T)
                     case 3
                         tw.v = T(1:2)'; tw.w = T(3);
-                        
+
                     case 6
                         tw.v = T(1:3)'; tw.w = T(4:6)';
-                        
+
                     otherwise
                         error('RTB:Twist:badarg', '3 or 6 element vector expected');
                 end
             end
         end
-        
+
         function x = S(tw)
         %Twist.S Return the twist vector
         %
@@ -174,7 +174,7 @@ classdef Twist
         % - Sometimes referred to as the twist coordinate vector.
             x = [tw.v; tw.w];
         end
-        
+
         function x = double(tw)
         %Twist.double Return the twist vector
         %
@@ -184,7 +184,7 @@ classdef Twist
         % - Sometimes referred to as the twist coordinate vector.
             x = [tw.v; tw.w]';
         end
-        
+
         function x = se(tw)
         %Twist.se Return the twist matrix
         %
@@ -194,7 +194,7 @@ classdef Twist
         x = skewa(tw.S);
         end
 
-        
+
         function c = mtimes(a, b)
         %Twist.mtimes Multiply twist by twist or scalar
         %
@@ -203,11 +203,11 @@ classdef Twist
         %
         % TW * S with its twist coordinates scaled by scalar S.
         %
-            
+
             if isa(a, 'Twist') && isa(b, 'Twist')
                 % composition
                 c = Twist( a.exp * b.exp);
-                
+
             elseif isreal(a) && isa(b, 'Twist')
                 c = Twist(a * b.S);
             elseif isa(a, 'Twist') && isreal(b)
@@ -216,7 +216,7 @@ classdef Twist
                 error('RTB:Twist: incorrect operand types for * operator')
             end
         end
-        
+
         function x = exp(tw, varargin)
         %Twist.exp Convert twist to homogeneous transformation
         %
@@ -230,14 +230,14 @@ classdef Twist
         % See also Twist.T, trexp, trexp2.
         opt.deg = false;
         [opt,args] = tb_optparse(opt, varargin);
-        
+
         if opt.deg && all(tw.w == 0)
             warning('Twist: using degree mode for a prismatic twist');
         end
-        
+
         if length(args) > 0
             theta = args{1};
-            
+
             if opt.deg
                 theta = theta * pi/180;
             end
@@ -250,7 +250,7 @@ classdef Twist
             x = trexp( tw.S * theta );
                 end
         end
-        
+
         function x = ad(tw)
         %Twist.ad Logarithm of adjoint
         %
@@ -260,8 +260,8 @@ classdef Twist
         % See also SE3.Ad.
             x = [ skew(tw.w) skew(tw.v); zeros(3,3) skew(tw.w) ];
         end
-        
-        
+
+
         function out = SE(tw)
         %Twist.SE Convert twist to SE2 or SE3 object
         %
@@ -273,8 +273,8 @@ classdef Twist
                     else
                         out = SE3( tw.T );
                     end
-        end 
-                
+        end
+
         function x = T(tw, varargin)
         %Twist.T Convert twist to homogeneous transformation
         %
@@ -288,7 +288,7 @@ classdef Twist
         % See also Twist.exp, trexp, trexp2.
             x = tw.exp( varargin{:} );
         end
-        
+
         function p = pitch(tw)
         %Twist.pitch Pitch of the twist
         %
@@ -296,14 +296,14 @@ classdef Twist
         %
         % Notes::
         % - For 3D case only.
-        
+
         if length(tw.v) == 2
                 p = 0;
             else
                 p = tw.w' * tw.v;
             end
         end
-        
+
         function L = line(tw)
         %Twist.line Line of twist axis in Plucker form
         %
@@ -313,11 +313,11 @@ classdef Twist
         % - For 3D case only.
         %
         % See also Plucker.
-        
+
                 % V = -tw.v - tw.pitch * tw.w;
                 L = Plucker('wv', tw.w, tw.v - tw.pitch * tw.w);
         end
-        
+
         function p = pole(tw)
         %Twist.pole Point on the twist axis
         %
@@ -334,7 +334,7 @@ classdef Twist
                 p = cross(tw.w, tw.v) / tw.theta();
             end
         end
-        
+
         function th = theta(tw)
         %Twist.theta Twist rotation
         %
@@ -343,8 +343,8 @@ classdef Twist
 
         th = norm(tw.w);
         end
-        
-            
+
+
         function s = char(tw)
         %Twist.char Convert to string
         %
@@ -354,7 +354,7 @@ classdef Twist
         % See also Twist.display.
         s = '';
             for i=1:length(tw)
-                
+
                 ps = '( ';
                 ps = [ ps, sprintf('%0.5g  ', tw(i).v) ];
                 ps = [ ps(1:end-2), '; '];
@@ -366,10 +366,10 @@ classdef Twist
                     s = char(s, ps);
                 end
             end
-            
+
 
         end
-        
+
         function display(tw)
             %Twist.display Display parameters
             %
@@ -389,8 +389,8 @@ classdef Twist
             disp([inputname(1), ' = '])
             disp( char(tw) );
         end % display()
-        
 
-        
+
+
     end
 end

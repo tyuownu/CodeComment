@@ -28,10 +28,10 @@
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
-% 
+%
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -39,11 +39,11 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 
 function [wM, j] = paycap(robot, q, w, f, tauR)
-    
+
     if robot.fast
         tauB = robot.gravload(q);
         tauP = robot.rne(q, zeros(size(q)), zeros(size(q)), [0; 0; 0], unit(w));
@@ -56,25 +56,25 @@ function [wM, j] = paycap(robot, q, w, f, tauR)
                 tauP = robot.pay(unit(w), q, 'e');
         end
     end
-    
+
     M = tauP > 0;
     m = ~M;
-    
+
     TAUm = ones(size(tauB));
     TAUM = ones(size(tauB));
     for c = 1:robot.n
         TAUM(:,c) = tauR(1,c);
         TAUm(:,c) = tauR(2,c);
     end
-    
+
     WM = zeros(size(tauB));
     WM(M) = (TAUM(M) - tauB(M)) ./ tauP(M);
     WM(m) = (TAUm(m) - tauB(m)) ./ tauP(m);
-    
+
     WM(isinf(WM)) = Inf; % Makes -Inf values Inf
-    
+
     [wM, j] = min(WM,[],2);
-    
+
 end
 
 function u = unit(v)

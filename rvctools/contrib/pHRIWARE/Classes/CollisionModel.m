@@ -35,8 +35,8 @@
 % This file is part of pHRIWARE.
 %
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -44,27 +44,27 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 
 classdef CollisionModel
-    
+
     properties (SetAccess = private)
         primitives % Primitive shapes of the CollisionModel
         checkFuns % Function handles to check each primitive
         % Short text description of object for user reference
         note = '<Add a description with note property>'
     end
-    
+
     methods
         function cmdl = CollisionModel(varargin)
             if ischar(varargin{1})
                 cmdl.note = varargin{1};
                 shapes = varargin(2:end);
             else
-                shapes = varargin;       
+                shapes = varargin;
             end
-            
+
             i = 1;
             while i <= length(shapes)
                 if isa(shapes{i},'CollisionModel')
@@ -81,24 +81,24 @@ classdef CollisionModel
                 end
                 i = i + 1;
             end
-            
+
             for i = length(shapes): -1: 1
                 negVol(i) = -shapes{i}.volume;
                 funcs{i} = shapes{i}.check;
             end
-            
+
             [~, order] = sort(negVol);
             cmdl.checkFuns = funcs(order);
             cmdl.primitives = shapes(order);
         end
-        
+
         function h = plot(cmdl, varargin)
             %PLOT Plot the CollisionModel
             %
             % As per the Shape method, but options affect all primitives
             %
             % See also Shape.plot
-            
+
             n = length(cmdl.primitives);
             hold on
             if nargout == 1, h = []; end
@@ -108,7 +108,7 @@ classdef CollisionModel
             end
             hold off
         end
-        
+
         function c = collision(cmdl, pts)
             %COLLISION Determine if a collision is occuring
             %
@@ -116,7 +116,7 @@ classdef CollisionModel
             % will return as soon as a collision is determined
             %
             % See also CollisionModel.check
-            
+
             n = length(cmdl.primitives);
             c = false;
             for i = 1: n
@@ -126,7 +126,7 @@ classdef CollisionModel
                 end
             end
         end
-        
+
         function inside = check(cmdl, pts)
             %CHECK Check if point(s) are inside the CollisionModel
             %
@@ -134,7 +134,7 @@ classdef CollisionModel
             % number of primitives
             %
             % See also CollisionModel.collisions Shape.check
-            
+
             n = length(cmdl.primitives);
             inside = zeros(size(pts,1),n);
             for i = 1: n
@@ -143,6 +143,6 @@ classdef CollisionModel
             end
         end
     end
-    
+
 end
 

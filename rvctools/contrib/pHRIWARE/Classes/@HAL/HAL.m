@@ -1,7 +1,7 @@
 %HAL Human Arm-like subclass for SerialLink
 %
-% A class to model the kinematics of the human right arm and human 
-% arm-like robots. Is a subclass of the SerialLink class, developed by 
+% A class to model the kinematics of the human right arm and human
+% arm-like robots. Is a subclass of the SerialLink class, developed by
 % Peter Corke (www.petercorke.com). See help folder for figure of HAL
 % chain frames.
 %
@@ -36,10 +36,10 @@
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
-% 
+%
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -47,7 +47,7 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 %
 % RTB LIBRARY:
@@ -62,24 +62,24 @@ classdef HAL < SerialLink
     properties (Dependent)
         AP % Arm properties (Tg, gre, erw, g)
     end
-    
+
     properties
         goal % Elbow axis normal vector, for resolving swivel angle
-		HAT % Matching CollisionModel object of human head and torso
-		ARM % Matching CollisionModel object of human (right) arm
+        HAT % Matching CollisionModel object of human head and torso
+        ARM % Matching CollisionModel object of human (right) arm
     end
-    
+
     methods
         function hal = HAL(Tg, gre, erw, g)
-   
+
             if ~nargin, [Tg, gre, erw, g] = deal([]); end
             if isempty(Tg), Tg = trotx(pi/2); end
             if isempty(gre), [~, gre] = anthroData('gre');end
             if isempty(erw), [~, erw] = anthroData('erw');end
             if isempty(g), g = [-0.2; 0.1; 0.2]; end
-            
+
             wrh = 0; % Hand length, make non-zero in future version
-            
+
             % Adduction/abduction
             L(1) = Revolute('alpha', -pi/2, 'offset', -pi/2,...
                 'qlim', [-30 180]*d2r);
@@ -101,17 +101,17 @@ classdef HAL < SerialLink
             % Pronation/supination
             L(7) = Revolute('d', -wrh,...
                 'qlim', [-80 80]*d2r);
-            
+
             hal = hal@SerialLink(L, 'base', Tg,...
                 'tool', troty(pi/2),...
                 'name', 'Right Arm',...
                 'comment', 'Kinematic model of the human right arm',...
                 'ikine', 'RightArm');
-            
+
             hal.manuf = '(C) Bryan Moutrie 2014';
-            
+
             hal.goal = g;
-            
+
             n = 50;
             Upoints = [zeros(1,n); linspace(0,2*gre/3,n); zeros(1,n)]';
             % Only 2/3 towards shoulder to not get caught
@@ -119,12 +119,12 @@ classdef HAL < SerialLink
             hal.points = {[], [], Upoints, Fpoints, [], [], []};
             hal.faces = cell(1,7);
         end
-        
+
         function AP = get.AP(hal)
             AP = {hal.base, hal.d(3), hal.a(4), hal.goal};
         end
-        
-		function addCM(hal)
+
+        function addCM(hal)
            %ADDCM Add CollisionModel objects for human head and torso
            % and arm.
            %
@@ -132,11 +132,11 @@ classdef HAL < SerialLink
            %  (1) hal.addCM
            %
            % See also CollisionModel cmdl_arm cmdl_hat
-           
+
             hal.HAT = cmdl_hat(hal.base);
-			hal.ARM = cmdl_arm(hal.d(3), hal.a(4));
+            hal.ARM = cmdl_arm(hal.d(3), hal.a(4));
         end
-        
+
         function varargout = plot3d(hal, q)
            %PLOT3D Plot HAL using CollisionModel data form HAT and ARM
            % properties. Overshadows SerialLink method of same name.
@@ -154,7 +154,7 @@ classdef HAL < SerialLink
            %  q : mx7 set of joint angles
            %
            % See also addCM SerialLink.plot3d
-           
+
             if isempty(hal.HAT) || isempty(hal.ARM)
                 error(pHRIWARE('error', 'Please add CollisionModels'));
             else
@@ -183,10 +183,10 @@ classdef HAL < SerialLink
            % (HAL.base replaces Tg)
            %
            % See also gikine
-           
+
            [q1, q2] = gikine(hal.base, Tu);
         end
-        
+
         function [Tf, Ts, Tu] = h2fsu(hal, varargin)
            %H2FSU Convert hand data to forearm, swivel, and upper arm frames
            %
@@ -194,10 +194,10 @@ classdef HAL < SerialLink
            % (HAL.AP replaces AP)
            %
            % See also h2fsu
-           
+
            [Tf, Ts, Tu] = h2fsu(hal.AP, varargin{:});
         end
-        
+
         function [q1, q2] = wikine(hal, varargin) %#ok<INUSL>
            %WIKINE Wrist inverse kinematics of HAL-like right wrist
            %
@@ -205,11 +205,11 @@ classdef HAL < SerialLink
            % (HAL is not used)
            %
            % See also wikine
-           
+
            warning('wikine does not use a HAL object!');
            [q1, q2] = wikine(varargin{:});
         end
     end
-    
+
 end
 

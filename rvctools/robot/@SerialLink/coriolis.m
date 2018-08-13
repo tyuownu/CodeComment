@@ -3,12 +3,12 @@
 % C = R.coriolis(Q, QD) is the Coriolis/centripetal matrix (NxN) for
 % the robot in configuration Q and velocity QD, where N is the number of
 % joints.  The product C*QD is the vector of joint force/torque due to velocity
-% coupling.  The diagonal elements are due to centripetal effects and the 
-% off-diagonal elements are due to Coriolis effects.  This matrix is also 
+% coupling.  The diagonal elements are due to centripetal effects and the
+% off-diagonal elements are due to Coriolis effects.  This matrix is also
 % known as the velocity coupling matrix, since it describes the disturbance forces
 % on any joint due to velocity of all other joints.
 %
-% If Q and QD are matrices (KxN), each row is interpretted as a joint state 
+% If Q and QD are matrices (KxN), each row is interpretted as a joint state
 % vector, and the result (NxNxK) is a 3d-matrix where each plane corresponds
 % to a row of Q and QD.
 %
@@ -29,17 +29,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -73,7 +73,7 @@ function C = coriolis(robot, q, qd)
     end
 
     N = robot2.n;
-    
+
 
     C = zeros(N,N);
     Csq = zeros(N,N);
@@ -96,7 +96,7 @@ function C = coriolis(robot, q, qd)
 
     % find the torques that depend on a pair of finite joint speeds,
     % these are due to the product (Coridolis) terms
-    %  set QD = [1 1 0 ...] then resulting torque is due to 
+    %  set QD = [1 1 0 ...] then resulting torque is due to
     %    qd_1 qd_2 + qd_1^2 + qd_2^2
     for j=1:N
         for k=j+1:N
@@ -111,7 +111,7 @@ function C = coriolis(robot, q, qd)
     end
 
     C = C + Csq * diag(qd);
-    
+
     if isa(q, 'sym')
         C = simplify(C);
     end

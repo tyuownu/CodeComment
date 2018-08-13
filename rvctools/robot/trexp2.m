@@ -5,7 +5,7 @@
 % R = TREXP2(OMEGA) is the matrix exponential (2x2) of the so(2) element OMEGA that
 % yields a rotation matrix (2x2).
 %
-% R = TREXP2(THETA) as above, but rotation by THETA (1x1). 
+% R = TREXP2(THETA) as above, but rotation by THETA (1x1).
 %
 % SE(2)::
 %
@@ -39,17 +39,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -57,7 +57,7 @@
 
 function T = trexp2(S, theta)
 
-    
+
     if ishomog2(S) || isvec(S,3)
         % input is se(2)
         if nargin == 1
@@ -74,11 +74,11 @@ function T = trexp2(S, theta)
                 v = S(1:2)';
                 skw = skew(S(3));
             end
-            
+
             R = trexp2(skw, theta);
-            
+
             t = (eye(2,2)*theta + (1-cos(theta))*skw + (theta-sin(theta))*skw^2)*v;
-            
+
             T = rt2tr(R,t);
             %T = expm([S v; 0 0 0]*theta);
         end
@@ -93,7 +93,7 @@ function T = trexp2(S, theta)
         else
             error('RTB:trexp2:badarg', 'expecting scalar or 2x2');
         end
-        
+
         if nargin == 1
             %  theta is not given, extract it
             if norm(w) < 10*eps
@@ -112,8 +112,8 @@ function T = trexp2(S, theta)
             end
             S = skew(w);
         end
-        
+
         T = eye(2,2) + sin(theta)*S + (1-cos(theta))*S^2;
-        
+
     end
 end

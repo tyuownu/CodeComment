@@ -1,7 +1,7 @@
 %OPTPARSE Standard option parser for Toolbox functions
 %
 % [OPTOUT,ARGS] = TB_OPTPARSE(OPT, ARGLIST) is a generalized option parser for
-% Toolbox functions.  It supports options that have an assigned value, boolean 
+% Toolbox functions.  It supports options that have an assigned value, boolean
 % or enumeration types (string or int).
 %
 % The software pattern is:
@@ -33,10 +33,10 @@
 %    are required they must be converted to a cell array.
 %
 % The allowable options are specified by the names of the fields in the
-% structure opt.  By default if an option is given that is not a field of 
-% opt an error is declared.  
+% structure opt.  By default if an option is given that is not a field of
+% opt an error is declared.
 %
-% Sometimes it is useful to collect the unassigned options and this can be 
+% Sometimes it is useful to collect the unassigned options and this can be
 % achieved using a second output argument
 %           [opt,arglist] = tb_optparse(opt, varargin);
 % which is a cell array of all unassigned arguments in the order given in
@@ -68,7 +68,7 @@ function [opt,others] = tb_optparse(in, argv)
     while argc <= length(argv)
         option = argv{argc};
         assigned = false;
-        
+
         if isstr(option)
 
             switch option
@@ -164,7 +164,7 @@ function [opt,others] = tb_optparse(in, argv)
                 end
             end
         end
-        
+
         argc = argc + 1;
     end % while
 
@@ -181,7 +181,7 @@ function [opt,others] = tb_optparse(in, argv)
             end
         end
     end
-                        
+
     if showopt
         fprintf('Options:\n');
         opt

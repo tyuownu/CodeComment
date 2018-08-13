@@ -33,17 +33,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -62,10 +62,10 @@ function tranimate(P2, varargin)
     opt.time = [];
 
     [opt, args] = tb_optparse(opt, varargin);
-    
+
     ud.opt = opt;
     ud.args = args;
-    
+
     if ~isempty(opt.movie)
         ud.anim = Animate(opt.movie);
     end
@@ -109,13 +109,13 @@ function tranimate(P2, varargin)
     else
         error('RTB:tranimate:badarg', 'argument must be 3x3 or 4x4 matrix');
     end
-    
+
     % at this point
     %   T1 is the initial pose
     %   T2 is the final pose
     %
     %  T2 may be a sequence
-        
+
     if size(T2,3) > 1
         % tranimate(Ts)
         % we were passed a homog sequence
@@ -128,7 +128,7 @@ function tranimate(P2, varargin)
         % create a path between them
         Ttraj = ctraj(T1, T2, opt.nsteps);
     end
-    
+
     if isempty(opt.axis)
         % create axis limits automatically based on motion of frame origin
         t = transl(Ttraj);
@@ -140,7 +140,7 @@ function tranimate(P2, varargin)
     else
         args = [args 'axis' opt.axis];
     end
-    
+
     if opt.retain
         hold on
         ud.hg = [];  % indicate no animation
@@ -149,13 +149,13 @@ function tranimate(P2, varargin)
     end
     ud.Ttraj = Ttraj;
 
-    
+
     if ~isempty(opt.time)
         ud.htime = uicontrol('Parent', gcf, 'Style', 'text', ...
             'HorizontalAlignment', 'left', 'Position', [50 20 100 20]);
     end
     % animate it for all poses in the sequence
-    
+
 
     t = timer('ExecutionMode', 'fixedRate', ...
         'BusyMode', 'queue', ...
@@ -164,7 +164,7 @@ function tranimate(P2, varargin)
         'Period', 1/opt.fps/2);
     t.TimerFcn = @timer_callback;
     start(t);
-    
+
     waitfor(t)
     delete(t)
         if opt.cleanup
@@ -183,16 +183,16 @@ function guts(ud, i)
     else
         trplot(T, 'handle', ud.hg);
     end
-    
+
     if ~isempty(ud.opt.movie)
         anim.add();
     end
-    
+
     if ~isempty(ud.opt.time)
         set(ud.htime, 'String', sprintf('time %g', ud.opt.time(i)));
     end
     drawnow
-              
+
 end
 
     function timer_callback(timerObj, ~)
@@ -204,7 +204,7 @@ end
         end
 
         i = timerObj.TasksExecuted;
-        
+
         guts(ud, i);
- 
+
     end

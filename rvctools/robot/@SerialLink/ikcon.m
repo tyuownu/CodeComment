@@ -9,7 +9,7 @@
 % scalar final value of the objective function.
 %
 % [Q,ERR,EXITFLAG] = robot.ikcon(T, OPTIONS) as above but also returns the
-% status EXITFLAG from fmincon.  
+% status EXITFLAG from fmincon.
 %
 % [Q,ERR,EXITFLAG] = robot.ikcon(T, Q0, OPTIONS) as above but specify the
 % initial joint coordinates Q0 used for the minimisation.
@@ -49,10 +49,10 @@
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
-% 
+%
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -60,30 +60,30 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 
 
 function [qstar, error, exitflag] = ikcon(robot, T, varargin)
-    
+
     % check if Optimization Toolbox exists, we need it
     assert( exist('fmincon')>0, 'rtb:ikcon:nosupport', 'Optimization Toolbox required');
 
     if isa(T, 'SE3')
         T = T.T;
     end
-    
+
     % create output variables
     T_sz = size(T, 3);
     qstar = zeros(T_sz, robot.n);
     error = zeros(T_sz, 1);
     exitflag = zeros(T_sz, 1);
-    
+
     problem.x0 = zeros(1, robot.n);
     problem.options = optimoptions('fmincon', ...
         'Algorithm', 'active-set', ...
         'Display', 'off'); % default options for ikcon
-    
+
     if nargin > 2
         % check if there is a q0 passed
         if isnumeric(varargin{1}) && length(varargin{1}) == robot.n
@@ -95,28 +95,28 @@ function [qstar, error, exitflag] = ikcon(robot, T, varargin)
         % if given, add optional argument to the list of optimiser options
         problem.options = optimoptions(problem.options, varargin{:});
     end
-    
+
     % set the joint limit bounds
     problem.lb = robot.qlim(:,1);
     problem.ub = robot.qlim(:,2);
     problem.solver = 'fmincon';
-    
+
     reach = sum(abs([robot.a, robot.d]));
     omega = diag([1 1 1 3/reach]);
-    
+
     for t = 1: T_sz
         problem.objective = ...
             @(x) sumsqr(((T(:,:,t) \ robot.fkine(x).T) - eye(4)) * omega);
-        
+
         [q_t, err_t, ef_t] = fmincon(problem);
-        
+
         qstar(t,:) = q_t;
         error(t) = err_t;
         exitflag(t) = ef_t;
-        
+
         problem.x0 = q_t;
     end
-    
+
 end
 
 function s = sumsqr(A)

@@ -19,32 +19,32 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 function T = r2t(R)
-    
+
     % check dimensions: R is SO(2) or SO(3)
     d = size(R);
     assert(d(1) == d(2), 'RTB:r2t:badarg', 'matrix must be square');
     assert(any(d(1) == [2 3]), 'RTB:r2t:badarg', 'argument is not a rotation matrix (sequence)');
-    
+
     Z = zeros(d(1),1);
     B = [Z' 1];
-    
+
     if numel(d) == 2
         % single matrix case
         T = [R Z; B];

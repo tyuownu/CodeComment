@@ -58,8 +58,8 @@
 %                   opt.foo is set to 4.
 %
 % The allowable options are specified by the names of the fields in the
-% structure opt.  By default if an option is given that is not a field of 
-% opt an error is declared.  
+% structure opt.  By default if an option is given that is not a field of
+% opt an error is declared.
 %
 % [OPTOUT,ARGS] = TB_OPTPARSE(OPT, ARGLIST) as above but returns all the
 % unassigned options, those that don't match anything in OPT, as a cell
@@ -80,17 +80,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -107,7 +107,7 @@ function [opt,others,ls] = tb_optparse(in, argv, cls)
     if nargin < 3
         cls = [];
     end
-    
+
     if ~iscell(argv)
         error('RTB:tboptparse:badargs', 'input must be a cell array');
     end
@@ -116,7 +116,7 @@ function [opt,others,ls] = tb_optparse(in, argv, cls)
 
     argc = 1;
     opt = in;
-    
+
     if ~isfield(opt, 'verbose')
         opt.verbose = false;
     end
@@ -131,7 +131,7 @@ function [opt,others,ls] = tb_optparse(in, argv, cls)
         % index over every passed option
         option = argv{argc};
         assigned = false;
-        
+
         if isstr(option)
 
             switch option
@@ -172,13 +172,13 @@ function [opt,others,ls] = tb_optparse(in, argv, cls)
 %                 if isfield(opt, option) || isfield(opt, ['d_' option])
 %                if any(strcmp(fieldnames(opt),option)) || any(strcmp(fieldnames(opt),))
                  if isfield(opt, option) || isfield(opt, ['d_' option]) || isprop(opt, option)
-                    
+
                     % handle special case if we we have opt.d_3d, this
                     % means we are looking for an option '3d'
                     if isfield(opt, ['d_' option]) || isprop(opt, ['d_' option])
                         option = ['d_' option];
                     end
-                    
+
                     %** BOOLEAN OPTION
                     val = opt.(option);
                     if islogical(val)
@@ -266,17 +266,17 @@ function [opt,others,ls] = tb_optparse(in, argv, cls)
                 end
             end
         end
-        
+
         argc = argc + 1;
     end % while
-    
+
     % copy choices into the opt structure
     if ~isempty(choices)
         for field=fieldnames(choices)'
             opt.(field{1}) = choices.(field{1});
         end
     end
- 
+
     % if enumerator value not assigned, set the default value
     if ~isempty(in)
         for field=fieldnames(in)'
@@ -292,9 +292,9 @@ function [opt,others,ls] = tb_optparse(in, argv, cls)
             end
         end
     end
-    
+
     % opt is now complete
-                        
+
     if showopt
         fprintf('Options:\n');
         opt
@@ -310,10 +310,10 @@ function [opt,others,ls] = tb_optparse(in, argv, cls)
                 cls.(field{1}) = opt.(field{1});
             end
         end
-        
+
         opt = cls;
     end
-    
+
     if nargout == 3
         % check to see if there is a valid linespec floating about in the
         % unused arguments
@@ -327,17 +327,17 @@ function [opt,others,ls] = tb_optparse(in, argv, cls)
             [b,e] = regexp(s, '[rgbcmywk]');
             s2 = s(b:e);
             s(b:e) = [];
-            
+
             % get line style
             [b,e] = regexp(s, '(--)|(-.)|-|:');
             s2 = [s2 s(b:e)];
             s(b:e) = [];
-            
+
             % get marker style
             [b,e] = regexp(s, '[o\+\*\.xsd\^v><ph]');
             s2 = [s2 s(b:e)];
             s(b:e) = [];
-            
+
             % found one
             if length(s) == 0
                 ls = arglist{i};

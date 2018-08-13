@@ -1,7 +1,7 @@
 %TRPRINT Compact display of homogeneous transformation
 %
-% TRPRINT(T, OPTIONS) displays the homogoneous transform in a compact 
-% single-line format.  If T is a homogeneous transform sequence then each 
+% TRPRINT(T, OPTIONS) displays the homogoneous transform in a compact
+% single-line format.  If T is a homogeneous transform sequence then each
 % element is printed on a separate line.
 %
 % S = TRPRINT(T, OPTIONS) as above but returns the string.
@@ -36,24 +36,24 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 function out = trprint(T, varargin)
-    
+
     if ischar(T)
         % command form: trprint T
         trprint( evalin('base', T) );
@@ -77,8 +77,8 @@ function out = trprint(T, varargin)
     else
         if isempty(opt.fmt)
             opt.fmt = '%8.2g';
-        end        
-        
+        end
+
         for i=1:size(T,3)
             % for each 4x4 transform in a possible 3D matrix
             s = char(s, tr2s(T(:,:,i), opt, args{:}) );

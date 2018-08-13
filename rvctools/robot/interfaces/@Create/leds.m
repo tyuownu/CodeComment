@@ -1,7 +1,7 @@
 function [] = leds(robot, LED, Color, Intensity)
 %[] = SetLEDsRoomba(serPort, LED,Color, Intensity)
 % Manipulates LEDS
-% LED = 0 for Play or 1 for Advance 
+% LED = 0 for Play or 1 for Advance
 % Color determines which color(Red/Green) that the Power LED will
 % illuminate as, from 0-100%
 % 0 is pure green, 100 is pure red.
@@ -18,7 +18,7 @@ function [] = leds(robot, LED, Color, Intensity)
     otherwise
         error('LED is 0 or 1');
     end
-       
+
     aColor= (Color/100)*255;
     aIntensity = (Intensity/100)*255;
 

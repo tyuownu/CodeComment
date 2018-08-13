@@ -1,7 +1,7 @@
 %VEX Convert skew-symmetric matrix to vector
 %
-% V = VEX(S) is the vector which has the corresponding skew-symmetric 
-% matrix S.  
+% V = VEX(S) is the vector which has the corresponding skew-symmetric
+% matrix S.
 %
 %
 % In the case that S (2x2) then V is 1x1
@@ -17,9 +17,9 @@
 %
 % Notes::
 % - This is the inverse of the function SKEW().
-% - Only rudimentary checking (zero diagonal) is done to ensure that the 
+% - Only rudimentary checking (zero diagonal) is done to ensure that the
 %   matrix is actually skew-symmetric.
-% - The function takes the mean of the two elements that correspond to 
+% - The function takes the mean of the two elements that correspond to
 %   each unique element of the matrix.
 %
 % References::
@@ -32,17 +32,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %

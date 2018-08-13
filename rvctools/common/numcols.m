@@ -29,4 +29,4 @@
 % http://www.petercorke.com
 
 function c = numcols(m)
-	c = size(m,2);
+    c = size(m,2);

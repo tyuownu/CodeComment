@@ -13,17 +13,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -34,33 +34,33 @@ function animate(robot, qq)
     if nargin < 3
         handles = findobj('Tag', robot.name);
     end
-    
+
     links = robot.links;
     N = robot.n;
-    
+
     % get handle of any existing graphical robots of same name
     %  one may have just been created above
     handles = findobj('Tag', robot.name);
-    
+
     % MAIN DISPLAY/ANIMATION LOOP
     while true
         % animate over all instances of this robot in different axes
-        
+
         for q=qq'  % for all configurations in trajectory
             q = q';
             for handle=handles'
                 h = get(handle, 'UserData');
-                
+
                 % now draw it for a pose q
                 if robot.mdh
                     % modified DH case
                     T = robot.base;
                     vert = T.t';
-                    
+
                     for L=1:N
                         if robot.links(L).isprismatic()
                             % scale the box representing the prismatic joint
-                            % it is based at the origin and extends in z-direction                            
+                            % it is based at the origin and extends in z-direction
                             if q(L) > 0
                                 set(h.pjoint(L), 'Matrix', diag([1 1 q(L) 1]));
                             else
@@ -69,7 +69,7 @@ function animate(robot, qq)
                             end
                         end
                         T = T * links(L).A(q(L));
-                        set(h.link(L), 'Matrix', T.T); 
+                        set(h.link(L), 'Matrix', T.T);
                         vert = [vert; T.t'];
                     end
                     % update the transform for link N+1 (the tool)
@@ -82,23 +82,23 @@ function animate(robot, qq)
                     % standard DH case
                     T = robot.base;
                     vert = T.t';
-                    
+
                     for L=1:N
                         % for all N links
-                        
+
                         if robot.links(L).isprismatic()
                             % scale the box representing the prismatic joint
                             % it is based at the origin and extends in z-direction
-                            
+
                             assert( q(L) >= 0, 'Prismatic joint length must be >= 0'); % link lengths must be positive
-                            
+
                             % if scale factor is zero the matrix is singular and MATLAB complains
                             %  so we make it no smaller than eps
 
                             set(h.pjoint(L), 'Matrix', diag([1 1 max(eps, q(L)) 1]));
 
                         end
-                        
+
                         % now set the transform for frame {L}, this controls the displayed pose of:
                         %   the pipes associated with link L, that join {L} back to {L-1}
                         %   (optional) a prismatic joint L, that joins {L} to {L+1}
@@ -106,7 +106,7 @@ function animate(robot, qq)
                             % for plot3d, skip any 0 in the handle list
                             set(h.link(L), 'Matrix', T.T);
                         end
-                        
+
                         T = T * links(L).A(q(L));
                         vert = [vert; T.t'];
                     end
@@ -118,30 +118,30 @@ function animate(robot, qq)
 
                     vert = [vert; T.t'];
                 end
-                
+
                 % now draw the shadow
                 if isfield(h, 'shadow')
                     set(h.shadow, 'Xdata', vert(:,1), 'Ydata', vert(:,2), ...
                         'Zdata', h.floorlevel*ones(size(vert(:,1))));
                 end
-                
+
                 % update the tool tip trail
                 if isfield(h, 'trail')
                     T = robot.fkine(q);
                     robot.trail = [robot.trail; transl(T)];
                     set(h.trail, 'Xdata', robot.trail(:,1), 'Ydata', robot.trail(:,2), 'Zdata', robot.trail(:,3));
                 end
-                
+
                 % animate the wrist frame
                 if ~isempty(h.wrist)
                     trplot(T, 'handle', h.wrist);
                 end
-                
+
                 % add a frame to the movie
                 if ~isempty(h.robot.movie)
                     h.robot.movie.add();
                 end
-                
+
                 if h.robot.delay > 0
                     pause(h.robot.delay);
                     drawnow
@@ -150,9 +150,9 @@ function animate(robot, qq)
                 set(handle, 'UserData', h);
             end
         end
-        
+
         if ~h.robot.loop
             break;
-        end        
+        end
     end
-    
+

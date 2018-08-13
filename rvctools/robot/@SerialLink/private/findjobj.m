@@ -1516,7 +1516,7 @@ function [handles,levels,parentIdx,listing] = findjobj(container,varargin)
                                 set(jComp,'ForegroundColor',oldColor);
                                 rmappdata(jComp,'ForegroundColor');
                             end
-                            
+
                         elseif ishghandle(jComp)
                             if visible
                                 set(jComp,'Selected','on');
@@ -2257,7 +2257,7 @@ function [handles,levels,parentIdx,listing] = findjobj(container,varargin)
                             end
 
                             % ...and now run it...
-                            %pause(0.1); 
+                            %pause(0.1);
                             drawnow;
                             dummy = which('uiinspect');  %#ok used only to load into memory
                             uiinspect(object);
@@ -2414,7 +2414,7 @@ function [handles,levels,parentIdx,listing] = findjobj(container,varargin)
                 return;
             end
             setappdata(src,'inCallback',1);  % used to prevent endless recursion
-            
+
             % Update the object's callback with the modified value
             modifiedColIdx = evd.getColumn;
             modifiedRowIdx = evd.getFirstRow;
@@ -2463,7 +2463,7 @@ function [handles,levels,parentIdx,listing] = findjobj(container,varargin)
             if ~iscom(object(1)),  msg = [msg ' or a {@func,args...} construct'];  end
             if ~isempty(errMsg),  msg = {errMsg, '', msg};  end
             msgbox(msg, ['Error setting ' cbName ' callback'], 'warn');
-            
+
             % Revert to the current value
             curValue = '';
             try

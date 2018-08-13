@@ -9,10 +9,10 @@ ButtonPlay = nan;
 
 % By; Joel Esposito, US Naval Academy, 2011
 try
-    
-%Flush Buffer    
+
+%Flush Buffer
 N = serPort.BytesAvailable();
-while(N~=0) 
+while(N~=0)
 fread(serPort,N);
 N = serPort.BytesAvailable();
 end

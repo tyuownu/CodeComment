@@ -30,7 +30,7 @@
 %  s*q       elementwise multiplication of quaternion by scalar
 %  q/q2      q*q2.inv
 %  q^n       q to power n (integer only)
-%  q+q2      elementwise sum of quaternion elements 
+%  q+q2      elementwise sum of quaternion elements
 %  q-q2      elementwise difference of quaternion elements
 %  q1==q2    test for quaternion equality
 %  q1~=q2    test for quaternion inequalityq = rx*ry*rz;
@@ -61,17 +61,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -82,15 +82,15 @@
 %  .r, .t on a quaternion vector??
 
 classdef Quaternion
-    
+
     properties (SetAccess = protected, GetAccess=public)
         s       % scalar part
         v       % vector part
     end
-    
-    
+
+
     methods
-        
+
         function q = Quaternion(s, v)
             %Quaternion.Quaternion Construct a quaternion object
             %
@@ -104,7 +104,7 @@ classdef Quaternion
             % Notes::
             % - The constructor is not vectorized, it cannot create a vector of
             %   Quaternions.
-            
+
             if nargin == 0
                 q.v = [0,0,0];
                 q.s = 0;
@@ -121,7 +121,7 @@ classdef Quaternion
             else
                 error ('RTB:Quaternion:badarg', 'bad argument to quaternion constructor');
             end
-            
+
         end
 
         function qo = set.s(q, s)
@@ -129,30 +129,30 @@ classdef Quaternion
             %
             % Q.s = S sets the scalar part of the Quaternion object to S.
             assert(~isa(s, 'sym') && isreal(s) && isscalar(s), 'RTB:Quaternion:badarg', 's must be real scalar');
-            
+
             qo = q;
             qo.s = s;
         end
-        
+
         function qo = set.v(q, v)
             %Quaternion.set.v Set vector component
             %
             % Q.v = V sets the vector part of the Quaternion object to V (1x3).
             assert(isvec(v,3), 'RTB:Quaternion:badarg', 'v must be a real 3-vector');
-            
+
             qo = q;
             qo.v = v(:).';
         end
-        
+
 %         function s = get.s(q)
 %             s = [q.s]';
 %         end
-%         
+%
 %         function v = get.v(q)
 %             [q.v]
 %             v = reshape([q.v]', 3, [])';
 %         end
-            
+
         function display(q)
             %Quaternion.display Display quaternion
             %
@@ -169,7 +169,7 @@ classdef Quaternion
             %   consecutive lines.
             %
             % See also Quaternion.char.
-            
+
             loose = strcmp( get(0, 'FormatSpacing'), 'loose');
             if loose
                 disp(' ');
@@ -183,11 +183,11 @@ classdef Quaternion
                 disp(' ');
             end
         end
-        
-       
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% QUATERNION FUNCTIONS
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%        
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function c = conj(q)
             %Quaternion.conj Conjugate of a quaternion
@@ -200,7 +200,7 @@ classdef Quaternion
             % See also Quaternion.inv.
             c = q.new(q.s, -q.v);
         end
-        
+
         function qi = inv(q)
             %Quaternion.inv Invert a quaternion
             %
@@ -210,13 +210,13 @@ classdef Quaternion
             % - Is vectorized.
             %
             % See also Quaternion.conj.
-            
+
             for i=1:length(q)
                 n2 = sum( q(i).double.^2 );
                 qi(i) = Quaternion([q(i).s -q(i).v]/ n2);
             end
         end
-        
+
         function qu = unit(q)
             %Quaternion.unit Unitize a quaternion
             %
@@ -226,12 +226,12 @@ classdef Quaternion
             % - Is vectorized.
             %
             % See also Quaternion.norm, UnitQuaternion.
-            
+
             for i=1:length(q)
                 qu(i) = UnitQuaternion( q(i).double / norm(q(i)) );
             end
         end
-       
+
         function n = norm(q)
             %Quaternion.norm Quaternion magnitude
             %
@@ -242,10 +242,10 @@ classdef Quaternion
             % - A unit-quaternion has a norm of one.
             %
             % See also Quaternion.inner, Quaternion.unit.
-            
+
             n = colnorm(double(q)')';
         end
-        
+
         function m = matrix(q)
             %Quaternion.matrix Matrix representation of Quaternion
             %
@@ -260,7 +260,7 @@ classdef Quaternion
             % Notes::
             % - This matrix is not unique, other matrices will serve the purpose for
             %   multiplication, see https://en.wikipedia.org/wiki/Quaternion#Matrix_representations
-            % - The determinant of the matrix is the norm of the quaternion to the fourth power. 
+            % - The determinant of the matrix is the norm of the quaternion to the fourth power.
             %
             % See also Quaternion.double, Quaternion.mtimes.
             m = [q.s    -q.v(1) -q.v(2) -q.v(3)
@@ -268,7 +268,7 @@ classdef Quaternion
                  q.v(2)  q.v(3)  q.s    -q.v(1)
                  q.v(3) -q.v(2)  q.v(1)  q.s];
         end
-        
+
         function n = inner(q1, q2)
             %Quaternion.inner Quaternion inner product
             %
@@ -279,15 +279,15 @@ classdef Quaternion
             % - Q1.inner(Q1) is the same as Q1.norm().
             %
             % See also Quaternion.norm.
-            
+
             n = double(q1)*double(q2)';
         end
-       
-        
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% ARITHMETIC OPERATORS
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%      
-        
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         function qp = mtimes(q1, q2)
             %Quaternion.mtimes Multiply a quaternion object
             %
@@ -305,12 +305,12 @@ classdef Quaternion
             %   scalar.
             %
             % See also Quaternion.mrdivide, Quaternion.mpower.
-            
+
             if isa(q1, 'Quaternion') && isa(q2, 'Quaternion')
                 %QQMUL  Multiply quaternion by quaternion
                 %
                 % QQ = qqmul(Q1, Q2) is the product of two quaternions.
-                
+
                 if isa(q1, 'UnitQuaternion') && isa(q2, 'UnitQuaternion')
                     new = @UnitQuaternion.new;
                 else
@@ -321,36 +321,36 @@ classdef Quaternion
                         % decompose into scalar and vector components
                         s1 = q1(i).s;  v1 = q1(i).v;
                         s2 = q2(i).s;  v2 = q2(i).v;
-                        
+
                         % form the product
                         qp(i) = new([s1*s2-v1*v2.' s1*v2+s2*v1+cross(v1,v2)]);
                     end
                 elseif isscalar(q1)
                     s1 = q1.s;  v1 = q1.v;
-                    
+
                     for i=1:length(q2)
                         % decompose into scalar and vector components
                         s2 = q2(i).s;  v2 = q2(i).v;
-                        
+
                         % form the product
                         qp(i) = new([s1*s2-v1*v2.' s1*v2+s2*v1+cross(v1,v2)]);
                     end
                 elseif isscalar(q2)
                     s2 = q2.s;  v2 = q2.v;
-                    
+
                     for i=1:length(q1)
                         % decompose into scalar and vector components
                         s1 = q1(i).s;  v1 = q1(i).v;
-                        
+
                         % form the product
                         qp(i) = new([s1*s2-v1*v2.' s1*v2+s2*v1+cross(v1,v2)]);
                     end
                 else
                     error('RTB:quaternion:badarg', '* operand length mismatch');
                 end
-                
+
             elseif isa(q1, 'Quaternion') && isa(q2, 'double')
-                
+
                 %QSMUL  Multiply quaternion
                 %
                 % Q = qsmul(Q, S) multiply quaternion by real scalar.
@@ -359,17 +359,17 @@ classdef Quaternion
                 for i=1:length(q1)
                     qp(i) = Quaternion( double(q1(i))*q2);
                 end
-                
-                
+
+
             elseif isa(q1, 'double') && isa(q2, 'Quaternion')
-                
+
                 %QSMUL  Multiply quaternion
                 %
                 % Q = qsmul(Q, S) multiply quaternion by real scalar.
                 %
-                
+
                 assert(isscalar(q1), 'quaternion-double product: must be a scalar');
-                
+
                 for i=1:length(q2)
                     qp(i) = Quaternion( double(q2(i))*q1);
                 end
@@ -377,7 +377,7 @@ classdef Quaternion
                 error('RTB:Quaternion:badarg', 'quaternion product: incorrect right hand operand');
             end
         end
-       
+
         function qq = mrdivide(q1, q2)
             %Quaternion.mrdivide Quaternion quotient.
             %
@@ -394,54 +394,54 @@ classdef Quaternion
             %   scalar.
             %
             % See also Quaternion.mtimes, Quaternion.mpower, Quaternion.plus, Quaternion.minus.
-            
+
             if isa(q1, 'Quaternion') && isa(q2, 'Quaternion')
                 %QQDIV  Divide quaternion by quaternion
                 %
                 % QQ = qqdiv(Q1, Q2) is the quotient of two quaternions.
-                
+
                 if length(q1) == length(q2)
                     for i=1:length(q1)
-                        
+
                         % form the quotient
                         qq(i) = q1(i) * inv(q2(i));
                     end
                 elseif isscalar(q1)
-                    
+
                     for i=1:length(q2)
-                      
+
                         % form the quotient
                         qq(i) = q1 * inv(q2(i));
                     end
                 elseif isscalar(q2)
-                    
+
                     for i=1:length(q1)
-                        
+
                         % form the quotient
                         qq(i) = q1(i) * inv(q2);
                     end
                 else
                     error('RTB:quaternion:badarg', '/ operand length mismatch');
                 end
-                
+
             elseif isa(q1, 'Quaternion') && isa(q2, 'double')
-                
+
                 %QSDIV  Divide quaternion by scalar
                 %
                 % Q = qsdiv(Q, S) divide quaternion by real scalar.
                 %
-                
+
                 assert(isscalar(q2), 'RTB:Quaternion:badarg', 'quaternion-double quotient: must be a scalar');
                 for i=1:length(q1)
                     qq(i) = Quaternion( double(q1(i))/q2);
                 end
-            
+
             else
                 error('RTB:Quaternion:badarg', 'quaternion quotient: incorrect right hand operand');
             end
         end
 
-                
+
         function qp = mpower(q, p)
             %Quaternion.mpower Raise quaternion to integer power
             %
@@ -454,28 +454,28 @@ classdef Quaternion
             %   unit quaternion.
             %
             % See also Quaternion.mtimes.
-            
+
             % check that exponent is an integer
             assert(p - floor(p) == 0, 'RTB:Quaternion:badarg', 'quaternion exponent must be integer');
-            
+
             if p == 0
                 qp = q.new([1 0 0 0]);
             else
                 qp = q;
-                
+
                 % multiply by itself so many times
                 for i = 2:abs(p)
                     qp = qp * q;
                 end
-                
+
                 % if exponent was negative, invert it
                 if p<0
                     qp = inv(qp);
                 end
             end
         end
-        
-        
+
+
         function qp = plus(q1, q2)
             %PLUS Add quaternions
             %
@@ -490,7 +490,7 @@ classdef Quaternion
             %   quaternion.
             %
             % See also Quaternion.minus.
-            
+
             if isa(q2, 'Quaternion')
                 qp = Quaternion(double(q1) + double(q2));
             elseif isvec(q2, 4)
@@ -500,7 +500,7 @@ classdef Quaternion
                 qp.v = qp.v + q2(2:4);
             end
         end
-        
+
         function qp = minus(q1, q2)
             %Quaternion.minus Subtract quaternions
             %
@@ -515,9 +515,9 @@ classdef Quaternion
             %   quaternion.
             %
             % See also Quaternion.plus.
-            
+
             if isa(q2, 'Quaternion')
-                
+
                 qp = Quaternion(double(q1) - double(q2));
             elseif isvec(q2, 4)
                 qp = Quaternion(q1);
@@ -526,11 +526,11 @@ classdef Quaternion
                 qp.v = qp.v - q2(2:4);
             end
         end
-        
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% RELATIONAL OPERATORS
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function e = isequal(q1, q2)
             %ISEQUAL Test quaternion element equality
@@ -584,7 +584,7 @@ classdef Quaternion
                 error('RTB:Quaternion:badargs');
             end
         end
-        
+
         function e = ne(q1, q2)
             %NE Test quaternion inequality
             %
@@ -624,7 +624,7 @@ classdef Quaternion
                 error('RTB:quaternion:badargs');
             end
         end
-        
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -635,7 +635,7 @@ classdef Quaternion
             %
             % S = Q.char() is a compact string representation of the quaternion's value
             % as a 4-tuple.  If Q is a vector then S has one line per element.
-            
+
             if length(q) > 1
                 s = '';
                 for qq = q;
@@ -646,7 +646,7 @@ classdef Quaternion
             s = [num2str(q.s), ' << ' ...
                 num2str(q.v(1)) ', ' num2str(q.v(2)) ', '   num2str(q.v(3)) ' >>'];
         end
-                
+
         function v = double(q)
             %Quaternion.double Convert a quaternion to a 4-element vector
             %
@@ -655,20 +655,20 @@ classdef Quaternion
             % matrix (Nx4) with rows corresponding to the Quaternion elements.
             %
             % elements [s vx vy vz].
-            
+
             for i=1:length(q)
                 v(i,:) = [q(i).s q(i).v];
             end
         end
- 
+
     end % methods
-    
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% STATIC FACTORY METHODS, ALTERNATIVE CONSTRUCTORS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     methods(Static)
-        
+
         function uq = new(varargin)
             %Quaternion.new Construct a new quaternion
             %
@@ -683,7 +683,7 @@ classdef Quaternion
             % - Polymorphic with UnitQuaternion and RTBPose derived classes.
             uq = Quaternion(varargin{:});
         end
-                
+
         function q = pure(v)
             %Quaternion.pure Construct a pure quaternion
             %
@@ -691,7 +691,7 @@ classdef Quaternion
             % a zero scalar part.
             %
 
-            
+
             if ~isvec(v)
                 error('RTB:Quaternion:bad arg', 'must be a 3-vector');
             end

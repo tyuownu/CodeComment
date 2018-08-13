@@ -33,10 +33,10 @@
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
-% 
+%
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -44,11 +44,11 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 
 function tauP = pay(robot, varargin)
-    
+
     if length(varargin) == 2
         w = varargin{1};
         J = varargin{2};
@@ -70,9 +70,9 @@ function tauP = pay(robot, varargin)
                 end
         end
     end
-    
+
     if ~isequal(size(w),[6 1]), error(pHRIWARE('error', 'inputSize')); end
     tauP = -reshape(J(:,:)'*w,n,[])';
-    
+
 end
 

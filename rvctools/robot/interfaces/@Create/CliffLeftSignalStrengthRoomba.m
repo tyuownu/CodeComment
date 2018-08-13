@@ -11,10 +11,10 @@ function [Signal] = CliffLeftSignalStrengthRoomba(serPort);
 Signal = nan;
 
 try
-    
-%Flush Buffer    
+
+%Flush Buffer
 N = serPort.BytesAvailable();
-while(N~=0) 
+while(N~=0)
 fread(serPort,N);
 N = serPort.BytesAvailable();
 end

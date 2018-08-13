@@ -43,17 +43,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -63,8 +63,8 @@
 % a structure which is passed into all callbacks
 
 function teach(robot, varargin)
-    
-    
+
+
     %---- handle options
     opt.deg = true;
     opt.orientation = {'rpy', 'rpy/zyx', 'eul', 'approach'};
@@ -72,13 +72,13 @@ function teach(robot, varargin)
     opt.callback = [];
     opt.record = [];
     [opt,args] = tb_optparse(opt, varargin);
-    
+
     % get the joint coordinates if given
     q = [];
     if isempty(args)
         % no joint angles passed, assume all zeros
         q = zeros(1, robot.n);
-        
+
         % set any prismatic joints to the minimum value
         for j=find(robot.links.isprismatic)
                 q(j) = robot.links(j).qlim(1);
@@ -87,16 +87,16 @@ function teach(robot, varargin)
         % joint angles passed
         if isnumeric(args{1})
             q = args{1};
-            
+
             args = args(2:end);
         end
     end
-    
+
     %---- get the current robot state
-    
+
     % check to see if there are any graphical robots of this name
     rhandles = findobj('Tag', robot.name);   % find the graphical element of this name
-    
+
     if isempty(rhandles)
         % no robot, plot one so long as joint coordinates were given
         assert( ~isempty(q), 'RTB:teach:badarg', 'No joint coordinates provided');
@@ -105,7 +105,7 @@ function teach(robot, varargin)
         % graphical robot already exists
         %   get the info from its Userdata
         info = get(rhandles(1), 'UserData');
-        
+
         % the handle contains current joint angles (set by plot)
         if isempty(q) && ~isempty(info.q)
             % if no joint coordinates given get from the graphical model
@@ -115,10 +115,10 @@ function teach(robot, varargin)
             robot.plot(q, args{:});
         end
     end
-    
+
     assert( ~isempty(q), 'RTB:teach:badarg', 'No joint coordinates provided');
     RTBPlot.install_teach_panel(robot.name, robot, q, opt)
-    
+
 end
 
 

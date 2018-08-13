@@ -21,17 +21,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -39,22 +39,22 @@
 
 function handles = plot_homline(lines, varargin)
 
-	% get plot limits from current graph
-	xlim = get(gca, 'XLim');
-	ylim = get(gca, 'YLim');
+    % get plot limits from current graph
+    xlim = get(gca, 'XLim');
+    ylim = get(gca, 'YLim');
 
     ish = ishold;
     hold on;
-    
+
     if min(size(lines)) == 1
         lines = lines(:);
     end
-    
+
     assert(numrows(lines) == 3, 'RTB:plot_homline:badarg', 'Input must be a 3-vector or 3xN matrix');
 
-	h = [];
-	% for all input lines (columns
-	for l=lines
+    h = [];
+    % for all input lines (columns
+    for l=lines
         if abs(l(2)) > abs(l(1))
             y = (-l(3) - l(1)*xlim) / l(2);
             hh = plot(xlim, y, varargin{:});
@@ -62,13 +62,13 @@ function handles = plot_homline(lines, varargin)
             x = (-l(3) - l(2)*ylim) / l(1);
             hh = plot(x, ylim, varargin{:});
         end
-		h = [h; hh];
-	end
+        h = [h; hh];
+    end
 
     if ~ish
         hold off
     end
 
-	if nargout > 0,
-		handles = h;
-	end
+    if nargout > 0,
+        handles = h;
+    end

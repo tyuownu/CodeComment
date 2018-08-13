@@ -11,7 +11,7 @@
 %
 % References::
 % - "Fanuc  M-16iB data sheet", http://www.robots.com/fanuc/m-16ib.
-% - "Utilizing the Functional Work Space Evaluation Tool for Assessing a 
+% - "Utilizing the Functional Work Space Evaluation Tool for Assessing a
 %   System Design and Reconfiguration Alternatives",
 %   A. Djuric and R. J. Urbanic
 %
@@ -29,26 +29,26 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 function r = mdl_m16()
-    
+
     deg = pi/180;
-    
+
     % robot length values (metres)
     d1 = 0.524;
     a1 = 0.150;
@@ -56,7 +56,7 @@ function r = mdl_m16()
     a3 = -0.100;
     d4 = 0.740;
     d6 = 0.100;
-    
+
     % DH parameter table
     %     theta d a alpha
     dh = [0 d1 a1  -pi/2
@@ -65,13 +65,13 @@ function r = mdl_m16()
           0 d4 0   -pi/2
           0 0  0   pi/2
           0 d6 0   pi];
-    
-    
+
+
     % and build a serial link manipulator
-    
+
     robot = SerialLink(dh, 'name', 'M16', ...
-        'manufacturer', 'Fanuc'); 
-    
+        'manufacturer', 'Fanuc');
+
     % place the variables into the global workspace
     if nargin == 1
         r = robot;

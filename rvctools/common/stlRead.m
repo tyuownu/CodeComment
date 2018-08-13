@@ -9,15 +9,15 @@
 % - Copyright (c) 2015, Pau Micó
 % - Copyright (c) 2013, Adam H. Aitkenhead
 % - Copyright (c) 2011, Francis Esmonde-White
-    
+
 %
-% stlGetFormat:	identifies the format of the STL file and returns 'binary'
+% stlGetFormat:    identifies the format of the STL file and returns 'binary'
 % or 'ascii'. This file is inspired in the 'READ-stl' file written and
 % published by Adam H. Aitkenhead
 % (http://www.mathworks.com/matlabcentral/fileexchange/27390-mesh-voxelisation).
-% Copyright (c) 2013, Adam H. Aitkenhead. 
+% Copyright (c) 2013, Adam H. Aitkenhead.
 %
-% stlReadAscii:	reads an STL file written in ascii format. This file is
+% stlReadAscii:    reads an STL file written in ascii format. This file is
 % inspired in the 'READ-stl' file written and published by Adam H.
 % Aitkenhead
 % (http://www.mathworks.com/matlabcentral/fileexchange/27390-mesh-voxelisation).
@@ -27,21 +27,21 @@
 % is inspired in the 'READ-stl' file written and published by Adam H.
 % Aitkenhead
 % (http://www.mathworks.com/matlabcentral/fileexchange/27390-mesh-voxelisation).
-% Copyright (c) 2013, Adam H. Aitkenhead stlRead:	uses 'stlGetFormat',
+% Copyright (c) 2013, Adam H. Aitkenhead stlRead:    uses 'stlGetFormat',
 %
 % 'stlReadAscii' and 'stlReadBinary' to make STL reading independent of the
 % format of the file
 %
-% stlSlimVerts:	finds and removes duplicated vertices. This function is
+% stlSlimVerts:    finds and removes duplicated vertices. This function is
 % written and published by Francis Esmonde-White as PATCHSLIM
 % (http://www.mathworks.com/matlabcentral/fileexchange/29986-patch-slim--patchslim-m-).
 % Copyright (c) 2011, Francis Esmonde-White.%
 %
-% 
+%
 % Redistribution and use in source and binary forms, with or without
 % modification, are permitted provided that the following conditions are
 % met:
-% 
+%
 %     * Redistributions of source code must retain the above copyright
 %       notice, this list of conditions and the following disclaimer.
 %     * Redistributions in binary form must reproduce the above copyright
@@ -53,7 +53,7 @@
 %     * Neither the name of the The Christie NHS Foundation Trust nor the names
 %       of its contributors may be used to endorse or promote products derived
 %       from this software without specific prior written permission.
-% 
+%
 % THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 % AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 % IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -73,7 +73,7 @@ function [v, f, n, name] = stlRead(fileName)
     %F are the faces
     %N are the normals
     %NAME is the name of the STL object (NOT the name of the STL file)
-    
+
     format = stlGetFormat(fileName);
     if strcmp(format,'ascii')
         [v,f,n,name] = stlReadAscii(fileName);
@@ -86,11 +86,11 @@ end
 function format = stlGetFormat(fileName)
     %STLGETFORMAT identifies the format of the STL file and returns 'binary' or
     %'ascii'
-    
+
     fid = fopen(fileName);
-    
+
     assert(fid > 0, 'Cant find file %s', fileName);
-    
+
     % Check the file size first, since binary files MUST have a size of 84+(50*n)
     fseek(fid,0,1);         % Go to the end of the file
     fidSIZE = ftell(fid);   % Check the size of the file
@@ -111,7 +111,7 @@ function format = stlGetFormat(fileName)
         fseek(fid,-80,1); % go to the end of the file minus 80 characters
         tail = char(fread(fid,80,'uchar')');
         isEndSolid = findstr(tail,'endsolid');
-        
+
         % Double check by reading the last 80 characters of the file.
         % For an ASCII file, the data should end (give or take a few
         % blank lines or spaces) with 'endsolid <object_name>'.
@@ -132,7 +132,7 @@ function [v, f, n, name] = stlReadAscii(fileName)
     %F are the faces
     %N are the normals
     %NAME is the name of the STL object (NOT the name of the STL file)
-    
+
     %======================
     % STL ascii file format
     %======================
@@ -153,12 +153,12 @@ function [v, f, n, name] = stlReadAscii(fileName)
     % <Repeat for all facets...>
     %
     % endsolid object_name
-    
+
     fid = fopen(fileName);
     cellcontent = textscan(fid,'%s','delimiter','\n'); % read all the file and put content in cells
     content = cellcontent{:}(logical(~strcmp(cellcontent{:},''))); % remove all blank lines
     fclose(fid);
-    
+
     % read the STL name
     line1 = char(content(1));
     if (size(line1,2) >= 7)
@@ -166,11 +166,11 @@ function [v, f, n, name] = stlReadAscii(fileName)
     else
         name = 'Unnamed Object';
     end
-    
+
     % read the vector normals
     normals = char(content(logical(strncmp(content,'facet normal',12))));
     n = str2num(normals(:,13:end));
-    
+
     % read the vertex coordinates (vertices)
     vertices = char(content(logical(strncmp(content,'vertex',6))));
     v = str2num(vertices(:,7:end));
@@ -179,7 +179,7 @@ function [v, f, n, name] = stlReadAscii(fileName)
     if (nvert == 3*nfaces)
         f = reshape(1:nvert,[3 nfaces])'; % create faces
     end
-    
+
     % slim the file (delete duplicated vertices)
     [v,f] = stlSlimVerts(v,f);
 end
@@ -190,7 +190,7 @@ function [v, f, n, name] = stlReadBinary(fileName)
     %F are the faces
     %N are the normals
     %NAME is the name of the STL object (NOT the name of the STL file)
-    
+
     %=======================
     % STL binary file format
     %=======================
@@ -219,7 +219,7 @@ function [v, f, n, name] = stlReadBinary(fileName)
     % 4 bytes:  (float) vertex3 z
     % 2 bytes:  Padding to make the data for each facet 50-bytes in length
     %   ...and repeat for next facet...
-    
+
     fid = fopen(fileName);
     header = fread(fid,80,'int8'); % reading header's 80 bytes
     name = deblank(native2unicode(header,'ascii')');
@@ -265,14 +265,14 @@ function [vnew, fnew]= stlSlimVerts(v, f)
     %  http://www.esmonde-white.com/home/diversions/matlab-program-for-loading-stl-files
     %
     % Francis Esmonde-White, May 2010
-    
+
     if ~exist('v','var')
         error('The vertex list (v) must be specified.');
     end
     if ~exist('f','var')
         error('The vertex connectivity of the triangle faces (f) must be specified.');
     end
-    
+
     [vnew, indexm, indexn] =  unique(v, 'rows');
     fnew = indexn(f);
 end

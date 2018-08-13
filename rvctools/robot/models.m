@@ -25,26 +25,26 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 function name_ = models(query)
-    
+
     path = fileparts( which('rotx') );
     path = fullfile(path, 'models');
-    
+
     models = dir(fullfile(path, 'mdl_*.m'));
     info = {};
     name = {};
@@ -60,12 +60,12 @@ function name_ = models(query)
                 break;
             end
             [p,n,e] = fileparts(model.name);
-            
+
             if (length(line) > 8) && (strcmp(line(1:8), '% MODEL:') == 1)
                 % we have a model description line
-                
+
                 line = line(10:end);  % trim off the tag
-                
+
                 if nargin > 0
                     % we have a  query
                     if strfind(lower(line), lower(query))
@@ -82,9 +82,9 @@ function name_ = models(query)
         end
         fclose(fid);
     end
-    
 
-    
+
+
     % optionally return a list of model names
     if nargout == 1
         name_ = name';
@@ -94,5 +94,5 @@ function name_ = models(query)
             fprintf('%s\n', i{1});
         end
     end
-    
+
 end

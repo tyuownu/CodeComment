@@ -9,20 +9,20 @@ classdef Create < handle
         function robot = Create(varargin)
         %[serPort] = RoombaInit(my_COM)
         % initializes serial port for use with Roomba
-        % COMMport is the number of the comm port 
+        % COMMport is the number of the comm port
         % ex. RoombaInit(1) sets port = 'COM1'
         % note that it sets baudrate to a default of 57600
-        % can be changed (see SCI).  
+        % can be changed (see SCI).
         % An optional time delay can be added after all commands
         % if your code crashes frequently.  15 ms is recommended by irobot
         % By; Joel Esposito, US Naval Academy, 2011
 
-        % This code puts the robot in CONTROL(132) mode, which means does NOT stop 
+        % This code puts the robot in CONTROL(132) mode, which means does NOT stop
         % when cliff sensors or wheel drops are true; can also run while plugged into charger
 
             Contrl = 132;
 
-            % Esposito 9/2008 
+            % Esposito 9/2008
 
             warning off
 
@@ -41,7 +41,7 @@ classdef Create < handle
                     delete(tty);
                 end
             end
-                
+
             if opt.verbose
                 disp('Establishing connection to Roomba...');
             end
@@ -111,7 +111,7 @@ classdef Create < handle
         function write(robot, msg, delay)
             fwrite(robot.serPort, msg);
             fprintf('write: '); disp(msg);
-            
+
             if nargin > 2
                 pause(delay);
             else
@@ -132,9 +132,9 @@ classdef Create < handle
 
 
         function flush(robot)
-            %Flush Buffer    
+            %Flush Buffer
             N = robot.serPort.BytesAvailable();
-            while(N ~= 0) 
+            while(N ~= 0)
                 fread(robot.serPort,N);
                 N = robot.serPort.BytesAvailable();
             end

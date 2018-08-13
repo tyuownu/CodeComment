@@ -11,15 +11,15 @@ classdef vmCodes < uint8
         vmInputs (4)
         vmButtons (6)
         vmLeds (4)
-        
+
         vmLCDWidth (178)
         vmLCDHeight (128)
         vmToplineHeight (10)
         vmLCDStoreLevels (3)
-        
+
         vmDefaultVolume (100)
         vmDefaultSleepminutes (30)
-        
+
         vmFGColor (1)
         vmBGColor (0)
     end

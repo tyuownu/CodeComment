@@ -1,15 +1,15 @@
 %VEXA Convert augmented skew-symmetric matrix to vector
 %
-% V = VEXA(S) is the vector which has the corresponding augmented skew-symmetric 
-% matrix S.  
+% V = VEXA(S) is the vector which has the corresponding augmented skew-symmetric
+% matrix S.
 %
-% V is 1x3 in the case that S (3x3) = 
+% V is 1x3 in the case that S (3x3) =
 %
 %               |  0  -v3  v1 |
 %               | v3    0  v2 |
 %               |  0    0   0 |
 %
-% V is 1x6 in the case that S (6x6) = 
+% V is 1x6 in the case that S (6x6) =
 %
 %
 %               |  0  -v6   v5  v1 |
@@ -32,17 +32,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -57,6 +57,6 @@ function s = vexa(Omega)
     else
         error('RTB:vexa:badarg', 'argument must be a 3x3 or 4x4 matrix');
     end
-    
-    
+
+
 end

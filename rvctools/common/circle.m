@@ -3,8 +3,8 @@
 % CIRCLE(C, R, OPTIONS) plots a circle centred at C (1x2) with radius R on the current
 % axes.
 %
-% X = CIRCLE(C, R, OPTIONS) is a matrix (2xN) whose columns define the 
-% coordinates [x,y] of points around the circumferance of a circle 
+% X = CIRCLE(C, R, OPTIONS) is a matrix (2xN) whose columns define the
+% coordinates [x,y] of points around the circumferance of a circle
 % centred at C (1x2) and of radius R.
 %
 % C is normally 2x1 but if 3x1 then the circle is embedded in 3D, and X is Nx3,
@@ -17,29 +17,29 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 function out = circle(centre, rad, varargin)
 
-	opt.n = 50;
-    
+    opt.n = 50;
+
     [opt,arglist] = tb_optparse(opt, varargin);
 
     % compute points on circumference
-	th = [0:opt.n-1]'/ opt.n*2*pi;
+    th = [0:opt.n-1]'/ opt.n*2*pi;
     x = rad*cos(th) + centre(1);
     y = rad*sin(th) + centre(2);
 

@@ -7,8 +7,8 @@
 % [THETA,V] = TR2ANGVEC(T, OPTIONS) as above but uses the rotational part of the
 % homogeneous transform T (4x4).
 %
-% If R (3x3xK) or T (4x4xK) represent a sequence then THETA (Kx1)is a vector 
-% of angles for corresponding elements of the sequence and V (Kx3) are the 
+% If R (3x3xK) or T (4x4xK) represent a sequence then THETA (Kx1)is a vector
+% of angles for corresponding elements of the sequence and V (Kx3) are the
 % corresponding axes, one per row.
 %
 % Options::
@@ -28,17 +28,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -50,19 +50,19 @@ function [theta_, n_] = tr2angvec(R, varargin)
 
     opt.deg = false;
     opt = tb_optparse(opt, varargin);
-    
+
     % get the rotation submatrix(s)
     if ~isrot(R)
         R = t2r(R);
     end
-    
+
     if size(R,3) > 1
         theta = zeros(size(R,3),1);
         v = zeros(size(R,3),3);
     end
-    
+
     for i=1:size(R,3)  % for each rotation matrix in the sequence
-        
+
         % There are a few ways to do this:
         %
         % 1.
@@ -89,29 +89,29 @@ function [theta_, n_] = tr2angvec(R, varargin)
         % 4.
         %
         % Take the log of the rotation matrix
-        
+
         Ri = R(:,:,i);
-        
+
         % check the determinant
         assert( abs(det(Ri)-1) < 10*eps, 'RTB:tr2angvec:badarg', 'matrix is not orthonormal');
-        
+
         [th,v] = trlog(Ri);
         theta(i) = th;
         n(i,:) = v;
-        
+
         if opt.deg
             theta(i) = theta(i) * 180/pi;
             units = 'deg';
         else
             units = 'rad';
         end
-        
+
         if nargout == 0
             % if no output arguments display the angle and vector
             fprintf('Rotation: %f %s x [%f %f %f]\n', theta(i), units, n(i,:));
         end
     end
-    
+
     if nargout == 1
         theta_ = theta;
     elseif nargout == 2

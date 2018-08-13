@@ -7,7 +7,7 @@ function varargout = RobotGuiControl(varargin)
 %Small Left Arrow-Turns Roomba 5 degrees left
 %Large Right Arrow-Turns Roomba 15 degrees right
 %Small Right Arrow-Turns Roomba 5 degrees right
-% Note, GUI can be used from touchscreen mobile device by making remote 
+% Note, GUI can be used from touchscreen mobile device by making remote
 % desktop connection from mobile device to PC running MTIC.
 
 % NUM_KEYPAD_BACKNOVIBE M-file for Num_Keypad_backnovibe.fig
@@ -92,7 +92,7 @@ global ser
 ser = RoombaInit(serPort);
 
 %logging
-global keyPresses startTime elapsedTime 
+global keyPresses startTime elapsedTime
 keyPresses = [0 0];
 startTime = [];
 elapsedTime = [];
@@ -100,12 +100,12 @@ elapsedTime = [];
 % speeds and angles
 global sV sD bV bD sW sA bW bA
 sV = .1; sD = 0.05; % vel in m/s angles in deg W is angluar speed but in m/s?
-bV = .2; bD = 0.1; 
-sW = .05; sA = 5; 
-bW = .1; bA = 15; 
+bV = .2; bD = 0.1;
+sW = .05; sA = 5;
+bW = .1; bA = 15;
 
 global moving movingTest
-movingTest = 1; 
+movingTest = 1;
 moving=0;
 
 
@@ -126,7 +126,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 
 
 %------------------------COPY TO ALL OTHERS
-global ser keyPresses startTime elapsedTime 
+global ser keyPresses startTime elapsedTime
 global sV sD bV bD sW sA bW bA
 keyPresses(1) = keyPresses(1) +1;
 keyPresses(2) = keyPresses(2) +1;
@@ -147,7 +147,7 @@ function pushbutton2_Callback(hObject, eventdata, handles)
 % global list
 % list=[list 2];
 %------------------------COPY TO ALL OTHERS
-global ser keyPresses startTime elapsedTime 
+global ser keyPresses startTime elapsedTime
 global sV sD bV bD sW sA bW bA
 keyPresses(1) = keyPresses(1) +1;
 
@@ -155,7 +155,7 @@ if isempty(startTime)
     startTime = tic;
 end
 
-global moving movingTest 
+global moving movingTest
 if (movingTest ==0)||(moving ==0)
 moving=1;
 travelDist(ser, sV, -sD);
@@ -172,7 +172,7 @@ function pushbutton3_Callback(hObject, eventdata, handles)
 % global list
 % list=[list 3];
 %------------------------COPY TO ALL OTHERS
-global ser keyPresses startTime elapsedTime 
+global ser keyPresses startTime elapsedTime
 global sV sD bV bD sW sA bW bA
 
 keyPresses(1) = keyPresses(1) +1;
@@ -193,7 +193,7 @@ function pushbutton4_Callback(hObject, eventdata, handles)
 % list=[list 4];
 
 %------------------------COPY TO ALL OTHERS
-global ser keyPresses startTime elapsedTime 
+global ser keyPresses startTime elapsedTime
 global sV sD bV bD sW sA bW bA
 keyPresses(1) = keyPresses(1) +1;
 if isempty(startTime)
@@ -218,7 +218,7 @@ function pushbutton5_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 % global list
 % list=[list 5];
-global ser keyPresses startTime elapsedTime 
+global ser keyPresses startTime elapsedTime
 global sV sD bV bD sW sA bW bA
 
 keyPresses(1) = keyPresses(1) +1;
@@ -243,7 +243,7 @@ function pushbutton6_Callback(hObject, eventdata, handles)
 % global list
 % list=[list 6];
 %------------------------COPY TO ALL OTHERS
-global ser keyPresses startTime elapsedTime 
+global ser keyPresses startTime elapsedTime
 global sV sD bV bD sW sA bW bA
 keyPresses(1) = keyPresses(1) +1;
 if isempty(startTime)
@@ -268,7 +268,7 @@ function pushbutton7_Callback(hObject, eventdata, handles)
 % global list
 % list=[list 7];
 %------------------------COPY TO ALL OTHERS
-global ser keyPresses startTime elapsedTime 
+global ser keyPresses startTime elapsedTime
 global sV sD bV bD sW sA bW bA
 
 keyPresses(1) = keyPresses(1) +1;
@@ -296,7 +296,7 @@ function pushbutton8_Callback(hObject, eventdata, handles)
 % list=[list 8];
 %--------
 %------------------------COPY TO ALL OTHERS
-global ser keyPresses startTime elapsedTime 
+global ser keyPresses startTime elapsedTime
 global sV sD bV bD sW sA bW bA
 keyPresses(1) = keyPresses(1) +1;
 if isempty(startTime)
@@ -323,7 +323,7 @@ function pushbutton9_Callback(hObject, eventdata, handles)
 % list=[list 9];
 
 %------------------------COPY TO ALL OTHERS
-global ser keyPresses startTime elapsedTime 
+global ser keyPresses startTime elapsedTime
 global sV sD bV bD sW sA bW bA
 
 keyPresses(1) = keyPresses(1) +1;
@@ -347,7 +347,7 @@ function pushbutton_back_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 %--------
-global ser keyPresses startTime elapsedTime 
+global ser keyPresses startTime elapsedTime
 global sV sD bV bD sW sA bW bA
 
 keyPresses(1) = keyPresses(1) +1;
@@ -367,7 +367,7 @@ function pushbutton_del_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 %--------
-global ser keyPresses startTime elapsedTime 
+global ser keyPresses startTime elapsedTime
 global sV sD bV bD sW sA bW bA
 keyPresses(1) = keyPresses(1) +1;
 keyPresses(2) = keyPresses(2) +1;
@@ -382,7 +382,7 @@ function pushbutton_enter_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_enter (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global ser keyPresses startTime elapsedTime 
+global ser keyPresses startTime elapsedTime
 global sV sD bV bD sW sA bW bA
 
 keyPresses(1) = keyPresses(1) +1;
@@ -418,7 +418,7 @@ function pushbutton10_Callback(hObject, eventdata, handles)
 % global list
 % list=[list .];
 %--------
-global ser keyPresses startTime elapsedTime 
+global ser keyPresses startTime elapsedTime
 global sV sD bV bD sW sA bW bA
 
 keyPresses = keyPresses +1;
@@ -431,7 +431,7 @@ end
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = RobotGuiControl_OutputFcn(hObject, eventdata, handles) 
+function varargout = RobotGuiControl_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB

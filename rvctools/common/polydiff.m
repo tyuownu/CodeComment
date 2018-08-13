@@ -30,6 +30,6 @@
 %
 % http://www.petercorke.com
 function pd = polydiff(p)
-	n = length(p)-1;
+    n = length(p)-1;
 
-	pd = [n:-1:1] .* p(1:n);
+    pd = [n:-1:1] .* p(1:n);

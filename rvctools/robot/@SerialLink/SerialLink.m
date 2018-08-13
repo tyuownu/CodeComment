@@ -124,17 +124,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -156,20 +156,20 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         comment
 
         plotopt  % options for the plot method, follow plot syntax
-        
+
         fast    % mex version of rne detected
-        
+
         interface   % interface to a real robot platform
-        
+
         ikineType
-        
+
         trail   % to support trail option
-        
+
         % to support plot method
         movie
         delay
         loop
-        
+
         % to support plot3d method
         model3d
         faces
@@ -187,7 +187,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         links
         T
     end
-    
+
     properties (Access = private)
         mdh
     end
@@ -209,7 +209,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         function r = SerialLink(varargin)
         %SerialLink Create a SerialLink robot object
         %
-        % R = SerialLink(LINKS, OPTIONS) is a robot object defined by a vector 
+        % R = SerialLink(LINKS, OPTIONS) is a robot object defined by a vector
         % of Link class objects which includes the subclasses Revolute,
         % Prismatic, RevoluteMDH or PrismaticMDH.
         %
@@ -218,7 +218,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         % R = SerialLink([R1 R2 ...], OPTIONS) concatenate robots, the base of
         % R2 is attached to the tip of R1.  Can also be written as R1*R2 etc.
         %
-        % R = SerialLink(R1, options) is a deep copy of the robot object R1, 
+        % R = SerialLink(R1, options) is a deep copy of the robot object R1,
         % with all the same properties.
         %
         % R = SerialLink(DH, OPTIONS) is a robot object with kinematics defined by
@@ -266,7 +266,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         % - Link subclass elements passed in must be all standard, or all modified,
         %   DH parameters.
         % - When robots are concatenated (either syntax) the intermediate base and
-        %   tool transforms are removed since general constant transforms cannot 
+        %   tool transforms are removed since general constant transforms cannot
         %   be represented in Denavit-Hartenberg notation.
         %
         % See also Link, Revolute, Prismatic, RevoluteMDH, PrismaticMDH, SerialLink.plot.
@@ -274,7 +274,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
 
             r.links = [];
             r.n = 0;
-            
+
             % default properties
             default.name = 'noname';
             default.comment = '';
@@ -282,8 +282,8 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             default.base = eye(4,4);
             default.tool = eye(4,4);
             default.gravity = [0; 0; 9.81];
-            
-            
+
+
             % process the rest of the arguments in key, value pairs
             opt.name = [];
             opt.comment = [];
@@ -291,7 +291,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             opt.base = [];
             opt.tool = [];
             opt.gravity = [];
-            
+
             opt.offset = [];
             opt.qlim = [];
             opt.plotopt = {};
@@ -302,17 +302,17 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             opt.configs = [];
 
             [opt,arg] = tb_optparse(opt, varargin);
-            
+
 
             if length(arg) == 1
                 % at least one argument, either a robot or link array
-                
+
                 L = arg{1};
-                
+
                 if isa(L, 'Link')
                     % passed an array of Link objects
                     r.links = L;
-                    
+
                 elseif numcols(L) >= 4 && (isa(L, 'double') || isa(L, 'sym'))
                     % passed a legacy DH matrix
                     dh_dyn = L;
@@ -322,53 +322,53 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
                             L(j) =        Link(dh_dyn(j,:), 'modified');
                         else
                             L(j) =        Link(dh_dyn(j,:));
-                        end                      
+                        end
                     end
                     r.links = L;
-                    
+
                 elseif isa(L, 'SerialLink')
                     % passed a SerialLink object
                     if length(L) == 1
                         % clone the passed robot and the attached links
-                        copy(r, L); 
+                        copy(r, L);
 
                         r.links = copy(L.links);
                         default.name = [L.name ' copy'];
                     else
                         % compound the robots in the vector
                         copy(r, L(1));
-                        
+
                         for k=2:length(L)
                             r.links = [r.links copy(L(k).links)];
                             r.name = [r.name '+' L(k).name];
                         end
-                        
+
                         r.tool = L(end).tool; % tool of composite robot from the last one
                         r.gravity = L(1).gravity; % gravity of composite robot from the first one
                     end
-                    
+
                 else
                     error('unknown type passed to robot');
                 end
                 r.n = length(r.links);
             end
-            
-            
+
+
             % set properties of robot object from passed options or defaults
             for p=properties(r)'
                 p = p{1};  % property name
-                
+
                 if isfield(opt, p) && ~isempty( opt.(p) )
                     % if there's a set option, override what's in the robot
                     r.(p) = opt.(p);
                 end
-                
-                if isfield(default, p) && isempty( r.(p) ) 
+
+                if isfield(default, p) && isempty( r.(p) )
                     % otherwise if there's a set default, use that
                     r.(p) = default.(p);
                 end
             end
-            
+
             % other properties
 
             if exist('frne') == 3
@@ -376,9 +376,9 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             else
                 r.fast = false;
             end
-            
+
             r.ikineType = opt.ikine;
-            
+
             r.gravity = r.gravity(:);
             assert(length(r.gravity) == 3, 'RTB:SerialLink:badarg', 'gravity must be a 3-vector');
 
@@ -393,7 +393,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
                     error('RTB:SerialLink:badarg', 'robot has mixed D&H links conventions');
                 end
             end
-            
+
             if ~isempty(opt.configs)
                 % add passed configurations as dynamic properties of the robot
                 for i=1:2:length(opt.configs)
@@ -404,7 +404,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
                     r.(name) = val;
                 end
             end
-            
+
         end
 
         %{
@@ -419,18 +419,18 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             end
         end
         %}
-        
+
         function copy(out, in)
             C = metaclass(in);
             P = C.Properties;
-            
+
             for k=1:length(P)
                 if ~P{k}.Dependent
                     out.(P{k}.Name) = in.(P{k}.Name);
                 end
             end
         end
-        
+
         function r2 = plus(R, L)
             %SerialLink.plus  Append a link objects to a robot
             %
@@ -443,12 +443,12 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             %
             % See also Link.plus.
             assert( isa(L, 'Link'), 'RTB:SerialLink: second operand for + operator must be a Link class');
-            
+
             R.links = [R.links L];
             r2 = R;
 
         end
-        
+
         function r2 = mtimes(r, l)
         %SerialLink.mtimes Concatenate robots
         %
@@ -456,7 +456,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         % robot R2 to the end of robot R1.
         %
         % Notes::
-        % - If R1 has a tool transform or R2 has a base transform these are 
+        % - If R1 has a tool transform or R2 has a base transform these are
         %   discarded since DH convention does not allow for general intermediate
         %   transformations.
             if isa(l, 'SerialLink')
@@ -474,7 +474,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         % R.display() displays the robot parameters in human-readable form.
         %
         % Notes::
-        % - This method is invoked implicitly at the command line when the result 
+        % - This method is invoked implicitly at the command line when the result
         %   of an expression is a SerialLink object and the command has no trailing
         %   semicolon.
         %
@@ -498,7 +498,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         %SerialLink.char Convert to string
         %
         % S = R.char() is a string representation of the robot's kinematic parameters,
-        % showing DH parameters, joint structure, comments, gravity vector, base and 
+        % showing DH parameters, joint structure, comments, gravity vector, base and
         % tool transform.
 
             s = '';
@@ -551,9 +551,9 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
 %                s_grav = horzcat(char('grav = ', ' ', ' '), mat2str(r.gravity'));
 %                 s_grav = char(s_grav, ' ');
 %                 s_base = horzcat(char('  base = ',' ',' ', ' '), mat2str(r.base));
-% 
+%
 %                 s_tool = horzcat(char('   tool =  ',' ',' ', ' '), mat2str(r.tool));
-% 
+%
 %                 line = horzcat(s_grav, s_base, s_tool);
                 %s = char(s, sprintf('gravity: (%g, %g, %g)', r.gravity));
                 if ~isidentity(r.base)
@@ -568,7 +568,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
                 end
             end
         end
-        
+
         function T = A(r, joints, q)
         %SerialLink.A Link transformation matrices
         %
@@ -594,12 +594,12 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         %
         % See also Link.A.
             T = SE3;
-            
+
             for joint=joints
                 T = T * r.links(joint).A(q(joint));
             end
         end
-        
+
         function q = getpos(robot)
             %SerialLink.getpos Get joint coordinates from graphical display
             %
@@ -607,16 +607,16 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             % teach operation on the graphical robot.
             %
             % See also SerialLink.plot, SerialLink.teach.
-            
+
             rhandles = findobj('Tag', robot.name);
-            
+
             % find the graphical element of this name
             if isempty(rhandles)
                 error('RTB:getpos:badarg', 'No graphical robot of this name found');
             end
             % get the info from its Userdata
             info = get(rhandles(1), 'UserData');
-            
+
             % the handle contains current joint angles (set by plot)
             if ~isempty(info.q)
                 q = info.q;
@@ -635,7 +635,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
                 r.tool = SE3(v);
             end
         end
-        
+
         function set.fast(r,v)
             if v && exist('frne') == 3
                 r.fast = true;
@@ -664,7 +664,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         function v = get.alpha(r)
             v = [r.links.alpha];
         end
-        
+
         function set.offset(r, v)
             if length(v) ~= length(v)
                 error('offset vector length must equal number DOF');
@@ -728,7 +728,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         function v = islimit(r,q)
         %SerialLink.islimit Joint limit test
         %
-        % V = R.islimit(Q) is a vector of boolean values, one per joint, 
+        % V = R.islimit(Q) is a vector of boolean values, one per joint,
         % false (0) if Q(i) is within the joint limits, else true (1).
         %
         % Notes::
@@ -756,14 +756,14 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         %
         % See also SerialLink.ikine6s.
             L = r.links(end-2:end);
-            
+
             alpha = [-pi/2 pi/2];
             v =  all([L(1:2).a] == 0) && ...
                 (L(2).d == 0) && ...
                 (all([L(1:2).alpha] == alpha) || all([L(1:2).alpha] == -alpha)) && ...
                 all([L(1:3).isrevolute]);
         end
-        
+
         function v = isconfig(r, s)
             %SerialLink.isconfig Test for particular joint configuration
             %
@@ -776,11 +776,11 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             % See also SerialLink.config.
             v = strcmpi(r.config(), s);
         end
-        
+
         function payload(r, m, p)
             %SerialLink.payload Add payload mass
             %
-            % R.payload(M, P) adds a payload with point mass M at position P 
+            % R.payload(M, P) adds a payload with point mass M at position P
             % in the end-effector coordinate frame.
             %
             % R.payload(0) removes added payload
@@ -802,7 +802,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
                 lastlink.m = m;
             end
         end
-        
+
         function t = jointdynamics(robot, q, qd)
             %SerialLink.jointdyamics Transfer function of joint actuator
             %
@@ -818,16 +818,16 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
             % - Coulomb friction is ignoredf.
             %
             % See also tf, SerialLink.rne.
-            
+
             for j=1:robot.n
                 link = robot.links(j);
-                
+
                 % compute inertia for this joint
                 zero = zeros(1, robot.n);
                 qdd = zero; qdd(j) = 1;
                 M = robot.rne(q, zero, qdd, 'gravity', [0 0 0]);
                 J = link.Jm + M(j)/abs(link.G)^2;
-                
+
                 % compute friction
                 B = link.B;
                 if nargin == 3
@@ -842,7 +842,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
 
             end
         end
-        
+
         function jt = jtraj(r, T1, T2, t, varargin)
             %SerialLink.jtraj Joint space trajectory
             %
@@ -869,14 +869,14 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
                 opt.ikine = @r.ikine;
             end
             [opt,args] = tb_optparse(opt, varargin);
-            
+
             q1 = opt.ikine(T1, args{:});
             q2 = opt.ikine(T2, args{:});
-            
+
             jt = jtraj(q1, q2, t);
         end
-        
-        
+
+
         function dyn(r, j)
             %SerialLink.dyn Print inertial properties
             %
@@ -893,39 +893,39 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
                 r.links.dyn();
             end
         end
-        
+
         function sr = sym(r)
             sr = SerialLink(r);
             for i=1:r.n
                 sr.links(i) = r.links(i).sym;
             end
         end
-        
+
         function p = isprismatic(robot)
             p = robot.links.isprismatic();
         end
-        
+
         function p = isrevolute(robot)
             p = robot.links.isrevolute();
         end
-        
+
         function qdeg = todegrees(robot, q)
             k = robot.isrevolute;
             qdeg = q;
             qdeg(:,k) = qdeg(:,k) * pi/180;
         end
-        
+
         function qrad = toradians(robot, q)
             k = robot.isrevolute;
             qrad = q;
             qrad(:,k) = qrad(:,k) * 180/pi;
         end
-        
+
         function J = jacobn(robot, varargin)
             warning('RTB:SerialLink:deprecated', 'Use jacobe instead of jacobn');
             J = robot.jacobe(varargin{:});
         end
-        
+
         function rmdh = MDH(r)
         %SerialLink.MDH  Convert standard DH model to modified
         %
@@ -936,9 +936,9 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         % - can only be applied to a model expressed with standard DH parameters.
         %
         % See also:  DH
-        
+
             assert(isdh(r), 'RTB:SerialLink:badmodel', 'this method can only be applied to a model with standard DH parameters');
-            
+
             % first joint
             switch r.links(1).jointtype()
                 case 'R'
@@ -972,13 +972,13 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
                             'qlim', r.links(i).qlim );
                 end
             end
-            
+
             % last joint
             tool = SE3(r.links(r.n).a, 0, 0) * SE3.Rx(r.links(r.n).alpha) * r.tool;
-            
+
             rmdh = SerialLink(link, 'base', r.base, 'tool', tool);
         end
-        
+
         function rdh = DH(r)
         %SerialLink.DH  Convert modified DH model to standard
         %
@@ -989,9 +989,9 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         % - can only be applied to a model expressed with modified DH parameters.
         %
         % See also:  MDH
-            
+
             assert(ismdh(r), 'RTB:SerialLink:badmodel', 'this method can only be applied to a model with modified DH parameters');
-            
+
             base = r.base * SE3(r.links(1).a, 0, 0) * SE3.Rx(r.links(1).alpha);
 
             % middle joints
@@ -1013,7 +1013,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
                             'qlim', r.links(i).qlim );
                 end
             end
-            
+
             % last joint
             switch r.links(1).jointtype()
                 case 'R'
@@ -1027,10 +1027,10 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
                         'offset', r.links(r.n).offset, ...
                         'qlim', r.links(r.n).qlim );
             end
-            
+
             rdh = SerialLink(link, 'base', base, 'tool', r.tool);
         end
-        
+
         function v = ismdh(r)
         %SerialLink.ismdh Test if SerialLink object has a modified DH model
         %
@@ -1039,7 +1039,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         % See also: isdh
             v = r.mdh;
         end
-        
+
         function v = isdh(r)
         %SerialLink.isdh Test if SerialLink object has a standard DH model
         %
@@ -1048,7 +1048,7 @@ classdef SerialLink < handle & dynamicprops % & matlab.mixin.Copyable
         % See also: ismdh
             v = ~r.mdh;
         end
-        
+
     end % methods
 
 end % classdef

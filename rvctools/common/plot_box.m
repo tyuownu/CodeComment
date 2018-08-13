@@ -9,7 +9,7 @@
 % PLOT_BOX('centre', P, 'size', W, OPTIONS) draws a box with center at P=[X,Y] and
 % with dimensions W=[WIDTH HEIGHT].
 %
-% PLOT_BOX('topleft', P, 'size', W, OPTIONS) draws a box with top-left at P=[X,Y] 
+% PLOT_BOX('topleft', P, 'size', W, OPTIONS) draws a box with top-left at P=[X,Y]
 % and with dimensions W=[WIDTH HEIGHT].
 %
 % PLOT_BOX('matlab', BOX, LS) draws box(es) as defined using the MATLAB convention of
@@ -36,17 +36,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -115,11 +115,11 @@ function plot_box(varargin)
     end
     x = [x1 x2 x2 x1 x1];
     y = [y1 y1 y2 y2 y1];
-    
-    
+
+
     holdon = ishold;
     hold on
-    
+
     if isempty(opt.fillcolor)
         % outline only
         plot(x, y, args{:})

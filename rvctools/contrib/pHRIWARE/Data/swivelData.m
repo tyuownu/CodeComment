@@ -1,11 +1,11 @@
 %SWIVELDATA Create look-up tables of swivel angle median and range
-% 
+%
 % Will save the file SwivelData.mat to the same location as this
 % function. The median and range look-up tables are called phi_med and
 % phi_range respectively. Angles are in radians, and non-reachable
 % points are NaN. They are made with 1deg resolution, and are nxnxn in
 % size, where n may be set, but default 101.
-% 
+%
 % Copyright (C) Bryan Moutrie, 2013-2014
 % Licensed under the GNU Lesser General Public License
 % see full file for full statement
@@ -20,10 +20,10 @@
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
-% 
+%
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -31,7 +31,7 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 
 w = which('wrapToPi');
@@ -64,7 +64,7 @@ for x = 1:n
             [~,~,Tu] = h2fsu(AP,[X(x),Y(y),Z(z)]',PHI);
             [Q1(:,1:3), Q2(:,1:3)] = gikine(AP{1},Tu);
             [~, u] = hal.reachable(Q1, Q2);
-                   
+
             valid = logical(~u');
 %             v = find(valid);
 %             if ~isempty(v)
@@ -91,13 +91,13 @@ for x = 1:n
 %                     valid = v;
 %                 end
 %             end
-                
+
                 reachablePhi = PHI(valid);
-                
+
                 if ~isempty(reachablePhi)
                     phiM = max(reachablePhi);
                     phim = min(reachablePhi);
-                   
+
                     if phim == PHI(1) && phiM == PHI(end)
                         unreachablePhi = PHI(logical(~valid));
                         phiM = min(unreachablePhi) + 1*d2r + 2*pi;
@@ -105,10 +105,10 @@ for x = 1:n
                     end
                 else
                     phiM = NaN;
-                    phim = NaN;    
+                    phim = NaN;
                 end
-                
-            
+
+
             phi_med(x,y,z) = (phiM+phim)/2;
             phi_range(x,y,z) = (phiM-phim)/2;
         end

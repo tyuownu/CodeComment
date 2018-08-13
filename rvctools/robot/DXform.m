@@ -1,6 +1,6 @@
 %DXform Distance transform navigation class
 %
-% A concrete subclass of the abstract Navigation class that implements the distance 
+% A concrete subclass of the abstract Navigation class that implements the distance
 % transform navigation algorithm which computes minimum distance paths.
 %
 % Methods::
@@ -27,7 +27,7 @@
 %
 % Notes::
 % - Obstacles are represented by NaN in the distancemap.
-% - The value of each element in the distancemap is the shortest distance from the 
+% - The value of each element in the distancemap is the shortest distance from the
 %   corresponding point in the map to the current goal.
 %
 % References::
@@ -41,17 +41,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -98,11 +98,11 @@ classdef DXform < Navigation
         function s = char(dx)
             %DXform.char Convert to string
             %
-            % DX.char() is a string representing the state of the object in 
+            % DX.char() is a string representing the state of the object in
             % human-readable form.
             %
             % See also DXform.display, Navigation.char
- 
+
             % most of the work is done by the superclass
             s = char@Navigation(dx);
 
@@ -124,12 +124,12 @@ classdef DXform < Navigation
                 disp('Goal changed -> distancemap cleared');
             end
         end
-  
+
         function plan(dx, varargin)
             %DXform.plan Plan path to goal
             %
             % DX.plan(GOAL, OPTIONS) plans a path to the goal given to the constructor,
-            % updates the internal distancemap where the value of each element is the 
+            % updates the internal distancemap where the value of each element is the
             % minimum distance from the corresponding point to the goal.
             %
             % DX.plan(GOAL, OPTIONS) as above but goal is specified explicitly
@@ -143,19 +143,19 @@ classdef DXform < Navigation
             % See also Navigation.path.
 
             opt.animate = false;
-            
+
             [opt,args] = tb_optparse(opt, varargin);
-            
+
             if opt.animate
                 show = 0.05;
             else
                 show = 0;
             end
-            
+
             if ~isempty(args) && isvec(args{1},2)
                 dx.setgoal(args{1});
             end
-            
+
             assert(~isempty(dx.goal), 'RTB:DXform:plan', 'no goal specified here or in constructor');
 
             dx.distancemap = distancexform(dx.occgridnav, dx.goal, dx.metric, show);
@@ -185,7 +185,7 @@ classdef DXform < Navigation
             if isempty(dx.distancemap)
                 error('No distancemap computed, you need to plan');
             end
-            
+
             % list of all possible directions to move from current cell
             directions = [
                 -1 -1
@@ -199,7 +199,7 @@ classdef DXform < Navigation
                 1 1];
 
             x = robot(1); y = robot(2);
-            
+
             % find the neighbouring cell that has the smallest distance
             mindist = Inf;
             mindir = [];
@@ -248,7 +248,7 @@ classdef DXform < Navigation
                 if isempty(varargin)
                     varargin{1} = 'k.';
                 end
-                plot3(p(:,1), p(:,2), height, varargin{:})             
+                plot3(p(:,1), p(:,2), height, varargin{:})
                 hold off
             end
         end

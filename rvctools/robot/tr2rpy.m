@@ -34,17 +34,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -52,11 +52,11 @@
 
 % TODO singularity for XYZ case,
 function [rpy,order] = tr2rpy(R, varargin)
-    
+
     opt.deg = false;
     opt.order = {'zyx', 'xyz', 'arm', 'vehicle', 'yxz', 'camera'};
     opt = tb_optparse(opt, varargin);
-    
+
     s = size(R);
     if length(s) > 2
         rpy = zeros(s(3), 3);
@@ -65,9 +65,9 @@ function [rpy,order] = tr2rpy(R, varargin)
         end
         return
     end
-    rpy = zeros(1,3);   
-    
-    
+    rpy = zeros(1,3);
+
+
     assert(isrot(R) || ishomog(R), 'RTB:tr2rpy:badarg', 'argument must be a 3x3 or 4x4 matrix');
     switch opt.order
         case {'xyz', 'arm'}
@@ -85,10 +85,10 @@ function [rpy,order] = tr2rpy(R, varargin)
             else
                 rpy(1) = -atan2(R(1,2), R(1,1));
                 rpy(3) = -atan2(R(2,3), R(3,3));
-                
+
                 rpy(2) = atan2(R(1,3)*cos(rpy(1)), R(1,1));
             end
-            
+
         case {'zyx', 'vehicle'}
             opt.order = 'zyx';
             % old ZYX order (as per Paul book)
@@ -105,15 +105,15 @@ function [rpy,order] = tr2rpy(R, varargin)
             else
                 rpy(1) = atan2(R(3,2), R(3,3));  % R
                 rpy(3) = atan2(R(2,1), R(1,1));  % Y
-                
+
                 rpy(2) = atan2(-R(3,1)*cos(rpy(1)), R(3,3));
             end
-            
+
         case {'yxz', 'camera'}
             opt.order = 'yxz';
             if abs(abs(R(2,3)) - 1) < eps  % when |R23| == 1
                 % singularity
-                
+
 
                 rpy(1) = 0;
                 if R(2,3) < 0
@@ -121,15 +121,15 @@ function [rpy,order] = tr2rpy(R, varargin)
                 else
                     rpy(3) = atan2(-R(3,1), -R(3,2));   % R+Y
                 end
-                
+
                 rpy(2) = -asin(R(2,3));    % P
             else
                 rpy(1) = atan2(R(2,1), R(2,2));
                 rpy(3) = atan2(R(1,3), R(3,3));
-                
+
                 rpy(2) = atan2(-cos(rpy(1))*R(2,3), R(2,2));
             end
-            
+
     end
     if opt.deg
         rpy = rpy * 180/pi;

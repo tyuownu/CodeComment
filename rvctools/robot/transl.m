@@ -32,17 +32,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -53,7 +53,7 @@ function [t1,t2,t3] = transl(x, y, z)
         if ishomog(x)
             if ndims(x) == 3
                 % transl(T)  -> P, trajectory case
-                if nargout == 1 
+                if nargout == 1
                     t1 = squeeze(x(1:3,4,:))';
                 elseif nargout == 3
                     t1 = squeeze(x(1,4,:))';
@@ -69,7 +69,7 @@ function [t1,t2,t3] = transl(x, y, z)
                     t2 = x(2,4);
                     t3 = x(3,4);
                 end
-                    
+
             end
         elseif length(x) == 3
             % transl(P) -> T
@@ -81,7 +81,7 @@ function [t1,t2,t3] = transl(x, y, z)
             n = size(x,1);
             t1 = repmat(eye(4,4), [1 1 n]);
             t1(1:3,4,:) = x';
-        end    
+        end
     elseif nargin == 3
         % transl(x,y,z) -> T
         t = [x; y; z];

@@ -1,9 +1,9 @@
 %JTRAJ Compute a joint space trajectory
 %
 % [Q,QD,QDD] = JTRAJ(Q0, QF, M) is a joint space trajectory Q (MxN) where the joint
-% coordinates vary from Q0 (1xN) to QF (1xN).  A quintic (5th order) polynomial is used 
-% with default zero boundary conditions for velocity and acceleration.  
-% Time is assumed to vary from 0 to 1 in M steps.  Joint velocity and 
+% coordinates vary from Q0 (1xN) to QF (1xN).  A quintic (5th order) polynomial is used
+% with default zero boundary conditions for velocity and acceleration.
+% Time is assumed to vary from 0 to 1 in M steps.  Joint velocity and
 % acceleration can be optionally returned as QD (MxN) and QDD (MxN) respectively.
 % The trajectory Q, QD and QDD are MxN matrices, with one row per time step,
 % and one column per joint.
@@ -14,7 +14,7 @@
 % [Q,QD,QDD] = JTRAJ(Q0, QF, T) as above but the number of steps in the
 % trajectory is defined by the length of the time vector T (Mx1).
 %
-% [Q,QD,QDD] = JTRAJ(Q0, QF, T, QD0, QDF) as above but specifies initial and 
+% [Q,QD,QDD] = JTRAJ(Q0, QF, T, QD0, QDF) as above but specifies initial and
 % final joint velocity for the trajectory and a time vector.
 %
 % Notes::
@@ -30,17 +30,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -77,7 +77,7 @@ function [qt,qdt,qddt] = jtraj(q0, q1, tv, qd0, qd1)
 
     tt = [t.^5 t.^4 t.^3 t.^2 t ones(size(t))];
     c = [A B C zeros(size(A)) E F]';
-    
+
     qt = tt*c;
 
     % compute optional velocity

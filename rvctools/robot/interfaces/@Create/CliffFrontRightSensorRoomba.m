@@ -9,10 +9,10 @@ function [state] = CliffFrontRightSensorRoomba(serPort);
 state = nan;
 
 try
-    
-%Flush Buffer    
+
+%Flush Buffer
 N = serPort.BytesAvailable();
-while(N~=0) 
+while(N~=0)
 fread(serPort,N);
 N = serPort.BytesAvailable();
 end
@@ -20,7 +20,7 @@ end
 warning off
 global td
 
-fwrite(serPort, [142]);  fwrite(serPort,11); 
+fwrite(serPort, [142]);  fwrite(serPort,11);
 CliffFrntRght = dec2bin(fread(serPort, 1));
 state = bin2dec(CliffFrntRght(end));
 

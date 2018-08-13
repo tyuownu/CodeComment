@@ -7,7 +7,7 @@
 % Methods::
 %  RRT          Constructor
 %  plan         Compute the tree
-%  query        Compute a path 
+%  query        Compute a path
 %  plot         Display the tree
 %  display      Display the parameters in human readable form
 %  char         Convert to string
@@ -25,10 +25,10 @@
 %
 % References::
 % - Randomized kinodynamic planning,
-%   S. LaValle and J. Kuffner, 
+%   S. LaValle and J. Kuffner,
 %   International Journal of Robotics Research vol. 20, pp. 378-400, May 2001.
 % - Probabilistic roadmaps for path planning in high dimensional configuration spaces,
-%   L. Kavraki, P. Svestka, J. Latombe, and M. Overmars, 
+%   L. Kavraki, P. Svestka, J. Latombe, and M. Overmars,
 %   IEEE Transactions on Robotics and Automation, vol. 12, pp. 566-580, Aug 1996.
 % - Robotics, Vision & Control, Section 5.2.5,
 %   P. Corke, Springer 2011.
@@ -39,17 +39,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -72,12 +72,12 @@ classdef RRT < Navigation
 
         xrange          % range of x coordinates
         yrange          % range of y coordinates
-        
+
         speed           % speed of vehicle
         vehicle         % Vehicle class object describes kinematics
-        
+
         revcost         % penalty for going backwards
-        
+
         root            % coordinate of the root of the tree (3x1)
     end
 
@@ -94,7 +94,7 @@ classdef RRT < Navigation
         %
         % Options::
         % 'npoints',N    Number of nodes in the tree (default 500)
-        % 'simtime',T    Interval over which to simulate kinematic model toward 
+        % 'simtime',T    Interval over which to simulate kinematic model toward
         %                random point (default 0.5s)
         % 'goal',P       Goal position (1x2) or pose (1x3) in workspace
         % 'speed',S      Speed of vehicle [m/s] (default 1)
@@ -127,14 +127,14 @@ classdef RRT < Navigation
             opt.speed = vehicle.speedmax;
             opt.revcost = 1;
             opt.root = [0 0 0];
-            
+
             [rrt,args] = tb_optparse(opt, varargin, rrt);
-            
+
             if isempty(rrt.occgrid)
                 opt = [];
                 opt.range = 5;
                 [opt,args] = tb_optparse(opt, args);
-                
+
                 % range can be specified as scalar, min/max, different min/max per
                 % direction
                 switch length(opt.range)
@@ -187,7 +187,7 @@ classdef RRT < Navigation
             opt.samples = false;
             opt.goal = [];
             opt.ntrials = 50;
-            
+
             opt = tb_optparse(opt, varargin);
 
             if ~isempty(opt.goal)
@@ -238,13 +238,13 @@ classdef RRT < Navigation
                 % pick a point not in obstacle
                 while true
                     xy = rrt.randxy();  % get random coordinate (x,y)
-                    
+
                     if isempty(rrt.occgrid)
                         break
                     else
                         % we have an occgrid
                         xy = round( xy );  % round it to a grid cell coordinate
-                        
+
                         % test if lies in the obstacle map
                         try
                             if ~rrt.isoccupied(xy)
@@ -275,9 +275,9 @@ classdef RRT < Navigation
 
                 % Step 5
                 % figure how to drive the robot from xnear to xrand
-                                
+
                 best = rrt.bestpath(xnear, xrand, opt.ntrials);
-                
+
                 xnew = best.path(:,best.k);
                 if opt.samples
                     plot(xnew(1), xnew(2), 'o');
@@ -294,7 +294,7 @@ classdef RRT < Navigation
                 % Step 7,8
                 % add xnew to the graph, with an edge from xnear
                 vnew = rrt.graph.add_node(xnew);
-                
+
 
                 if rrt.graph.vdata(vnear).vel * best.vel < 0
                     % we changed direction, penalise that
@@ -303,14 +303,14 @@ classdef RRT < Navigation
                     cost = 1;
                 end
                 rrt.graph.add_edge(vnear, vnew, cost);
-                
+
                 rrt.graph.setvdata(vnew, best);
-                
+
                 npoints = npoints + 1;
                 if opt.progress
                     Navigation.progress(h, npoints / rrt.npoints);
                 end
-                
+
             end
 
             if opt.progress
@@ -322,8 +322,8 @@ classdef RRT < Navigation
         function p_ = query(rrt, xstart, xgoal)
         %RRT.query Find a path between two points
         %
-        % X = R.path(START, GOAL) finds a path (Nx3) from pose START (1x3) 
-        % to pose GOAL (1x3).  The pose is expressed as [X,Y,THETA]. 
+        % X = R.path(START, GOAL) finds a path (Nx3) from pose START (1x3)
+        % to pose GOAL (1x3).  The pose is expressed as [X,Y,THETA].
         %
         % R.path(START, GOAL) as above but plots the path in 3D, where the vertical
         % axis is vehicle heading angle.  The nodes are shown as circles and the
@@ -338,16 +338,16 @@ classdef RRT < Navigation
 
             assert(rrt.graph.n > 0, 'RTB:RRT: there is no plan');
             rrt.checkquery(xstart, xgoal);
-            
+
             g = rrt.graph;
             vstart = g.closest(xstart);
             vgoal = g.closest(xgoal);
 
             % find path through the graph using A* search
             [path,cost] = g.Astar(vstart, vgoal);
-            
+
             fprintf('A* path cost %g\n', cost);
-          
+
             % concatenate the vehicle motion segments
             cpath = [];
             for i = 1:length(path)
@@ -367,15 +367,15 @@ classdef RRT < Navigation
                 clf; hold on
 
                 plot2(g.coord(path)', 'o');     % plot the node coordinates
-                
+
                 for i = 1:length(path)
                     p = path(i);
                     b = g.vdata(p);            % get path data for segment
-                    
+
                     % draw segment with direction dependent color
                     if ~isempty(b)
                         % if the vertex has a path leading to it
-                        
+
                         if i >= length(path) || g.edgedir(p, path(i+1)) > 0
                             % positive edge
                             %  draw from prev vertex to end of path
@@ -385,7 +385,7 @@ classdef RRT < Navigation
                             %  draw reverse path to next next vertex
                             seg = [  b.path(:,end:-1:1)  g.coord(path(i+1))]';
                         end
-                        
+
                         if b.vel > 0
                             plot2(seg, 'b');
                         else
@@ -411,13 +411,13 @@ classdef RRT < Navigation
 
             % display the occgrid background
             rrt.plot_bg(varargin{:});
-            
+
             % display the graph
             %rrt.graph.plot('noedges', 'NodeSize', 3, 'NodeFaceColor', 'm', 'NodeEdgeColor', 'm', 'edges');
-            
+
             rrt.graph.plot('noedges', 'nocomponentcolor', 'NodeSize', 3, 'NodeFaceColor', 'b', 'NodeEdgeColor', 'b', 'edges');
 hold on
-            
+
             % display the occgrid background
             rrt.plot_fg(varargin{:});
             axis([rrt.xrange rrt.yrange])
@@ -438,7 +438,7 @@ hold on
         % R.char() is a string representing the state of the RRT
         % object in human-readable form.
         %
-        
+
             % invoke the superclass char() method
             s = char@Navigation(rrt);
 
@@ -452,7 +452,7 @@ hold on
                 s = char(s, char(rrt.vehicle) );
             end
         end
-        
+
 
     end % methods
 
@@ -469,8 +469,8 @@ hold on
             x0 = x0(:); xg = xg(:);
 
             best.d = Inf;
-            for i=1:N   % for multiple trials 
-            
+            for i=1:N   % for multiple trials
+
                 %choose random direction of motion and random steer angle
                 if rand > 0.5
                     vel = rrt.speed;
@@ -478,17 +478,17 @@ hold on
                     vel = -rrt.speed;
                 end
                 steer = (2*rrt.rand - 1) * rrt.vehicle.steermax;    % uniformly distributed
-                
-                % simulate motion of vehicle for this speed and steer angle which 
+
+                % simulate motion of vehicle for this speed and steer angle which
                 % results in a path
                 x = rrt.vehicle.run2(rrt.simtime, x0, vel, steer)';
-                
+
                 %% find point on the path closest to xg
                 % distance of all path points from goal
                 d = colnorm( [bsxfun(@minus, x(1:2,:), xg(1:2)); angdiff(x(3,:), xg(3))] );
                 % the closest one
                 [dmin,k] = min(d);
-                
+
                 % is it the best so far?
                 if dmin < best.d
                     % yes it is!  save it and the inputs that led to it
@@ -498,8 +498,8 @@ hold on
                     best.vel = vel;
                     best.k = k;
                 end
-            end 
-        end 
+            end
+        end
 
         % generate a random coordinate within the working region
         function xy = randxy(rrt)

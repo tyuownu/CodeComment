@@ -6,13 +6,13 @@
 % acceleration can be optionally returned as SD (Mx1) and SDD (Mx1)
 % respectively.
 %
-% [S,SD,SDD] = LSPB(S0, SF, M, V) as above but specifies the velocity of 
+% [S,SD,SDD] = LSPB(S0, SF, M, V) as above but specifies the velocity of
 % the linear segment which is normally computed automatically.
 %
-% [S,SD,SDD] = LSPB(S0, SF, T) as above but specifies the trajectory in 
+% [S,SD,SDD] = LSPB(S0, SF, T) as above but specifies the trajectory in
 % terms of the length of the time vector T (Mx1).
 %
-% [S,SD,SDD] = LSPB(S0, SF, T, V) as above but specifies the velocity of 
+% [S,SD,SDD] = LSPB(S0, SF, T, V) as above but specifies the velocity of
 % the linear segment which is normally computed automatically and a time
 % vector.
 %
@@ -23,7 +23,7 @@
 % - If M is given
 %   - Velocity is in units of distance per trajectory step, not per second.
 %   - Acceleration is in units of distance per trajectory step squared, not
-%     per second squared. 
+%     per second squared.
 % - If T is given then results are scaled to units of time.
 % - The time vector T is assumed to be monotonically increasing, and time
 %   scaling is based on the first and last element.
@@ -40,17 +40,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -96,7 +96,7 @@ function [s,sd,sdd] = lspb(q0, q1, t, V)
     p = zeros(length(t), 1);
     pd = p;
     pdd = p;
-    
+
     for i = 1:length(t)
         tt = t(i);
 
@@ -152,7 +152,7 @@ function [s,sd,sdd] = lspb(q0, q1, t, V)
             else
                 ylabel('$ds/dt$', 'FontSize', 16, 'Interpreter','latex');
             end
-            
+
             subplot(313)
             plot(xt, pdd, '.-', plotsargs{:});
             grid;
@@ -161,7 +161,7 @@ function [s,sd,sdd] = lspb(q0, q1, t, V)
             else
                 ylabel('$ds^2/dt^2$', 'FontSize', 16, 'Interpreter','latex');
             end
-            
+
             if ~isscalar(t0)
                 xlabel('t (seconds)')
             else

@@ -26,7 +26,7 @@
 %         mdl_planar2
 %         sol = p2.ikine_sym(2);
 %         length(sol)
-%         ans = 
+%         ans =
 %               2       % there are 2 solutions
 %         s1 = sol{1}  % is one solution
 %         q1 = s1(1);      % the expression for q1
@@ -35,7 +35,7 @@
 % References::
 % - Robot manipulators: mathematics, programming and control
 %   Richard Paul, MIT Press, 1981.
-% - The kinematics of manipulators under computer control, 
+% - The kinematics of manipulators under computer control,
 %   D.L. Pieper, Stanford report AI 72, October 1968.
 %
 % Notes::
@@ -47,24 +47,24 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 function out = ikine_sym(srobot, N, varargin)
-    
+
     %
     % Given a robot model the following steps are performed:
     % 1. Convert model to symbolic form
@@ -77,10 +77,10 @@ function out = ikine_sym(srobot, N, varargin)
     % TODO:
     %  - handle the wrist joints, only first 3 joints so far
     %  - handle base and tool transforms
-    
+
     opt.file = [];
     opt = tb_optparse(opt, varargin);
-    
+
     % make a symbolic representation of the passed robot
     srobot = sym(srobot);
     q = srobot.gencoords();
@@ -93,13 +93,13 @@ function out = ikine_sym(srobot, N, varargin)
         otherwise
             error('RTB:ikine_sym:badarg', 'Can only solve for 2,3,6 DOF');
     end
-    
+
     % define symbolic elements of the homogeneous transform
     syms nx ox ax tx
     syms ny oy ay ty
     syms nz oz az tz
     syms d3
-    
+
     % inits
     Q = {};
     trigsubOld = [];
@@ -108,10 +108,10 @@ function out = ikine_sym(srobot, N, varargin)
     % loop over each joint variable
     for j=1:N
         fprintf('----- solving for joint %d\n', j);
-        
+
         % create some equations to sift through
         [left,right] = pieper(srobot, j, 'left');
-        
+
         % decide which equations to look at
         if j <= 3
             % for first three joints only focus on translational part
@@ -122,18 +122,18 @@ function out = ikine_sym(srobot, N, varargin)
             left = left(1:3, 1:3); left = left(:);
             right = right(1:3, 1:3); right = right(:);
         end
-        
+
         % substitute sin/cos for preceding joint as S/C, essentially removes
         % the joint variables from the equations and treats them as constants.
         if ~isempty(trigsubOld)
             left = subs(left, trigsubOld, trigsubNew);
             right = subs(right, trigsubOld, trigsubNew);
         end
-        
+
         % then simplify the LHS
         %   do it after the substitution to prevent sum of angle terms being introduced
         left = simplify(left);
-        
+
         % search for a solveable equation:
         %    function of current joint variable on the LHS
         %    constant element on the RHS
@@ -144,18 +144,18 @@ function out = ikine_sym(srobot, N, varargin)
                 break;
             end
         end
-        
+
         eq = [];
-        
+
         if ~isnan(k)
             % create the equation to solve: LHS-RHS == 0
             eq = left(k) - right(k);
         else
             % ok, we weren't lucky, try another strategy
-            
+
             % find all equations:
             %    function of current joint variable on the LHS
-            
+
             k = [];
             for i=1:length(left)
                 % has qj on the left and constant on the right
@@ -163,27 +163,27 @@ function out = ikine_sym(srobot, N, varargin)
                     k = [k i];
                 end
             end
-            
+
             % hopefully we found two of them
             if length(k) < 2
                 continue;
             end
-            
+
             % we did, lets see if the sum square RHS is constant
             rhs = simplify(right(k(1))^2 + right(k(2))^2); % was simple
             if isconstant( rhs )
                 % it is, let's sum and square the LHS
                 fprintf('lets square and add %d %d\n', k);
-                
+
                 eq = simplify( expand( left(k(1))^2 + left(k(2))^2 ) ) - rhs; % was simple
             end
         end
-        
+
         % expand the list of joint variable subsitutions
         fprintf('subs sin/cos q%d for S/C\n', j);
         trigsubOld = [trigsubOld mvar('sin(q%d)', j) mvar('cos(q%d)', j)];
         trigsubNew = [trigsubNew mvar('S%d', j) mvar('C%d', j)];
-        
+
         if isempty(eq)
             fprintf('cant solve this equation');
             k
@@ -203,11 +203,11 @@ function out = ikine_sym(srobot, N, varargin)
             Q{j} = solve( eq == 0, q);
         end
     end
-    
+
     % final simplification
     %  get rid of C^2+S^2 and C^4, S^4 terms
     fprintf('**final simplification pass\n')
-    
+
     % create a list of simplifications
     %  substitute S^2 = 1-C^2, S^4=(1-C^2)^2
     tsubOld = [];
@@ -216,7 +216,7 @@ function out = ikine_sym(srobot, N, varargin)
         tsubOld = [tsubOld mvar('S%d', j)^2 mvar('S%d', j)^4];
         tsubNew = [tsubNew 1-mvar('C%d', j)^2 (1-mvar('C%d', j)^2)^2];
     end
-    
+
     for j=1:N
         for k=1:5
             % seem to need to iterate this, not quite sure why
@@ -228,7 +228,7 @@ function out = ikine_sym(srobot, N, varargin)
     if nargout > 0
         out = Q;
     end
-    
+
     if ~isempty(opt.file)
         fprintf('**generate MATLAB code\n')
         gencode(Q);
@@ -252,57 +252,57 @@ end
 % Judicious choice of the equations can lead to joint solutions
 
 function [L,R] = pieper(robot, n, which)
-    
+
     if nargin < 3
         which = 'left';
     end
-    
+
     syms nx ox ax tx real
     syms ny oy ay ty real
     syms nz oz az tz real
-        
+
     T = [nx ox ax tx
         ny oy ay ty
         nx oz az tz
         0  0  0  1 ];
-    
+
     T = inv(robot.base.T) * T * inv(robot.tool.T);
-    
+
     q = robot.gencoords();
-    
-    
+
+
     % Create the symbolic A matrices
     for j=1:robot.n
         A{j} = robot.links(j).A(q(j)).T;
     end
-    
+
     switch which
         case 'left'
             left = T;
             for j=1:n
                 left = inv(A{j}) * left ;
             end
-            
+
             right = eye(4,4);
             for j=n+1:robot.n
                 right = right * A{j};
             end
-            
+
         case 'right'
             left = T;
             for j=1:n
                 left = left * inv(A{robot.n-j+1});
             end
-            
+
             right = eye(4,4);
             for j=1:(robot.n-n)
                 right = right * A{j};
             end
     end
-    
+
     %     left = simple(left);
     %     right = simple(right);
-    
+
     if nargout == 0
         left == right
     elseif nargout == 1
@@ -326,19 +326,19 @@ end
 % joint variable in the expression.
 
 function s = solve_joint(eq, j)
-    
+
     sinj = mvar('sin(q%d)', j);
     cosj = mvar('cos(q%d)', j);
-    
+
     A = getcoef(eq, cosj);
     B = getcoef(eq, sinj);
-    
+
     if isempty(A) || isempty(B)
         warning('don''t know how to solve this kind of equation');
     end
-    
+
     C = -simplify(eq - A*cosj - B*sinj);  % was simple
-    
+
     if C == 0
         % A cos(q) + B sin(q) = 0
         s(2) = atan2(A, -B);
@@ -347,7 +347,7 @@ function s = solve_joint(eq, j)
         % A cos(q) + B sin(q) = C
         r = sqrt(A^2 + B^2 - C^2);
         phi = atan2(A, B);
-        
+
         s(2) = atan2(C, r) - phi;
         s(1) = atan2(C, -r) - phi;
     end
@@ -375,7 +375,7 @@ function v = mvar(fmt, varargin)
         v = sym( sprintf(fmt, varargin{:}), 'real' );
     else
         v = str2sym( sprintf(fmt, varargin{:}) );
-        
+
     end
 end
 
@@ -388,7 +388,7 @@ end
 % Eg. hasonly('sin(q1)*cos(q2)*cos(q4)', [1]) -> false
 
 function s = hasonly(eq, j)
-    
+
     q = findq(eq);
     if isempty(q)
         s = false;
@@ -415,9 +415,9 @@ end
 % Eg. findq('sin(q1)*cos(q2)+S3') -> [1 2]
 
 function q = findq(s)
-    
+
     q = [];
-    
+
     for var=symvar(s)
         if isempty(var)
             break
@@ -438,7 +438,7 @@ end
 % Output a joint expression to a file
 
 function s = gencode(Q, filename)
-    
+
     function s = G(s, fmt, varargin)
         s = strvcat(s, sprintf(fmt, varargin{:}));
     end
@@ -446,7 +446,7 @@ function s = gencode(Q, filename)
     s = 'function q = xikine(T, sol)';
     s = G(s, '  if nargin < 2; sol = ones(1, %d); end', length(Q));
     s = G(s, '  px = T(1,4); py = T(2,4); pz = T(3,4);');
-    
+
     for j=1:3
         Qj = Q{j};   % cast it to subclass
         if length(Qj) == 1
@@ -457,25 +457,25 @@ function s = gencode(Q, filename)
             s = G(s, '  else');
             s = G(s, '    q(%d) = %s', j, matgen2(Qj(2)));
             s = G(s, '  end');
-            
-            
+
+
         end
-        
-        
+
+
         s = G(s, '  S%d = sin(q(%d));', j, j);
         s = G(s, '  C%d = cos(q(%d));', j, j);
         s = G(s, ' ');
-        
-        
+
+
     end
     s = G(s, 'end');
-    
+
     fp = fopen(filename, 'w');
     for i=1:numrows(s)
         fprintf(fp, '%s\n', deblank(s(i,:)));
     end
     fclose(fp);
-    
+
 end
 
 % Generate MATLAB code from an expression
@@ -483,9 +483,9 @@ end
 % Requires a bit of a hack, a subclass of sym (sym2) to do this
 
 function s = matgen2(e)
-    
+
     s = matgen(sym2(e));
-    
+
     k = strfind(s, '=');
     s = deblank( s(k+2:end) );
 end

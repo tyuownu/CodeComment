@@ -39,17 +39,17 @@
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -68,7 +68,7 @@ classdef Arbotix < Machine
     properties
         serPort;
         nservos;
-        
+
         gripper
     end
 
@@ -86,12 +86,12 @@ classdef Arbotix < Machine
         ADDR_SPEED = 32;
         ADDR_POS = 36;
         ADDR_TEMP = 43;
-        
+
         %%% define the instructions
         %  native Arbotix instructions
         INS_READ_DATA = 2;
         INS_WRITE_DATA = 3;
-        
+
         %  pseudo Arbotix instructions, implemented by Arbotix pypose
         INS_ARB_SIZE_POSE = 7;
         INS_ARB_LOAD_POSE = 8;
@@ -100,9 +100,9 @@ classdef Arbotix < Machine
         INS_ARB_LOOP_SEQ = 11;
         INS_ARB_TEST = 25;
     end
-    
+
     % Communications format:
-    % 
+    %
     % To Arbotix:
     %
     % 0xff 0xff ID  LEN  INSTRUC PAYLOAD CHKSUM
@@ -133,7 +133,7 @@ classdef Arbotix < Machine
     %  readdata      Reads data from control table
     %  command       Invokes instruction on servo
 
-    
+
     methods
         function arb = Arbotix(varargin)
             %Arbotix.Arbotix Create Arbotix interface object
@@ -147,25 +147,25 @@ classdef Arbotix < Machine
             %  'baud',B      Set baud rate (default 38400)
             %  'debug',D     Debug level, show communications packets (default 0)
             %  'nservos',N   Number of servos in the chain
-            
+
             opt.port = '';
             opt.debug = false;
             opt.nservos = [];
             opt.baud = 38400;
-            
+
             opt = tb_optparse(opt, varargin);
-            
+
             arb.serPort = opt.port;
             arb.debug = opt.debug;
             arb.nservos = opt.nservos;
-            
+
             arb.connect(opt);
-                       
+
             % open and closed amount
             arb.gripper = [0 2.6];
-            
+
         end
-        
+
         function connect(arb, opt)
             %Arbotix.connect  Connect to the physical robot controller
             %
@@ -173,7 +173,7 @@ classdef Arbotix < Machine
             % controller.
             %
             % See also Arbotix.disconnect.
-            
+
             % clean up any previous instances of the port, can happen...
             for tty = instrfind('port', opt.port)
                 if ~isempty(tty)
@@ -182,20 +182,20 @@ classdef Arbotix < Machine
                     delete(tty);
                 end
             end
-            
+
             if opt.verbose
                 disp('Establishing connection to Arbotix chain...');
             end
-            
+
             arb.serPort = serial(arb.serPort,'BaudRate', opt.baud);
             set(arb.serPort,'InputBufferSize',1000)
             set(arb.serPort, 'Timeout', 1)
             set(arb.serPort, 'Tag', 'Arbotix')
-            
+
             if opt.verbose
                 disp('Opening connection to Arbotix chain...');
             end
-            
+
             pause(0.5);
             try
                 fopen(arb.serPort);
@@ -204,28 +204,28 @@ classdef Arbotix < Machine
                 me.message
                 return
             end
-            
+
             arb.flush();
         end
-        
+
         function disconnect(arb)
             %Arbotix.disconnect  Disconnect from the physical robot controller
             %
             % ARB.disconnect() closes the serial connection.
             %
             % See also Arbotix.connect.
-            
+
             tty = instrfind('port', arb.serPort.port);
             fclose(tty);
             delete(tty);
         end
-        
+
         function s = char(arb)
             %Arbotix.char  Convert Arbotix status to string
             %
             % C = ARB.char() is a string that succinctly describes the status
             % of the Arbotix controller link.
-            
+
             % show serport Status, number of servos
             s = sprintf('Arbotix chain on serPort %s (%s)', ...
                 arb.serPort.port, get(arb.serPort, 'Status'));
@@ -233,7 +233,7 @@ classdef Arbotix < Machine
                 s = strvcat(s, sprintf(' %d servos in chain', arb.nservos));
             end
         end
-        
+
         function display(arb)
             %Arbotix.display Display parameters
             %
@@ -253,7 +253,7 @@ classdef Arbotix < Machine
             disp( char(arb) );
         end % display()
 
-                
+
         function p = getpos(arb, id)
             %Arbotix.getpos Get position
             %
@@ -265,13 +265,13 @@ classdef Arbotix < Machine
             % - N is defined at construction time by the 'nservos' option.
             %
             % See also Arbotix.e2a.
-            
+
             arb.flush();
-            
+
             if nargin < 2
                 id = [];
             end
-            
+
             if ~isempty(id)
                 retval = arb.readdata(id, Arbotix.ADDR_POS, 2);
                 p = Arbotix.e2a( retval.params*[1; 256] );
@@ -286,7 +286,7 @@ classdef Arbotix < Machine
                 end
             end
         end
-        
+
         function setpos(arb, varargin)
             %Arbotix.setpos Set position
             %
@@ -304,11 +304,11 @@ classdef Arbotix < Machine
             %
             % See also Arbotix.a2e.
 
-            
+
             if length(varargin{1}) > 1
                 % vector mode
                 pos = varargin{1};
-                
+
                 if isempty(arb.nservos)
                     error('RTB:Arbotix:notspec', 'Number of servos not specified');
                 end
@@ -318,7 +318,7 @@ classdef Arbotix < Machine
                 for j=1:arb.nservos
                     arb.writedata2(j, Arbotix.ADDR_GOAL, Arbotix.a2e( pos(j) ));
                 end
-                
+
                 % need a separate write for this, since pypose writes max of 2 bytes
                 if nargin == 3
                     speed = varargin{2};
@@ -332,16 +332,16 @@ classdef Arbotix < Machine
             else
                 % single joint mode
                 id = varargin{1}; pos = varargin{2};
-                
+
                 arb.writedata2(id, Arbotix.ADDR_GOAL, Arbotix.a2e( pos ));
-                
+
                 if nargin == 4
                     speed = varargin{3};
                     arb.writedata2(id, Arbotix.ADDR_SPEED, speed);
                 end
             end
         end
-        
+
 
         function setpath(arb, jt, t)
             %Arbotix.setpath Load a path into Arbotix controller
@@ -350,26 +350,26 @@ classdef Arbotix < Machine
             % where P is the number of points on the path and N is the number of
             % robot joints.  Allows for smooth multi-axis motion.
             %
-            % See also Arbotix.a2e.            
-            
+            % See also Arbotix.a2e.
+
             % will the path fit in Arbotix memory?
             if numrows(jt) > 30
                 error('RTB:Arbotix:badarg', 'Too many points on trajectory (30 max)');
             end
-            
+
             jt = Arbotix.a2e(jt);   % convert to encoder values
-            
+
             % set the number of servos
             arb.command(253, Arbotix.INS_ARB_SIZE_POSE, uint8(numcols(jt)));
             pause(0.2);  % this delay is important
-            
+
             % set the poses
             %  payload: <pose#> q1 q2 .. qN
             for i=1:numrows(jt)
                 pose = jt(i,:);
                 arb.command(253, Arbotix.INS_ARB_LOAD_POSE, [i-1 typecast( uint16(pose), 'uint8')]);
             end
-            
+
             % set the sequence in which to execute the poses
             if nargin < 3
                 dt = 200;    % milliseconds between poses
@@ -377,8 +377,8 @@ classdef Arbotix < Machine
                 dt = t*1000;
             end
             dt8 = typecast( uint16(dt), 'uint8');
-            
-            
+
+
             cmd = [];
             for i=1:numrows(jt)
                 cmd = [cmd uint8(i-1) dt8];
@@ -387,15 +387,15 @@ classdef Arbotix < Machine
             cmd = [cmd 255 0 0];   % mark end of sequence
             arb.command(253, Arbotix.INS_ARB_LOAD_SEQ, cmd);
 
-            
+
             % now do it
             arb.command(253, Arbotix.INS_ARB_PLAY_SEQ);
-            
-        end            
-        
-        
 
-                
+        end
+
+
+
+
         function relax(arb, id, status)
             %Arbotix.relax Control relax state
             %
@@ -407,7 +407,7 @@ classdef Arbotix < Machine
             %
             % Notes::
             % - N is defined at construction time by the 'nservos' option.
-            
+
             if nargin == 1 || isempty(id)
                 % vector mode
                 if isempty(arb.nservos)
@@ -433,7 +433,7 @@ classdef Arbotix < Machine
                 end
             end
         end
-        
+
         function setled(arb, id, status)
             %Arbotix.led Set LEDs on servos
             %
@@ -445,25 +445,25 @@ classdef Arbotix < Machine
             % Notes::
             % - N is defined at construction time by the 'nservos' option.
 
-            
+
             if isempty(id)
                 % vector mode
                 if isempty(arb.nservos)
                     error('RTB:Arbotix:notspec', 'Number of servos not specified');
                 end
-                
+
                 for j=1:arb.nservos
-                    
+
                     arb.writedata1(j, Arbotix.ADDR_LED, status);
                 end
             else
                 % single joint mode
-                
+
                 arb.writedata1(id, Arbotix.ADDR_LED, status);
             end
         end
 
-        
+
         function t = gettemp(arb, id)
             %Arbotix.gettemp Get temperature
             %
@@ -472,10 +472,10 @@ classdef Arbotix < Machine
             % T = ARB.GETTEMP() is a vector (1xN) of the temperature of servos 1 to N.
             %
             % Notes::
-            % - N is defined at construction time by the 'nservos' option.            
-            
+            % - N is defined at construction time by the 'nservos' option.
+
             arb.flush();
-            
+
             if nargin == 2
                 retval = arb.readdata(id, Arbotix.ADDR_TEMP, 1);
                 t = retval.params;
@@ -490,13 +490,13 @@ classdef Arbotix < Machine
                 end
             end
         end
-        
+
         function retval = readdata(arb, id, addr, len)
             %Arbotix.readdata Read byte data from servo control table
             %
             % R = ARB.READDATA(ID, ADDR) reads the successive elements of the servo
             % control table for servo ID, starting at address ADDR.  The complete
-            % return status in the structure R, and the byte data is a vector in the 
+            % return status in the structure R, and the byte data is a vector in the
             % field 'params'.
             %
             % Notes::
@@ -505,12 +505,12 @@ classdef Arbotix < Machine
             %   to the screen as well as being sent to the Arbotix.
             %
             % See also Arbotix.receive, Arbotix.command.
-            
+
             arb.command(id, Arbotix.INS_READ_DATA, [addr len]);
-            
+
             retval = arb.receive();
         end
-        
+
         function writedata1(arb, id, addr, data)
             %Arbotix.writedata1 Write byte data to servo control table
             %
@@ -524,12 +524,12 @@ classdef Arbotix < Machine
             %   to the screen as well as being sent to the Arbotix.
             %
             % See also Arbotix.writedata2, Arbotix.command.
-            
+
             % each element of data is converted to a single byte
 
             arb.command(id, Arbotix.INS_WRITE_DATA, [addr uint8(data)]);
         end
-        
+
         function writedata2(arb, id, addr, data)
             %Arbotix.writedata2 Write word data to servo control table
             %
@@ -543,12 +543,12 @@ classdef Arbotix < Machine
             %   to the screen as well as being sent to the Arbotix.
             %
             % See also Arbotix.writedata1, Arbotix.command.
-            
+
             % each element of data is converted to a two byte value
             arb.command(id, Arbotix.INS_WRITE_DATA, [addr typecast( uint16(data), 'uint8')]);
         end
-        
-        
+
+
         function out = command(arb, id, instruc, data)
             %Arbotix.command Execute command on servo
             %
@@ -568,15 +568,15 @@ classdef Arbotix < Machine
             % - If an output argument is requested the serial channel is flushed first.
             %
             % See also Arbotix.receive, Arbotix.flush.
-            
+
             if nargout > 0
                 arb.flush();
             end
-            
+
             if isempty(id)
                 id = 254;   % 0xFE is broadcast
             end
-            
+
             if nargin < 4
                 data = [];
             end
@@ -589,14 +589,14 @@ classdef Arbotix < Machine
                 fprintf('\n');
             end
             fwrite(arb.serPort, out);
-            
+
             if nargout > 0
                 out = arb.receive();
             end
-            
+
         end
-        
-        
+
+
         function out = flush(robot)
             %Arbotix.flush Flush the receive buffer
             %
@@ -604,14 +604,14 @@ classdef Arbotix < Machine
             %
             % S = ARB.FLUSH() as above but returns a vector of all bytes flushed from
             % the channel.
-            %           
+            %
             % Notes::
             % - Every command sent to the Arbotix elicits a reply.
             % - The method receive() should be called after every command.
             % - Some Arbotix commands also return diagnostic text information.
             %
             % See also Arbotix.receive, Arbotix.parse.
-            
+
             %Flush Buffer
             N = robot.serPort.BytesAvailable();
             data = [];
@@ -621,23 +621,23 @@ classdef Arbotix < Machine
                 pause(0.1); % seem to need this
                 N = robot.serPort.BytesAvailable();
             end
-            
+
             if nargout > 0
                 out = data;
             end
-            
+
         end
-       
-        
+
+
         function s = receive(arb)
             %Arbotix.receive Decode Arbotix return packet
             %
-            % R = ARB.RECEIVE() reads and parses the return packet from the Arbotix 
+            % R = ARB.RECEIVE() reads and parses the return packet from the Arbotix
             % and returns a structure with the following fields:
             %  id        The id of the servo that sent the message
             %  error     Error code, 0 means OK
             %  params    The returned parameters, can be a vector of byte values
-            %           
+            %
             % Notes::
             % - Every command sent to the Arbotix elicits a reply.
             % - The method receive() should be called after every command.
@@ -684,7 +684,7 @@ classdef Arbotix < Machine
                         end
                     case 6  % expecting checksum
                         cs = bitcmp(uint8( mod(s.id + len + sum(params), 256)));
-                        
+
                         if arb.debug > 0
                             fprintf('[0x%02x]\n', cs);
                         end
@@ -693,13 +693,13 @@ classdef Arbotix < Machine
                                 c, cs);
                         end
                         state = 0;
-                        
-                        
+
+
                         break;
                 end
             end
         end
-        
+
 %        % Low-level Dynamixel bus functions not supported by pypose sketch
 %        % Need to create better code for the Arbotix board
 %
@@ -711,29 +711,29 @@ classdef Arbotix < Machine
 %        end
 %        function ping(arb, id)
 %            arb.command(id, 1);
-%            
+%
 %            retval = arb.receive();
 %            retval
 %        end
-%        
+%
 %        function regwrite(arb, id, addr, data)
 %            arb.command(id, 4, [addr data]);
 %        end
-%        
+%
 %        function action(arb)
 %            arb.command(id, 5);
 %        end
-%        
+%
 %        function reset(arb, id)
 %            arb.command(id, 6);
 %        end
-%        
+%
 %        function syncwrite(arb, addr, matrix)
 %            % one column per actuator
 %            arb.command(id, hex2dec('83'));
 %        end
     end
-    
+
     methods(Static)
         function a = e2a(e)
             %Arbotix.e2a Convert encoder to angle
@@ -744,9 +744,9 @@ classdef Arbotix < Machine
             % TODO:
             % - Scale factor is constant, should be a parameter to constructor.
             a = (e - 512) / 512 * 150 / 180 * pi;
-            
+
         end
-        
+
         function e = a2e(a)
             %Arbotix.a2e Convert angle to encoder
             %
@@ -756,7 +756,7 @@ classdef Arbotix < Machine
             % - Scale factor is constant, should be a parameter to constructor.
             e = a / pi * 180 / 150 * 512  + 512;
         end
-        
+
         function parse(s)
             %Arbotix.parse Parse Arbotix return strings
             %
@@ -770,9 +770,9 @@ classdef Arbotix < Machine
             % - Some Arbotix commands also return diagnostic text information.
             %
             % See also Arbotix.flush, Arbotix.command.
-            
+
             str = [];
-            
+
             while length(s) > 0
                 if s(1) == 255 && s(2) == 255
                     % we have a packet
@@ -787,6 +787,6 @@ classdef Arbotix < Machine
             end
             fprintf('str: %s\n', char(str));
         end
-        
+
     end
 end

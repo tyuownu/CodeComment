@@ -21,20 +21,20 @@
 
 % MODEL: Kuka, KR5, 6DOF, standard_DH
 
-%mdl_KR5 
+%mdl_KR5
 %Define simplest line model for KUKA KR5 robot
 %Contain DH parameters for KUKA KR5 robot
 %All link lenghts and offsets are measured in cm
 clear L
 %            theta    d           a       alpha
 links = [
-	    Link([0        0.4         0.18    pi/2])
-		Link([0        0.135       0.60    pi])
-		Link([0        0.135       0.12   -pi/2])
-		Link([0        0.62        0       pi/2])
-		Link([0        0           0      -pi/2])
-		Link([0        0           0       0])
-	];
+        Link([0        0.4         0.18    pi/2])
+        Link([0        0.135       0.60    pi])
+        Link([0        0.135       0.12   -pi/2])
+        Link([0        0.62        0       pi/2])
+        Link([0        0           0      -pi/2])
+        Link([0        0           0       0])
+    ];
 
 KR5=SerialLink(links, 'name', 'Kuka KR5');
 KR5.tool=transl(0,0,0.115);

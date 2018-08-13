@@ -125,7 +125,7 @@
 % CREATE_DIR                Add a CREATE_DIR system command to the command object
 % DELETE_FILE               Add a DELETE_FILE system command to the command object
 % WRITEMAILBOX              Add a WRITEMAILBOX system command to the command object
-% 
+%
 % Notes::
 % - Refer to the EV3 documentation or source code for a more detailed
 % description of the commands.
@@ -144,18 +144,18 @@ classdef Command < handle
     %   ,------,------,------,------,------,------,------,------,
     %   |Byte 0|Byte 1|Byte 2|Byte 3|Byte 4|Byte 5|      |Byte n|
     %   '------'------'------'------'------'------'------'------'
-    % 
+    %
     %   Byte 0 – 1: Command size, Little Endian\n
-    % 
+    %
     %   Byte 2 – 3: Message counter, Little Endian\n
-    % 
+    %
     %   Byte 4:     Command type. see following defines   */
-    % 
+    %
     %   #define     SYSTEM_COMMAND_REPLY          0x01    //  System command, reply required
     %   #define     SYSTEM_COMMAND_NO_REPLY       0x81    //  System command, reply not required
     %                                                     /*
     %   Byte 5:     System Command. see following defines */
-    % 
+    %
     %   #define     BEGIN_DOWNLOAD                0x92    //  Begin file down load
     %   #define     CONTINUE_DOWNLOAD             0x93    //  Continue file down load
     %   #define     BEGIN_UPLOAD                  0x94    //  Begin file upload
@@ -173,32 +173,32 @@ classdef Command < handle
     %   #define     ENTERFWUPDATE                 0xA0    //  Restart the brick in Firmware update mode
     %   #define     SETBUNDLEID                   0xA1    //  Set Bundle ID for mode 2
     %   #define     SETBUNDLESEEDID               0xA2    //  Set bundle seed ID for mode 2
-    % 
+    %
     % /*
-    % 
+    %
     %   Byte 6 - n: Dependent on System Command
-    % 
-    % 
-    % 
+    %
+    %
+    %
     %   System Command Response Bytes:
     %   ,------,------,------,------,------,------,------,------,
     %   |Byte 0|Byte 1|Byte 2|Byte 3|      |      |      |Byte n|
     %   '------'------'------'------'------'------'------'------'
-    % 
+    %
     %   Byte 0 – 1: Reply size, Little Endian\n
-    % 
+    %
     %   Byte 2 – 3: Message counter, Little Endian\n
-    % 
+    %
     %   Byte 4:     Reply type. see following defines     */
-    % 
+    %
     %   #define     SYSTEM_REPLY                  0x03    //  System command reply
     %   #define     SYSTEM_REPLY_ERROR            0x05    //  System command reply error
     % /*
     %   Byte 5:     System command this is the response to
-    % 
+    %
     %   Byte 6:     Reply status
     % */
-    % 
+    %
     %   // SYSTEM command return codes
     %   #define     SUCCESS                       0x00
     %   #define     UNKNOWN_HANDLE                0x01
@@ -213,7 +213,7 @@ classdef Command < handle
     %   #define     UNKNOWN_ERROR                 0x0A
     %   #define     ILLEGAL_FILENAME              0x0B
     %   #define     ILLEGAL_CONNECTION            0x0C
-    % 
+    %
     % /*
     %   Byte 7 - n: Response dependent on System Command
     %
@@ -221,50 +221,50 @@ classdef Command < handle
     %   ,------,------,------,------,------,------,------,------,
     %   |Byte 0|Byte 1|Byte 2|Byte 3|Byte 4|Byte 5|      |Byte n|
     %   '------'------'------'------'------'------'------'------'
-    % 
+    %
     %   Byte 0 – 1: Command size, Little Endian\n
-    % 
+    %
     %   Byte 2 – 3: Message counter, Little Endian\n
-    % 
+    %
     %   Byte 4:     Command type. see following defines   */
-    % 
+    %
     %   #define     DIRECT_COMMAND_REPLY          0x00    //  Direct command, reply required
     %   #define     DIRECT_COMMAND_NO_REPLY       0x80    //  Direct command, reply not required
-    % 
+    %
     %                                                     /*
-    % 
+    %
     %   Byte 5 - 6: Number of global and local variables (compressed).
-    % 
+    %
     %                Byte 6    Byte 5
     %               76543210  76543210
     %               --------  --------
     %               llllllgg  gggggggg
-    % 
+    %
     %                     gg  gggggggg  Global variables [0..MAX_COMMAND_GLOBALS]
-    % 
+    %
     %               llllll              Local variables  [0..MAX_COMMAND_LOCALS]
-    % 
+    %
     %   Byte 7 - n: Byte codes
     %
     %                     Direct Command Response Bytes:
     %   ,------,------,------,------,------,------,------,------,
     %   |Byte 0|Byte 1|Byte 2|Byte 3|      |      |      |Byte n|
     %   '------'------'------'------'------'------'------'------'
-    % 
+    %
     %   Byte 0 – 1: Reply size, Little Endian\n
-    % 
+    %
     %   Byte 2 – 3: Message counter, Little Endian\n
-    % 
+    %
     %   Byte 4:     Reply type. see following defines     */
-    % 
+    %
     %   #define     DIRECT_REPLY                  0x02    //  Direct command reply
     %   #define     DIRECT_REPLY_ERROR            0x04    //  Direct command reply error
-    % 
+    %
     %                                                     /*
-    % 
+    %
     %   Byte 5 - n: Response buffer (global variable values)
     %                                                     */
-    
+
     properties
         msg
     end
@@ -277,18 +277,18 @@ classdef Command < handle
             %
             % Example::
             %           c = Command();
-            
+
             cmd.msg = uint8([]);
         end
-            
+
         function delete(cmd)
             % Command.delete Clear command
             %
             % delete(c) clears the command
-            
+
             cmd.msg = '';
         end
-        
+
         function addHeaderSystem(cmd,counter)
             % Command.addHeaderSystem Add a system header with no reply
             %
@@ -300,14 +300,14 @@ classdef Command < handle
             %
             % Example::
             %            cmd.addHeaderSystem(42)
-            
+
            cmd.msg = [cmd.msg typecast(uint16(counter), 'uint8'), uint8(129)];
         end
-        
+
         function addHeaderSystemReply(cmd,counter)
             % Command.addHeaderSystemReply Add a system header with reply
             %
-            % Command.addHeaderSystemReply(counter) adds a system command 
+            % Command.addHeaderSystemReply(counter) adds a system command
             % header with reply (0x01).
             %
             % Notes::
@@ -315,14 +315,14 @@ classdef Command < handle
             %
             % Example::
             %            cmd.addHeaderSystemReply(42)
-            
+
            cmd.msg = [cmd.msg typecast(uint16(counter), 'uint8'), uint8(1)];
         end
-        
+
         function addHeaderDirect(cmd,counter,nGV,nLV)
             % Command.addHeaderDirect Add a direct header with no reply
             %
-            % Command.addHeaderDirect(counter,GV,LV) Adds a direct command 
+            % Command.addHeaderDirect(counter,GV,LV) Adds a direct command
             % header with no reply (0x80).
             %
             % Notes::
@@ -334,14 +334,14 @@ classdef Command < handle
             %
             % Example::
             %            cmd.addHeaderDirect(42,0,0)
-            
+
            cmd.msg = [cmd.msg typecast(uint16(counter), 'uint8'), uint8(128), typecast(bitor(bitshift(uint16(nLV),10),uint16(nGV)), 'uint8')];
         end
-        
+
         function addHeaderDirectReply(cmd,counter,nG,nL)
             % Command.addHeaderDirectReply Add a direct header with reply
             %
-            % Command.addHeaderDirect(counter,GV,LV) Adds a direct command 
+            % Command.addHeaderDirect(counter,GV,LV) Adds a direct command
             % header with reply (0x00).
             %
             % Notes::
@@ -350,25 +350,25 @@ classdef Command < handle
             % - nLV is the number of 1 byte local variables needed.
             % - If you needed a global float varible then GV = 4.
             % - If you nedded a local uint16 variable then LV = 2.
-            % 
+            %
             % Example::
             %            cmd.addHeaderDirectReply(42,0,0)
-            
+
            cmd.msg = [cmd.msg typecast( uint16(counter), 'uint8'), uint8(0), typecast( bitor(bitshift(uint16(nL),10),uint16(nG)), 'uint8')];
         end
-        
+
         function addLength(cmd)
             % Command.addLength Add command length
             %
-            % Command.addLength() adds the command message length to the 
+            % Command.addLength() adds the command message length to the
             % start of command object message.
-            % 
+            %
             % Example::
             %            cmd.addLength()
-            
-           cmd.msg = [typecast( uint16(length(cmd.msg)), 'uint8') cmd.msg]; 
+
+           cmd.msg = [typecast( uint16(length(cmd.msg)), 'uint8') cmd.msg];
         end
-        
+
         function addSystemCommand(cmd,v)
             % Command.addSystemCommand Add a system command
             %
@@ -377,13 +377,13 @@ classdef Command < handle
             %
             % Notes::
             % - v is the system commands which can be found in c_com.h
-            % 
+            %
             % Example::
             %            cmd.addSystemCommand(SystemCommands.BeginDownload)
-            
-           cmd.msg = [cmd.msg uint8(v)]; 
+
+           cmd.msg = [cmd.msg uint8(v)];
         end
-        
+
         function addDirectCommand(cmd,v)
             % Command.addDirectCommand Add a direct command
             %
@@ -395,10 +395,10 @@ classdef Command < handle
             %
             % Example::
             %            cmd.addDirectCommand(SoundSubCodes.Tone)
-            
-           cmd.msg = [cmd.msg uint8(v)]; 
+
+           cmd.msg = [cmd.msg uint8(v)];
         end
-        
+
         function clear(cmd)
             % Command.clear Clear command
             %
@@ -409,21 +409,21 @@ classdef Command < handle
 
             cmd.msg = '';
         end
-        
+
         function s = char(cmd)
             s = '';
             for i=1:length(cmd.msg)
                 s = [s sprintf(' %d', cmd.msg(i))];
             end
         end
-        
+
         function s = hex(cmd)
             s = '';
             for i=1:length(cmd.msg)
                 s = [s sprintf(' %x', cmd.msg(i))];
             end
         end
-        
+
         function display(cmd)
             % Command.display Display the command message (decimal)
             %
@@ -432,15 +432,15 @@ classdef Command < handle
             %
             % Example::
             %           cmd.display()
-            
+
             loose = strcmp( get(0, 'FormatSpacing'), 'loose');
             if loose
                 disp(' ');
             end
             disp([inputname(1), ' = '])
             disp( char(cmd) );
-        end 
-        
+        end
+
         function displayHex(cmd)
             % Command.displayHex Display the command message (hex)
             %
@@ -449,17 +449,17 @@ classdef Command < handle
             %
             % Example::
             %           cmd.displayHex()
-            
+
             loose = strcmp( get(0, 'FormatSpacing'), 'loose');
             if loose
                 disp(' ');
             end
             disp([inputname(1), ' = '])
             disp( hex(cmd) );
-        end 
-        
+        end
+
         function LC0(cmd,v)
-            % Command.LC0 Add a local constant 0 
+            % Command.LC0 Add a local constant 0
             %
             % Command.LC0(v) adds a local constant 0 to the command object.
             %
@@ -467,13 +467,13 @@ classdef Command < handle
             % - v is the numerical value for the LC0 command
             % - Local constant 0 is defined as ((v & PRIMPAR_VALUE) | PRIMPAR_SHORT | PRIMPAR_CONST)
             % - LC0 has a range from -32 to 31 since PRIMPAR_VALUE = 3F
-            % 
+            %
             % Examples::
             %           cmd.LC0(10)
-            
-            cmd.msg = [cmd.msg bitor(bitand(typecast(int8(v),'uint8'),uint8(Primitives.pvalue)),bitor(uint8(Primitives.pshort),uint8(Primitives.pconst)))]; 
+
+            cmd.msg = [cmd.msg bitor(bitand(typecast(int8(v),'uint8'),uint8(Primitives.pvalue)),bitor(uint8(Primitives.pshort),uint8(Primitives.pconst)))];
         end
-        
+
         function LC1(cmd,v)
             % Command.LC1 Add a local constant 1
             %
@@ -483,15 +483,15 @@ classdef Command < handle
             % - v is the numerical value for the LC1 command
             % - Local constant 1 is defined as (PRIMPAR_LONG  | PRIMPAR_CONST | PRIMPAR_1_BYTE),(v & 0xFF)
             % - LC1 has a range from -127 to 128
-            % 
+            %
             % Examples::
             %           cmd.LC1(100)
-            
+
             cmd.msg = [cmd.msg bitor(bitor(uint8(Primitives.plong),uint8(Primitives.pconst)),(uint8(Primitives.p1_byte))), bitand(typecast(int8(v),'uint8'),255)];
         end
-        
+
         function LC2(cmd,v)
-            % Command.LC2 Add a local constant 2 
+            % Command.LC2 Add a local constant 2
             %
             % Command.LC2(v) adds a local constant 2 to the command object.
             %
@@ -499,13 +499,13 @@ classdef Command < handle
             % - v is the numerical value for the LC2 command
             % - Local constant 2 is defined as (PRIMPAR_LONG  | PRIMPAR_CONST | PRIMPAR_2_BYTES),(v & 0xFF),((v >> 8) & 0xFF)
             % - LC2 has a range from -32768 to 32767
-            % 
+            %
             % Examples::
             %           cmd.LC2(1000)
-                        
+
             cmd.msg = [cmd.msg bitor(bitor(uint8(Primitives.plong),uint8(Primitives.pconst)),(uint8(Primitives.p2_byte))), typecast(int16(v), 'uint8')];
         end
-        
+
         function LC4(cmd,v)
             % Command.LC4 Add a local constant 4
             %
@@ -515,16 +515,16 @@ classdef Command < handle
             % - v is the numerical value for the LC4 command
             % - Local constant 4 is defined as(PRIMPAR_LONG  | PRIMPAR_CONST | PRIMPAR_4_BYTES),((ULONG)v & 0xFF),(((ULONG)v >> (ULONG)8) & 0xFF),(((ULONG)v >> (ULONG)16) & 0xFF),(((ULONG)v >> (ULONG)24) & 0xFF)
             % - LC4 has a range from –2,147,483,648 to 2,147,483,647
-            % 
+            %
             % Examples::
             %           cmd.LC4(10000)
-            
+
             cmd.msg = [cmd.msg bitor(bitor(uint8(Primitives.plong),uint8(Primitives.pconst)),(uint8(Primitives.p4_byte))), typecast(int32(v), 'uint8')];
         end
-        
+
         function LV0(cmd,i)
             % Command.LV0 Add a local variable 0
-            % 
+            %
             % Command.LV0(i) adds a local variable 0 to the command object.
             %
             % Notes::
@@ -533,26 +533,26 @@ classdef Command < handle
             %
             % Example::
             %           cmd.LV0(1)
-            
+
             cmd.msg = [cmd.msg bitor(bitor(bitor(bitand(uint8(i),Primitives.pindex),Primitives.pshort),Primitives.pvariabel),Primitives.plocal)];
         end
-        
+
         function GV0(cmd,i)
             % Command.GV0 Add a global constant 0
             %
             % Command.GV0(i) adds a global variable 0 to the command
             % object.
-            % 
+            %
             % Notes::
             % - i is the number of 1 byte global variables needed.
             % - Global constant 0 is defined as ((i & PRIMPAR_INDEX) | PRIMPAR_SHORT | PRIMPAR_VARIABEL | PRIMPAR_GLOBAL)
             %
             % Example::
             %           cmd.GV0(4)
-            
+
             cmd.msg = [cmd.msg bitor(bitor(bitor(bitand(uint8(i),Primitives.pindex),Primitives.pshort),Primitives.pvariabel),Primitives.pglobal)];
         end
-        
+
         function LCS(cmd)
             % Command.LCS Add a local constant string
             %
@@ -564,10 +564,10 @@ classdef Command < handle
             %
             % Example::
             %           cmd.LCS()
-            
+
             cmd.msg = [cmd.msg bitor(Primitives.plong,Primitives.pstring)];
         end
-        
+
         function addValue(cmd,v)
             % Command.addValue add a numerical value
             %
@@ -579,10 +579,10 @@ classdef Command < handle
             %
             % Example::
             %           cmd.addValue(10)
-            
+
             cmd.msg = [cmd.msg uint8(v)];
         end
-        
+
         function addArray(cmd,txt)
             % Command.addArray add a numerical array
             %
@@ -591,15 +591,15 @@ classdef Command < handle
             %
             % Notes::
             % - txt is the numerical array to be added
-            % 
+            %
             % Example::
             %           cmd.addArray([1,2,3,4,5])
-            
+
             for i=1:length(txt)
-               cmd.addValue(txt(i)); 
-            end   
+               cmd.addValue(txt(i));
+            end
         end
-        
+
         function addString(cmd,txt)
             % Command.addString add a string
             %
@@ -612,13 +612,13 @@ classdef Command < handle
             %
             % Example::
             %           cmd.addString('hello')
-            
+
             for i=1:length(txt)
-               cmd.addValue(txt(i)); 
+               cmd.addValue(txt(i));
             end
-            cmd.addValue(0);    
+            cmd.addValue(0);
         end
-        
+
         function addLCSString(cmd,txt)
             % Command.addLCSString add a string with the LCS type
             %
@@ -632,14 +632,14 @@ classdef Command < handle
             %
             % Example::
             %           cmd.addLCSString('hello')
-            
+
             cmd.LCS;
             for i=1:length(txt)
-               cmd.addValue(txt(i)); 
+               cmd.addValue(txt(i));
             end
-            cmd.addValue(0);    
+            cmd.addValue(0);
         end
-        
+
         function LONGToBytes(cmd,x)
             % Command.LONGToBytes add a LONGToBytes
             %
@@ -652,10 +652,10 @@ classdef Command < handle
             %
             % Example::
             %           cmd.LONGToBytes(1)
-            
+
             cmd.msg = [cmd.msg typecast(uint32(x), 'uint8')];
         end
-        
+
         function WORDToBytes(cmd,x)
             % Command.WORDToBytes add a WORDToBytes
             %
@@ -668,10 +668,10 @@ classdef Command < handle
             %
             % Example::
             %           cmd.WORDToBytes(1)
-            
+
             cmd.msg = [cmd.msg typecast(uint16(x), 'uint8')];
         end
-        
+
         function BYTEToBytes(cmd,x)
             % Command.BYTEToBytes add a BYTEToBytes
             %
@@ -684,14 +684,14 @@ classdef Command < handle
             %
             % Example::
             %           cmd.BYTEToBytes(1)
-            
+
             cmd.msg = [cmd.msg uint8(x)];
         end
-        
+
         function PROGRAMHeader(cmd,VersionInfo,NumberOfObjects,GlobalBytes)
             % Command.PROGRAMHeader add a PROGRAMHeader
             %
-            % Command.PROGRAMHeader(VersionInfo,NumberOfObjects,GlobalBytes) 
+            % Command.PROGRAMHeader(VersionInfo,NumberOfObjects,GlobalBytes)
             % adds a PROGRAMHeader to the command object.
             %
             % Notes::
@@ -703,7 +703,7 @@ classdef Command < handle
             %
             % Example::
             %           cmd.PROGRAMHeader(0,1,0)
-            
+
             BYTECODE_VERSION = 1.04;
             cmd.msg = [cmd.msg,uint8('L'),uint8('E'),uint8('G'),uint8('O')] ;
             cmd.LONGToBytes(0);
@@ -711,24 +711,24 @@ classdef Command < handle
             cmd.WORDToBytes(NumberOfObjects);
             cmd.LONGToBytes(GlobalBytes);
         end
-        
+
         function addFileSize(cmd)
             % Command.addFileSize Add file size
-            % 
+            %
             % Command.addFileSize() adds the file size to the command
             % object.
             %
             % Notes::
-            % - With bytecode compiling using "Old header", the file size is 
-            % inserted at byte number 5 which corresponds to the two bytes 
+            % - With bytecode compiling using "Old header", the file size is
+            % inserted at byte number 5 which corresponds to the two bytes
             % after 'L','E','G','O'
             %
             % Example::
             %            cmd.addFileSize
-            
-            cmd.msg(5:6) = typecast(uint16(length(cmd.msg)),'uint8');            
+
+            cmd.msg(5:6) = typecast(uint16(length(cmd.msg)),'uint8');
         end
-        
+
         function VMTHREADHeader(cmd,OffsetToInstructions,LocalBytes)
             % Command.VMTHREADHeader Add a VMTHREADHeader
             %
@@ -742,12 +742,12 @@ classdef Command < handle
             %
             % Example::
             %           cmd.VMTHREADHeader(0,1)
-            
+
             cmd.LONGToBytes(OffsetToInstructions);
             cmd.msg = [cmd.msg uint8(0),uint8(0),uint8(0),uint8(0)];
             cmd.LONGToBytes(LocalBytes) ;
         end
-        
+
         function SUBCALLHeader(cmd,OffsetToInstructions,LocalBytes)
             % Command.SUBCALLHeader Add a SUBCALLHeader
             %
@@ -761,12 +761,12 @@ classdef Command < handle
             %
             % Example::
             %           cmd.SUBCALLHeader(0,1)
-            
+
             cmd.LONGToBytes(OffsetToInstructions);
             cmd.msg = [cmd.msg uint8(0),uint8(0),uint8(1),uint8(0)];
             cmd.LONGToBytes(LocalBytes) ;
         end
-        
+
         function BLOCKHeader(cmd,OffsetToInstructions,OwnerObjectId,TriggerCount)
             % Command.BLOCKHeader
             %
@@ -781,20 +781,20 @@ classdef Command < handle
             %
             % Example::
             %           cmd.BLOCKHeader(0,0,0)
-            
+
             cmd.LONGToBytes(OffsetToInstructions);
             cmd.WORDToBytes(OwnerObjectId);
             cmd.WORDToBytes(TriggerCount)
             cmd.LONGToBytes(0);
-        end  
-        
+        end
+
         function GenerateByteCode(cmd, fileName)
             % Command.GenerateByteCode Generate byte code
             %
             % Command.GenerateByteCode(fileName) prints the byte code in
             % the command object to a file. This file can then be uplodaded
             % and executed directly on the brick.
-            % 
+            %
             % Example::
             %           cmd.GenerateByteCode('tst.rbf')
 
@@ -803,33 +803,33 @@ classdef Command < handle
             fclose(fid);
             fprintf('Wrote %d bytes to %s.rbf\n',length(cmd.msg),fileName);
         end
-        
+
         function opNOP(cmd)
-            % Command.opNOP Add a opNOP 
+            % Command.opNOP Add a opNOP
             %
             % Command.opNOP() adds a opNOP opcode to the command object.
             %
             % Example::
             %           cmd.opNOP()
-           
-            cmd.addDirectCommand(ByteCodes.Nop);            
+
+            cmd.addDirectCommand(ByteCodes.Nop);
         end
-        
+
         function opOBJECT_END(cmd)
             % Command.opOBJECT_END Add a opOBJECT_END
-            % 
+            %
             % Command.opOBJECT_END() adds a opOBJECT_END opcode to the
-            % command object. 
+            % command object.
             %
             % Notes::
             % - opOBJECT_END
             %
-            % Example::            
+            % Example::
             %           cmd.opOBJECT_END()
-           
+
             cmd.addDirectCommand(ByteCodes.ObjectEnd);
         end
-        
+
         function opJR(cmd,offset)
             % Command.opJR Add a opJR
             %
@@ -847,7 +847,7 @@ classdef Command < handle
             cmd.addDirectCommand(ByteCodes.Jr);
             cmd.LC0(offset);
         end
-        
+
         function opUI_FLUSH(cmd)
             % Command.opUI_FLUSH Add a opUI_FLUSH
             %
@@ -859,14 +859,14 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opUI_FLUSH()
-            
+
             cmd.addDirectCommand(ByteCodes.UIFlush);
         end
-        
+
         function opUI_READ_GET_VBATT(cmd,value)
             % Command.opUI_READ_GET_VBATT Add a opUI_READ_GET_VBATT
             %
-            % Command.opUI_READ_GET_VBATT adds a opUI opcode with a 
+            % Command.opUI_READ_GET_VBATT adds a opUI opcode with a
             % READ_GET_VBATT subcode to the command object.
             %
             % Notes::
@@ -876,12 +876,12 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opUI_READ_GET_VBATT(0)
-            
+
             cmd.addDirectCommand(ByteCodes.UIRead);
             cmd.LC0(UIReadSubCodes.GetVbatt);
             cmd.GV0(value);
         end
-        
+
         function opUI_READ_GET_LBATT(cmd,value)
             % Command.opUI_READ_GET_LBATT Add a opUI_READ_GET_LBATT
             %
@@ -900,7 +900,7 @@ classdef Command < handle
             cmd.LC0(UIReadSubCodes.GetLbatt);
             cmd.GV0(value);
         end
-        
+
         function opUI_WRITE_PUT_STRING(cmd,txt)
             % Command.opUI_WRITE_PUT_STRING Add a opUI_WRITE_PUT_STRING
             %
@@ -913,12 +913,12 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opUI_WRITE_PUT_STRING('hello')
-            
+
             cmd.addDirectCommand(ByteCodes.UIWrite);
             cmd.LC0(UIWriteSubCodes.PutString);
             cmd.addLCSString(txt);
         end
-        
+
         function opUI_WRITE_INIT_RUN(cmd)
             % Command.opUI_WRITE_INIT_RUN Add a opUI_WRITE_INIT_RUN
             %
@@ -930,11 +930,11 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opUI_WRITE_INIT_RUN()
-            
+
             cmd.addDirectCommand(ByteCodes.UIWrite);
             cmd.LC0(UIWriteSubCodes.InitRun);
         end
-        
+
         function opUI_WRITE_LED(cmd,pattern)
             % Command.opUI_WRITE_LED Add a opUI_WRITE_LED
             %
@@ -948,12 +948,12 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opUI_WRITE_LED(Device.LedBlack)
-            
+
             cmd.addDirectCommand(ByteCodes.UIWrite);
             cmd.LC0(UIWriteSubCodes.Led);
-            cmd.LC0(pattern);            
+            cmd.LC0(pattern);
         end
-        
+
         function opUI_DRAW_UPDATE(cmd)
             % Command.opUI_DRAW_UPDATE Add a opUI_DRAW_UPDATE
             %
@@ -965,11 +965,11 @@ classdef Command < handle
             %
             % Examples::
             %           cmd.opUI_DRAW_UPDATE()
-            
+
             cmd.addDirectCommand(ByteCodes.UIDraw);
             cmd.LC0(UIDrawSubCodes.Update);
         end
-        
+
         function opUI_DRAW_CLEAN(cmd)
             % Command.opUI_DRAW_CLEAN Add a opUI_DRAW_CLEAN
             %
@@ -978,14 +978,14 @@ classdef Command < handle
             %
             % Notes::
             % - opUI_DRAW,LC0(1)
-            % 
+            %
             % Example::
             %           cmd.opUI_DRAW_CLEAN()
-            
+
             cmd.addDirectCommand(ByteCodes.UIDraw);
             cmd.LC0(UIDrawSubCodes.Clean);
         end
-        
+
         function opUI_DRAW_PIXEL(cmd,color,x,y)
             % Command.opUI_DRAW_PIXEL Add a opUI_DRAW_PIXEL
             %
@@ -1007,7 +1007,7 @@ classdef Command < handle
             cmd.LC2(x);
             cmd.LC2(y)
         end
-        
+
         function opUI_DRAW_LINE(cmd,color,x0,y0,x1,y1)
             % Command.opUI_DRAW_LINE Add a opUI_DRAW_LINE
             %
@@ -1022,7 +1022,7 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opUI_DRAW_LINE(vmCodes.vmFGColor,0,0,1,1)
-            
+
             cmd.addDirectCommand(ByteCodes.UIDraw);
             cmd.LC0(UIDrawSubCodes.Line);
             cmd.LC0(color);
@@ -1031,7 +1031,7 @@ classdef Command < handle
             cmd.LC2(x1);
             cmd.LC2(y1);
         end
-        
+
         function opUI_DRAW_CIRCLE(cmd,color,x0,y0,r)
             % Command.opUI_DRAW_CIRCLE Add a opUI_DRAW_CIRCLE
             %
@@ -1042,20 +1042,20 @@ classdef Command < handle
             % - color is the pixel color (either foregrond or background)
             % - x is the x coordinate of the circle center
             % - y is the y coordinate of the circle center
-            % - r is the radius of the circle 
+            % - r is the radius of the circle
             % - opUI_DRAW,LC0(4),LC0(color),LC2(x0),LC2(y0),LC2(r)
             %
             % Example::
             %           cmd.opUI_DRAW_CIRCLE(vmCodes.vmFGColor,0,0,5)
-            
+
             cmd.addDirectCommand(ByteCodes.UIDraw);
             cmd.LC0(UIDrawSubCodes.Circle);
             cmd.LC0(color);
             cmd.LC2(x0);
             cmd.LC2(y0);
             cmd.LC2(r);
-        end           
-        
+        end
+
         function opUI_DRAW_TEXT(cmd,color,x,y,txt)
             % Command.opUI_DRAW_TEXT Add a opUI_DRAW_TEXT
             %
@@ -1071,7 +1071,7 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opUI_DRAW_TEXT(vmCodes.vmFGColor,0,0,'hello')
-            
+
             cmd.addDirectCommand(ByteCodes.UIDraw);
             cmd.LC0(UIDrawSubCodes.Text);
             cmd.LC0(color);
@@ -1079,7 +1079,7 @@ classdef Command < handle
             cmd.LC2(y);
             cmd.addLCSString(txt);
         end
-        
+
         function opUI_DRAW_VALUE(cmd,color,x,y,index,figures,decimals)
             % Command.opUI_DRAW_VALUE Add a opUI_DRAW_VALUE
             %
@@ -1098,7 +1098,7 @@ classdef Command < handle
             % Example::
             %           cmd.opUI_DRAW_VALUE(vmCodes.vmFGColor,0,0,0,3,2)
             %
-            
+
             cmd.addDirectCommand(ByteCodes.UIDraw);
             cmd.LC0(UIDrawSubCodes.Value);
             cmd.LC0(color);
@@ -1108,7 +1108,7 @@ classdef Command < handle
             cmd.LC0(figures);
             cmd.LC0(decimals);
         end
-        
+
         function opUI_DRAW_FILLRECT(cmd,color,x0,y0,x1,y1)
             % Command.opUI_DRAW_FILLRECT Add a opUI_DRAW_FILLRECT
             %
@@ -1124,7 +1124,7 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opUI_DRAW_FILLRECT(vmCodes.vmFGColor,0,0,10,10)
-            
+
             cmd.addDirectCommand(ByteCodes.UIDraw);
             cmd.LC0(UIDrawSubCodes.Fillrect);
             cmd.LC0(color);
@@ -1133,7 +1133,7 @@ classdef Command < handle
             cmd.LC2(x1);
             cmd.LC2(y1);
         end
-        
+
         function opUI_DRAW_RECT(cmd,color,x0,y0,x1,y1)
             % Command.opUI_DRAW_RECT Add a opUI_DRAW_RECT
             %
@@ -1149,7 +1149,7 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opUI_DRAW_RECT(vmCodes.vmFGColor,0,0,10,10)
-            
+
             cmd.addDirectCommand(ByteCodes.UIDraw);
             cmd.LC0(UIDrawSubCodes.Rect);
             cmd.LC0(color);
@@ -1158,7 +1158,7 @@ classdef Command < handle
             cmd.LC2(x1);
             cmd.LC2(y1);
         end
-        
+
         function opUI_DRAW_INVERSERECT(cmd,x0,y0,x1,y1)
             % Command.opUI_DRAW_INVERSERECT Add a opUI_DRAW_INVERSERECT
             %
@@ -1180,7 +1180,7 @@ classdef Command < handle
             cmd.LC2(x1);
             cmd.LC2(y1);
         end
-        
+
         function opUI_DRAW_SELECT_FONT(cmd,type)
             % Command.opUI_DRAW_SELECT_FONT Add a opUI_DRAW_SELECT_FONT
             %
@@ -1188,17 +1188,17 @@ classdef Command < handle
             % with a SELECT_FONT subcode to the command object.
             %
             % Notes::
-            % - type is the font type [0..2] 
+            % - type is the font type [0..2]
             % - opUI_DRAW,LC0(17),LC0(type)
             %
             % Examples::
             %           cmd.opUI_DRAW_SELECT_FONT(1)
-            
+
             cmd.addDirectCommand(ByteCodes.UIDraw);
             cmd.LC0(UIDrawSubCodes.SelectFont);
             cmd.LC0(type);
         end
-        
+
         function opUI_DRAW_TOPLINE(cmd,enable)
             % Command.opUI_DRAW_TOPLINE Add a opUI_DRAW_TOPLINE
             %
@@ -1211,12 +1211,12 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opUI_DRAW_TOPLINE(1)
-         
+
             cmd.addDirectCommand(ByteCodes.UIDraw);
             cmd.LC0(UIDrawSubCodes.Topline);
             cmd.LC0(enable);
         end
-        
+
         function opUI_DRAW_FILLWINDOW(cmd, color, y0, y1)
             % Command.opUI_DRAW_FILLWINDOW Add a opUI_DRAW_FILLWINDOW
             %
@@ -1231,14 +1231,14 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opUI_DRAW_FILLWINDOW(vmCodes.vmFGColor,0,10)
-            
+
             cmd.addDirectCommand(ByteCodes.UIDraw);
             cmd.LC0(UIDrawSubCodes.Fillwindow);
             cmd.LC0(color);
             cmd.LC2(y0);
-            cmd.LC2(y1);            
+            cmd.LC2(y1);
         end
-        
+
         function opUI_DRAW_FILLCIRCLE(cmd,color,x0,y0,r)
             % Command.opUI_DRAW_FILLCIRCLE Add a opUI_DRAW_FILLCIRCLE
             %
@@ -1254,7 +1254,7 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opUI_DRAW_FILLCIRCLE(vmCodes.vmFGColor,10,10,5)
-            
+
             cmd.addDirectCommand(ByteCodes.UIDraw);
             cmd.LC0(UIDrawSubCodes.Fillcircle);
             cmd.LC0(color);
@@ -1262,12 +1262,12 @@ classdef Command < handle
             cmd.LC2(y0);
             cmd.LC2(r);
         end
-        
+
         function opUI_DRAW_STORE(cmd,no)
             % Command.opUI_DRAW_STORE Add a opUI_DRAW_STORE
             %
             % Command.opUI_DRAW_STORE(no) adds a UI_DRAW opcode with a
-            % STORE subcode to the command object. 
+            % STORE subcode to the command object.
             %
             % Notes::
             % - no is the level number to store the UI screen
@@ -1275,17 +1275,17 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opUI_DRAW_STORE(1)
-            
+
             cmd.addDirectCommand(ByteCodes.UIDraw);
             cmd.LC0(UIDrawSubCodes.Store);
             cmd.LC0(no);
         end
-        
+
         function opUI_DRAW_RESTORE(cmd,no)
             % Command.opUI_DRAW_RESTORE Add a opUI_DRAW_RESTORE
             %
             % Command.opUI_DRAW_RESTORE(no) adds a UI_DRAW opcode with a
-            % RESTORE subcode to the command object. 
+            % RESTORE subcode to the command object.
             %
             % Notes::
             % - no is the level number to store the UI screen (0 is saved screen before run)
@@ -1293,12 +1293,12 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opUI_DRAW_RESTORE(1)
-            
+
             cmd.addDirectCommand(ByteCodes.UIDraw);
             cmd.LC0(UIDrawSubCodes.Restore);
             cmd.LC0(no);
         end
-        
+
         function opTIMER_WAIT(cmd,time,timer)
             % Command.opTIMER_WAIT Add a opTIMER_WAIT
             %
@@ -1312,12 +1312,12 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opTIMER_WAIT(1000,0)
-            
+
             cmd.addDirectCommand(ByteCodes.TimerWait);
             cmd.LC2(time);
             cmd.LV0(timer);
         end
-        
+
         function opTIMER_READY(cmd,timer)
             % Command.opTIMER_READY Add a opTIMER_READY
             %
@@ -1330,11 +1330,11 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opTIMER_READY(0)
-            
+
             cmd.addDirectCommand(ByteCodes.TimerReady);
             cmd.LV0(timer);
         end
-        
+
         function opTIMER_READ(cmd,time)
             % Command.opTIMER_READ Add a opTIMER_READ
             %
@@ -1347,11 +1347,11 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opTIMER_READ(0)
-            
+
             cmd.addDirectCommand(ByteCodes.TimerRead);
             cmd.LV0(time);
         end
-        
+
         function opSOUND_BREAK(cmd)
             % Command.opSOUND_BREAK Add a opSOUND_BREAK
             %
@@ -1363,11 +1363,11 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opSOUND_BREAK()
-            
+
             cmd.addDirectCommand(ByteCodes.Sound);
             cmd.LC0(SoundSubCodes.Break);
         end
-        
+
         function opSOUND_TONE(cmd,volume,frequency,duration)
             % Command.opSOUND_TONE Add a opSOUND_TONE
             %
@@ -1382,14 +1382,14 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opSOUND_TONE(5,1000,500)
-            
+
             cmd.addDirectCommand(ByteCodes.Sound);
             cmd.LC0(SoundSubCodes.Tone);
             cmd.LC1(volume);
             cmd.LC2(frequency);
             cmd.LC2(duration);
         end
-        
+
         function opSOUND_PLAY(cmd,volume,name)
             % Command.opSOUND_PLAY Add a opSOUND_PLAY
             %
@@ -1403,13 +1403,13 @@ classdef Command < handle
             % - volume is the volume to play the file at
             % - name is the name of the file to play
             % - opSOUND,LC0(2),LC0(volume),LCS,'A','B' ... '0'
-            
+
             cmd.addDirectCommand(ByteCodes.Sound);
             cmd.LC0(SoundSubCodes.Play);
             cmd.LC0(volume);
             cmd.addLCSString(name);
         end
-        
+
         function opSOUND_REPEAT(cmd,volume,name)
             % Command.opSOUND_REPEAT Add a opSOUND_REPEAT
             %
@@ -1423,18 +1423,18 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opSOUND_REPEAT(1,'test.rsf')
-            
+
             cmd.addDirectCommand(ByteCodes.Sound);
             cmd.addDirectCommand(SoundSubCodes.Repeat);
             cmd.LC0(volume);
             cmd.addLCSString(name);
         end
-        
+
         function opSOUND_TEST(cmd,busy)
             % Command.opSOUND_TEST Add a opSOUND_TEST
             %
             % Command.opSOUND_TEST(busy) adds a opSOUND_TEST to the command
-            % object. 
+            % object.
             %
             % Notes::
             % - busy is the returned busy flag (0 = ready, 1 = busy)
@@ -1442,15 +1442,15 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opSOUND_TEST(0)
-            
+
             cmd.addDirectCommand(ByteCodes.SoundTest);
             cmd.LV0(busy);
         end
-        
+
         function opSOUND_READY(cmd)
             % Commad.opSOUND_READY Add a opSOUND_READY
             %
-            % Command.opSOUND_READY() adds a opSOUND_READY opcode to the 
+            % Command.opSOUND_READY() adds a opSOUND_READY opcode to the
             % command object.
             %
             % Example::
@@ -1458,10 +1458,10 @@ classdef Command < handle
             %
             % Notes::
             % - opSOUND_READY
-            
-            cmd.addDirectCommand(ByteCodes.SoundReady);           
+
+            cmd.addDirectCommand(ByteCodes.SoundReady);
         end
-        
+
         function opINPUT_DEVICE_LIST(cmd,length,array,changed)
             % Command.opINPUT_DEVICE_LIST Add a opINPUT_DEVICE_LIST
             %
@@ -1476,13 +1476,13 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opINPUT_DEVICE_LIST(32,0,1)
-            
+
             cmd.addDirectCommand(ByteCodes.InputDeviceList);
             cmd.LC0(length);
             cmd.GV0(array);
             cmd.GV0(changed);
         end
-        
+
         function opINPUT_DEVICE_GET_TYPEMODE(cmd,layer,no,type,mode)
             % Command.opINPUT_DEVICE_GET_TYPEMODE Add a opINPUT_DEVICE_GET_TYPEMODE
             %
@@ -1499,7 +1499,7 @@ classdef Command < handle
             %
             % Example::
             %           cms.opINPUT_DEVICE_GET_TYPEMODE(0,Device.Port1,0,1)
-            
+
             cmd.addDirectCommand(ByteCodes.InputDevice);
             cmd.LC0(InputDeviceSubCodes.GetTypeMode);
             cmd.LC0(layer);
@@ -1507,7 +1507,7 @@ classdef Command < handle
             cmd.GV0(type);
             cmd.GV0(mode);
         end
-        
+
         function opINPUT_DEVICE_GET_SYMBOL(cmd,layer,no,length,destination)
             % Command.opINPUT_DEVICE_GET_SYMBOL Add a opINPUT_DEVICE_GET_SYMBOL
             %
@@ -1524,7 +1524,7 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opINPUT_DEVICE_GET_SYMBOL(0,Device,Port1,5,0)
-            
+
             cmd.addDirectCommand(ByteCodes.InputDevice);
             cmd.LC0(InputDeviceSubCodes.GetSymbol);
             cmd.LC0(layer);
@@ -1532,7 +1532,7 @@ classdef Command < handle
             cmd.LC0(length);
             cmd.GV0(destination);
         end
-        
+
         function opINPUT_DEVICE_CLR_ALL(cmd,layer)
             % Command.opINPUT_DEVICE_CLR_ALL Add a opINPUT_DEVICE_CLR_ALL
             %
@@ -1544,12 +1544,12 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opINPUT_DEVICE_CLR_ALL(0)
-            
+
             cmd.addDirectCommand(ByteCodes.InputDevice);
             cmd.LC0(InputDeviceSubCodes.ClrAll);
             cmd.LC0(layer);
-        end 
-        
+        end
+
         function opINPUT_DEVICE_GET_NAME(cmd,layer,no,length,destination)
             % Command.opINPUT_DEVICE_GET_NAME Add a opINPUT_DEVICE_GET_NAME
             %
@@ -1566,19 +1566,19 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opINPUT_DEVICE_GET_NAME(0,Device,Port1,12,0)
-            
+
             cmd.addDirectCommand(ByteCodes.InputDevice);
             cmd.LC0(InputDeviceSubCodes.GetName);
             cmd.LC0(layer);
             cmd.LC0(no);
             cmd.LC0(length);
             cmd.GV0(destination);
-        end 
+        end
 
         function opINPUT_READ(cmd,layer,no,type,mode,pct)
             % Command.opINPUT_READ Add a opINPUT_READ
             %
-            % Command.opINPUT_READ(layer,no,type,mode,pct) adds a opINPUT_READ 
+            % Command.opINPUT_READ(layer,no,type,mode,pct) adds a opINPUT_READ
             % opcode to the command object.
             %
             % Notes::
@@ -1593,7 +1593,7 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opINPUT_READ(0,Device.Port1,Device.Ultraonsic,Device.USDistCM,0)
-            
+
             cmd.addDirectCommand(ByteCodes.InputReadSI);
             cmd.LC0(layer);
             cmd.LC0(no);
@@ -1601,12 +1601,12 @@ classdef Command < handle
             cmd.LC0(mode);
             cmd.GV0(pct);
         end
-        
+
         function opINPUT_READY(cmd,layer,no)
             % Command.opINPUT_READY Add a opINPUT_READY
             %
             % Command.opINPUT_READY(layer,no) adds a opINPUT_READY opcode
-            % to the command object. 
+            % to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1615,16 +1615,16 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opINPUT_READY(0,Device.Port1)
-            
+
             cmd.addDirectCommand(ByteCodes.InputReady);
             cmd.LC0(layer);
             cmd.LC0(no);
         end
-        
+
         function opINPUT_READSI(cmd,layer,no,type,mode,si)
             % Command.opINPUT_READSI Add a opINPUT_READSI
             %
-            % Command.opINPUT_READSI(layer,no,type,mode,si) adds a opINPUT_READSI  
+            % Command.opINPUT_READSI(layer,no,type,mode,si) adds a opINPUT_READSI
             % opcode to the command object.
             %
             % Notes::
@@ -1647,7 +1647,7 @@ classdef Command < handle
             cmd.LC0(mode);
             cmd.GV0(si);
         end
-        
+
         function opOUTPUT_SET_TYPE(cmd,layer,nos,type)
             % Command.opOUTPUT_SET_TYPE Add a opOUTPUT_SET_TYPE
             %
@@ -1662,17 +1662,17 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_SET_TYPE(0,Device.MotorA,0)
-            
+
             cmd.addDirectCommand(ByteCodes.OutputSetType);
             cmd.LC0(layer);
             cmd.LC0(nos);
             cmd.LC0(type);
         end
-        
+
         function opOUTPUT_RESET(cmd,layer,nos)
             % Command.opOUTPUT_RESET Add a opOUTPUT_RESET
             %
-            % Command.opOUTPUT_RESET(layer,nos) adds a opOUTPUT_RESET opcode 
+            % Command.opOUTPUT_RESET(layer,nos) adds a opOUTPUT_RESET opcode
             % to the command object.
             %
             % Notes::
@@ -1682,16 +1682,16 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_RESET(0,Device.MotorA)
-                        
+
             cmd.addDirectCommand(ByteCodes.OutputReset);
             cmd.LC0(layer);
             cmd.LC0(nos);
         end
-        
+
         function opOUTPUT_STOP(cmd,layer,nos,brake)
             % Command.opOUTPUT_STOP Add a opOUTPUT_STOP
             %
-            % Command.opOUTPUT_STOP(layer,nos,brake) adds a opOUTPUT_STOP opcode 
+            % Command.opOUTPUT_STOP(layer,nos,brake) adds a opOUTPUT_STOP opcode
             % to the command object.
             %
             % Notes::
@@ -1701,17 +1701,17 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_STOP(0,Device.MotorA,Device.Coast)
-            
+
             cmd.addDirectCommand(ByteCodes.OutputStop);
             cmd.LC0(layer);
             cmd.LC0(nos);
             cmd.LC0(brake);
         end
-        
+
         function opOUTPUT_SPEED(cmd,layer,nos,speed)
             % Command.opOUTPUT_SPEED Add a opOUTPUT_SPEED
             %
-            % Command.opOUTPUT_SPEED(layer,nos,speed) adds a opOUTPUT_SPEED opcode 
+            % Command.opOUTPUT_SPEED(layer,nos,speed) adds a opOUTPUT_SPEED opcode
             % to the command object.
             %
             % Notes::
@@ -1722,17 +1722,17 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_SPEED(0,Device.MotorA,10)
-           
+
             cmd.addDirectCommand(ByteCodes.OutputSpeed);
             cmd.LC0(layer);
             cmd.LC0(nos);
             cmd.LC1(speed);
         end
-        
+
         function opOUTPUT_POWER(cmd,layer,nos,power)
             % Command.opOUTPUT_POWER Add a opOUTPUT_POWER
             %
-            % Command.opOUTPUT_POWER(layer,nos,speed) adds a opOUTPUT_POWER opcode 
+            % Command.opOUTPUT_POWER(layer,nos,speed) adds a opOUTPUT_POWER opcode
             % to the command object.
             %
             % Notes::
@@ -1743,17 +1743,17 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_POWER(0,Device.MotorA,10)
-            
+
             cmd.addDirectCommand(ByteCodes.OutputPower);
             cmd.LC0(layer);
             cmd.LC0(nos);
             cmd.LC1(power);
         end
-        
+
         function opOUTPUT_START(cmd,layer,nos)
             % Command.opOUTPUT_START Add a opOUTPUT_START
             %
-            % Command.opOUTPUT_START(layer,nos) adds a opOUTPUT_START opcode 
+            % Command.opOUTPUT_START(layer,nos) adds a opOUTPUT_START opcode
             % to the command object.
             %
             % Notes::
@@ -1763,16 +1763,16 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_START(0,Device.MotorA)
-            
+
             cmd.addDirectCommand(ByteCodes.OutputStart);
             cmd.LC0(layer);
             cmd.LC0(nos);
         end
-        
+
         function opOUTPUT_POLARITY(cmd,layer,nos,pol)
             % Command.opOUTPUT_POLARITY Add a opOUTPUT_POLARITY
             %
-            % Command.opOUTPUT_POLARITY(layer,nos,pol) adds a opOUTPUT_POLARITY opcode 
+            % Command.opOUTPUT_POLARITY(layer,nos,pol) adds a opOUTPUT_POLARITY opcode
             % to the command object.
             %
             % Notes::
@@ -1785,17 +1785,17 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_POLARITY(0,Device.MotorA,0)
-            
+
             cmd.addDirectCommand(ByteCodes.OutputPolarity);
             cmd.LC0(layer);
             cmd.LC0(nos);
             cmd.LC0(pol);
         end
-        
+
         function opOUTPUT_READ(cmd,layer,nos,speed,tacho)
             % Command.opOUTPUT_READ Add a opOUTPUT_READ
             %
-            % Command.opOUTPUT_READ(layer,nos,speed,tacho) adds a opOUTPUT_READ opcode 
+            % Command.opOUTPUT_READ(layer,nos,speed,tacho) adds a opOUTPUT_READ opcode
             % to the command object.
             %
             % Notes::
@@ -1807,18 +1807,18 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_READ(0,Device.MotorA,0,1)
-            
+
             cmd.addDirectCommand(ByteCodes.OutputRead);
             cmd.LC0(layer);
             cmd.LC0(nos);
             cmd.GV0(speed);
             cmd.GV0(tacho);
-        end 
-        
+        end
+
         function opOUTPUT_TEST(cmd,layer,nos,value)
             % Command.opOUTPUT_TEST Add a opOUTPUT_TEST
             %
-            % Command.opOUTPUT_READ(layer,nos) adds a opOUTPUT_TEST opcode 
+            % Command.opOUTPUT_READ(layer,nos) adds a opOUTPUT_TEST opcode
             % to the command object.
             %
             % Notes::
@@ -1830,17 +1830,17 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_TEST(0,Device.MotorA,0)
-            
+
             cmd.addDirectCommand(ByteCodes.OutputTest);
             cmd.LC0(layer);
             cmd.LC0(nos);
             cmd.GV0(value);
         end
-        
+
         function opOUTPUT_READY(cmd,layer,nos)
             % Command.opOUTPUT_READY Add a opOUTPUT_READY
             %
-            % Command.opOUTPUT_READY(layer,nos) adds a opOUTPUT_READY opcode with 
+            % Command.opOUTPUT_READY(layer,nos) adds a opOUTPUT_READY opcode with
             % to the command object.
             %
             % Notes::
@@ -1850,17 +1850,17 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_READY(0,Device.MotorA)
-            
+
             cmd.addDirectCommand(ByteCodes.OutputReady);
             cmd.LC0(layer);
             cmd.LC0(nos);
-        end 
-        
+        end
+
         function opOUTPUT_STEP_POWER(cmd,layer,nos,power,step1,step2,step3,brake)
             % Command.opOUTPUT_STEP_POWER Add a opOUTPUT_STEP_POWER
             %
-            % Command.opOUTPUT_STEP_POWER(layer,nos,power,step1,step2,step3,brake) 
-            % adds a opOUTPUT_STEP_POWER opcode to the command object. 
+            % Command.opOUTPUT_STEP_POWER(layer,nos,power,step1,step2,step3,brake)
+            % adds a opOUTPUT_STEP_POWER opcode to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1874,7 +1874,7 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_STEP_POWER(0,Device.MotorA,50,50,360,50,Device.Coast)
-            
+
             cmd.addDirectCommand(ByteCodes.OutputStepPower);
             cmd.LC0(layer);
             cmd.LC0(nos);
@@ -1884,11 +1884,11 @@ classdef Command < handle
             cmd.LC4(step3);
             cmd.LC0(brake);
         end
-        
+
         function opOUTPUT_STEP_SPEED(cmd,layer,nos,speed,step1,step2,step3,brake)
             % Command.opOUTPUT_STEP_SPEED Add a opOUTPUT_STEP_SPEED
-            % 
-            % Command.opOUTPUT_STEP_SPEED(layer,nos,speed,step1,step2,step3,brake) 
+            %
+            % Command.opOUTPUT_STEP_SPEED(layer,nos,speed,step1,step2,step3,brake)
             % adds a opOUTPUT_STEP_SPEED opcode to the command object.
             %
             % Notes::
@@ -1903,7 +1903,7 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_STEP_SPEED(0,Device.MotorA,50,50,360,50,Device.Coast)
-            
+
             cmd.addDirectCommand(ByteCodes.OutputStepSpeed);
             cmd.LC0(layer);
             cmd.LC0(nos);
@@ -1913,12 +1913,12 @@ classdef Command < handle
             cmd.LC4(step3);
             cmd.LC0(brake);
         end
-        
+
         function opOUTPUT_TIME_SPEED(cmd,layer,nos,speed,step1,step2,step3,brake)
             % Command.opOUTPUT_TIME_SPEED Add a opOUTPUT_TIME_SPEED
             %
-            % Command.opOUTPUT_TIME_SPEED(layer,nos,speed,step1,step2,step3,brake) 
-            % adds a opOUTPUT_TIME_SPEED opcode to the command object. 
+            % Command.opOUTPUT_TIME_SPEED(layer,nos,speed,step1,step2,step3,brake)
+            % adds a opOUTPUT_TIME_SPEED opcode to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1932,7 +1932,7 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_TIME_SPEED(0,Device.MotorA,50,100,1000,100,Device.Coast)
-            
+
             cmd.addDirectCommand(ByteCodes.OutputTimeSpeed);
             cmd.LC0(layer);
             cmd.LC0(nos);
@@ -1942,12 +1942,12 @@ classdef Command < handle
             cmd.LC4(step3);
             cmd.LC0(brake);
         end
-        
+
         function opOUTPUT_STEP_SYNC(cmd,layer,nos,speed,turn,step,brake)
             % Command.opOUTPUT_STEP_SYNC Add a opOUTPUT_STEP_SYNC
             %
-            % Command.opOUTPUT_STEP_SYNC(layer,nos,speed,turn,step,brake) 
-            % adds a opOUTPUT_STEP_SYNC opcode to the command object. 
+            % Command.opOUTPUT_STEP_SYNC(layer,nos,speed,turn,step,brake)
+            % adds a opOUTPUT_STEP_SYNC opcode to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1960,7 +1960,7 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_STEP_SYNC(0,Device.MotorA,50,30,100,Device.Coast)
-            
+
             cmd.addDirectCommand(ByteCodes.OutputStepSync);
             cmd.LC0(layer);
             cmd.LC0(nos);
@@ -1969,12 +1969,12 @@ classdef Command < handle
             cmd.LC4(step);
             cmd.LC0(brake);
         end
-        
+
         function opOUTPUT_TIME_SYNC(cmd,layer,nos,speed,turn,time,brake)
             % Command.opOUTPUT_TIME_SYNC Add a opOUTPUT_TIME_SYNC
             %
-            % Command.opOUTPUT_TIME_SYNC(layer,nos,speed,turn,time,brake) 
-            % adds a opOUTPUT_TIME_SYNC opcode to the command object. 
+            % Command.opOUTPUT_TIME_SYNC(layer,nos,speed,turn,time,brake)
+            % adds a opOUTPUT_TIME_SYNC opcode to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -1987,7 +1987,7 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_TIME_SYNC(0,Device.MotorA,50,30,1000,Device.Coast)
-            
+
             cmd.addDirectCommand(ByteCodes.OutputTimeSync);
             cmd.LC0(layer);
             cmd.LC0(nos);
@@ -1996,12 +1996,12 @@ classdef Command < handle
             cmd.LC4(time);
             cmd.LC0(brake);
         end
-        
+
         function opOUTPUT_CLR_COUNT(cmd,layer,nos)
             % Command.opOUTPUT_CLR_COUNT Add a opOUTPUT_CLR_COUNT
             %
-            % Command.opOUTPUT_TIME_SYNC(layer,nos) adds a opOUTPUT_CLR_COUNT opcode 
-            % to the command object. 
+            % Command.opOUTPUT_TIME_SYNC(layer,nos) adds a opOUTPUT_CLR_COUNT opcode
+            % to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -2015,12 +2015,12 @@ classdef Command < handle
             cmd.LC0(layer);
             cmd.LC0(nos);
         end
-        
+
         function opOUTPUT_GET_COUNT(cmd,layer,nos,tacho)
             % Command.opOUTPUT_GET_COUNT Add a opOUTPUT_GET_COUNT
             %
             % Command.opOUTPUT_GET_COUNT(layer,nos,tacho) adds a opOUTPUT_GET_COUNT
-            % to the command object. 
+            % to the command object.
             %
             % Notes::
             % - layer is the usb chain layer (usually 0)
@@ -2030,18 +2030,18 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opOUTPUT_GET_COUNT(0,Device.MotorA,4)
- 
+
             cmd.addDirectCommand(ByteCodes.OutputGetCount);
             cmd.LC0(layer);
             cmd.LC0(nos);
             cmd.GV0(tacho);
         end
-        
+
         function opCOMGET_GET_BRICKNAME(cmd,length,name)
             % Command.opCOMGET_GET_BRICKNAME Add a opCOMGET_GET_BRICKNAME
             %
             % Command.opCOMGET_GET_BRICKNAME(length,name) adds a opCOMGET
-            % with a GET_BRICKNAME subcode to the command object. 
+            % with a GET_BRICKNAME subcode to the command object.
             %
             % Notes::
             % - length is the max length of the returned string
@@ -2050,18 +2050,18 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opCOMGET_GET_BRICKNAME(10,0)
- 
+
             cmd.addDirectCommand(ByteCodes.COMGet);
             cmd.LC0(COMGetSubCodes.GetBrickName);
             cmd.LC0(length);
             cmd.GV0(name);
-        end 
-        
+        end
+
         function opCOMSET_SET_BRICKNAME(cmd,name)
             % Command.opCOMSET_SET_BRICKNAME Add a opCOMSET_SET_BRICKNAME
             %
             % Command.opCOMSET_SET_BRICKNAME(name) adds a opCOMSET
-            % with a SET_BRICKNAME subcode to the command object. 
+            % with a SET_BRICKNAME subcode to the command object.
             %
             % Notes::
             % - name is the brick name to be set
@@ -2069,12 +2069,12 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opCOMSET_SET_BRICKNAME('EV3')
- 
+
             cmd.addDirectCommand(ByteCodes.COMSet);
             cmd.LC0(COMSetSubCodes.SetBrickName);
-            cmd.addLCSString(name);  
+            cmd.addLCSString(name);
         end
-        
+
         function opMAILBOX_WRITE(cmd,brickname,boxname,type,msg)
             % Command.opMAILBOX_WRITE Add a opMAILBOX_WRITE
             %
@@ -2091,7 +2091,7 @@ classdef Command < handle
             %
             % Example::
             %           cmd.opMAILBOX_WRITE('T500','abc','logical',1)
-            
+
             cmd.addDirectCommand(ByteCodes.MailboxWrite);
             cmd.addLCSString(brickname);
             % hardware transportation media (not used)
@@ -2115,9 +2115,9 @@ classdef Command < handle
                     fprintf('Error! Type must be ''text'', ''numeric'' or ''logic''.\n');
             end
         end
-    
+
         function BEGIN_DOWNLOAD(cmd,filelength,filename)
-            % Command.BEGIN_DOWNLOAD Add a BEGIN_DOWNLOAD 
+            % Command.BEGIN_DOWNLOAD Add a BEGIN_DOWNLOAD
             %
             % Command.BEGIN_DOWNLOAD(filelength,filename) adds a BEGIN_DOWNLOAD
             % system command to the command object. Download is from PC to
@@ -2131,12 +2131,12 @@ classdef Command < handle
             %
             % Example::
             %           cmd.BEGIN_DOWNLOAD(60,'../apps/tst/tst.rbf')
-            
+
             cmd.addSystemCommand(SystemCommands.BeginDownload);
             cmd.addArray(typecast(uint32(filelength),'uint8'));
-            cmd.addString(filename);            
+            cmd.addString(filename);
         end
-            
+
         function CONTINUE_DOWNLOAD(cmd,handle,payload)
             % Command.CONTINUE_DOWNLOAD Add a CONTINUE_DOWNLOAD
             %
@@ -2151,12 +2151,12 @@ classdef Command < handle
             %
             % Example::
             %           cmd.CONTINUE_DOWNLOAD(0,[10 20 30 .... ])
-            
+
             cmd.addSystemCommand(SystemCommands.ContinueDownload);
             cmd.addValue(handle);
             cmd.addArray(payload);
         end
-        
+
         function BEGIN_UPLOAD(cmd,filelength,filename)
             % Command.BEGIN_UPLOAD Add a BEGIN_UPLOAD
             %
@@ -2172,12 +2172,12 @@ classdef Command < handle
             %
             % Example::
             %            cmd.BEGIN_UPLOAD(100,'../apps/tst/tst.rbf')
-           
+
            cmd.addSystemCommand(SystemCommands.BeginUpload);
            cmd.addArray(typecast(uint16(filelength),'uint8'));
            cmd.addString(filename);
         end
-        
+
         function CONTINUE_UPLOAD(cmd,handle,maxlength)
             % Command.CONTINUE_UPLOAD Add a CONTINUE_UPLOAD
             %
@@ -2191,12 +2191,12 @@ classdef Command < handle
             % - ss (CONTINUE_UPLOAD) hh (handle from BEGIN_UPLOAD REPLY) llll (maxlength/bytes to read)
             % Example::
             %           cmd.CONTINUE_UPLOAD(0,100)
-            
+
             cmd.addSystemCommand(SystemCommands.ContinueUpload);
             cmd.addValue(handle);
             cmd.addArray(typecast(uint16(maxlength),'uint8'));
         end
-        
+
         function LIST_FILES(cmd,maxlength,pathname)
             % Command.LIST_FILES Add a LIST_FILES
             %
@@ -2210,12 +2210,12 @@ classdef Command < handle
             %
             % Example::
             %           cmd.LIST_FILES(100,'/home/root/lms2012/')
-            
+
             cmd.addSystemCommand(SystemCommands.ListFiles);
             cmd.addArray(typecast(uint16(maxlength),'uint8'));
             cmd.addString(pathname)
         end
-        
+
         function CONTINUE_LIST_FILES(cmd,handle,maxlength)
             % Command.CONTINUE_LIST_FILES Add a CONTINUE_LIST_FILES
             %
@@ -2226,16 +2226,16 @@ classdef Command < handle
             % - handle is the handle returned by LIST_FILES
             % - maxlength is the max buffer size used for file listing
             % - ss (CONTINUE_LIST_FILES) hh (handle) llll (maxlength/max bytes to read)
-            
+
             %
             % Example::
             %           cmd.CONTINUE_LIST_FILES(0,100)
-            
+
             cmd.addSystemCommand(SystemCommands.ContinueListFiles);
             cmd.addValue(handle);
             cmd.addArray(typecast(uint16(maxlength),'uint8'));
         end
-        
+
         function CREATE_DIR(cmd,pathname)
             % Command.CREATE_DIR Add a CREATE_DIR
             %
@@ -2245,15 +2245,15 @@ classdef Command < handle
             % Notes::
             % - pathname is the absolute path for directory creation.
             % - ss (CREATE_DIR) pp (pathname)
-            
+
             %
             % Example::
             %           cmd.CREATE_DIR('/home/root/lms2012/newdir')
-            
+
             cmd.addSystemCommand(SystemCommands.CreateDir);
             cmd.addString(pathname);
         end
-        
+
         function DELETE_FILE(cmd,pathname)
             % Command.DELETE_FILE Add a DELETE_FILE
             %
@@ -2266,16 +2266,16 @@ classdef Command < handle
             %
             % Example::
             %           cmd.DELETE_FILE('/home/root/lms2012/newdir')
-            
+
             cmd.addSystemCommand(SystemCommands.DeleteFile);
             cmd.addString(pathname);
         end
-        
+
         function WRITEMAILBOX(cmd,title,type,msg)
             % Command.WRITEMAILBOX Add a WRITEMAILBOX
             %
             % Command.WRITEMAILBOX(title,type,msg) adds a WRITEMAILBOX
-            % command to the command object. 
+            % command to the command object.
             %
             % Notes::
             % - title is the message title sent from the brick
@@ -2285,7 +2285,7 @@ classdef Command < handle
             %
             % Example::
             %           cmd.WRITEMAILBOX('abc','text','hello!')
- 
+
             cmd.addSystemCommand(SystemCommands.WriteMailBox);
             cmd.addValue(length(title)+1);
             cmd.addString(title);
@@ -2304,7 +2304,7 @@ classdef Command < handle
                     end
                     cmd.addArray(typecast(uint8(msg),'uint8'));
             end
-        end 
-        
+        end
+
     end
 end

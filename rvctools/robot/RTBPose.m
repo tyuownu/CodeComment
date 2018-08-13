@@ -51,17 +51,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -69,15 +69,15 @@
 
 
 classdef (Abstract) RTBPose
-    
+
     properties(Access=protected, Hidden=true)
         data   % this is a 2x2, 3x3 or 4x4 matrix, possibly symbolic
     end
-    
-    
+
+
     methods
-        
-        
+
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%  INFORMATION METHODS
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -86,26 +86,26 @@ classdef (Abstract) RTBPose
             %
             % N = P.dim() is the dimension of the group object, 2 for SO2, 3 for SE2
             % and SO3, and 4 for SE3.
-            
+
             n = size(obj(1).data, 2);
         end
-        
+
         function t = isSE(T)
             %RTBPose.isSE  Test if pose
             %
             % P.isSE() is true if the object is of type SE2 or SE3.
-            
+
             s = class(T);
             t = s(2) == 'E';
         end
-        
+
         function t = issym(obj)
             %RTBPose.issym  Test if pose is symbolic
             %
             % P.issym() is true if the pose has symbolic rather than real values.
             t = isa(obj(1).data, 'sym');
         end
-        
+
 %         function e = isequal(obj1, obj2)
 %             %ISEQUAL Test quaternion element equality
 %             %
@@ -120,7 +120,7 @@ classdef (Abstract) RTBPose
 %                 length(obj1) == length(obj2) &&
 %                 alleq(q1, q2);
 %         end
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%  OPERATORS
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -130,26 +130,26 @@ classdef (Abstract) RTBPose
             % P1+P2 is the elementwise summation of the matrix elements of the two
             % poses.  The result is a matrix not the input class type since the result
             % of addition is not in the group.
-            
+
             assert(isa(b, class(a)) && length(a) == length(b), 'RTB:RTBPose:plus:badarg', 'operands don''t conform');
             for i=1:length(a)
                 v(:,:,i) = a(i).data + b(i).data;
             end
         end
-        
+
         function v = minus(a, b)
             %RTBPose.minus Subtract poses
             %
             % P1-P2 is the elementwise difference of the matrix elements of the two
             % poses.  The result is a matrix not the input class type since the result
             % of subtraction is not in the group.
-            
+
             assert(isa(b, class(a)) && length(a) == length(b), 'RTB:RTBPose:minus:badarg', 'operands don''t conform');
             for i=1:length(a)
                 v(:,:,i) = a(i).data - b(i).data;
             end
         end
-        
+
         function out = simplify(obj)
             %RTBPose.simplify Symbolic simplification
             %
@@ -167,7 +167,7 @@ classdef (Abstract) RTBPose
                 end
             end
         end
-        
+
         function out = vpa(obj, D)
             %RTBPose.vpa Variable precision arithmetic
             %
@@ -190,31 +190,31 @@ classdef (Abstract) RTBPose
                 end
             end
         end
-        
+
         function e = isequal(obj1, obj2)
             e = eq(obj1, obj2);
         end
-        
+
         function e = eq(obj1, obj2)
             e = false;
-            
+
             if ~isa(obj2, class(obj2)) || ~(length(obj1) == length(obj2))
                 return;
             end
-            
+
             t = [obj1.data] == [obj2.data];
             e = all(t(:));
-            
+
         end
-        
+
         function e = ne(obj1, obj2)
             e = ~eq(obj1, obj2);
         end
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  COMPOSITION
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         function out = mtimes(obj, a)
             %RTBPose.mtimes  Compound pose objects
             %
@@ -244,10 +244,10 @@ classdef (Abstract) RTBPose
             % such that W(:,i) = P(i)*V(:,i).
             %
             % See also RTBPose.mrdivide.
-            
+
             obj1 = obj(1);
             n = obj1.dim;
-            
+
             if strcmp(class(obj1), class(a))
                 % obj * obj
                 out = repmat(obj1, 1, max(length(obj),length(a)));
@@ -269,10 +269,10 @@ classdef (Abstract) RTBPose
                 else
                     error('RTB:RTBPose:badops', 'invalid operand lengths to * operator');
                 end
-                
+
             elseif isfloat(a)
                 % obj * vectors (nxN), result is nxN
-                
+
                 if obj1.isSE
                     % is SE(n) convert to homogeneous form
                     assert(numrows(a) == n-1, 'RTB:RTBPose:badops', 'LHS should be matrix with %d rows', n-1);
@@ -280,9 +280,9 @@ classdef (Abstract) RTBPose
                 else
                     assert(numrows(a) == n, 'RTB:RTBPose:badops', 'LHS should be matrix with %d rows', n);
                 end
-                
+
                 out = zeros(n, max(length(obj),numcols(a)));  % preallocate space
-                
+
                 if length(obj) == numcols(a)
                     % do objvector*vector and objscalar*scalar case
                     for i=1:length(obj)
@@ -301,7 +301,7 @@ classdef (Abstract) RTBPose
                 else
                     error('RTB:RTBPose:badops', 'unequal vector lengths to * operator');
                 end
-                
+
                 if obj1.isSE
                     % is SE(n) convert to homogeneous form
                     out = out(1:end-1,:);
@@ -315,7 +315,7 @@ classdef (Abstract) RTBPose
                 end
             end
         end
-        
+
         function out = mrdivide(obj, a)
             %SO2.mrdivide  Compound SO2 object with inverse
             %
@@ -333,10 +333,10 @@ classdef (Abstract) RTBPose
             % R(i) = P(i)/R(i).
             %
             % See also RTBPose.mtimes.
-            
+
             obj1 = obj(1);
             n = obj1.dim;
-            
+
             if strcmp(class(obj1), class(a))
                 % obj / obj
                 out = repmat(obj1, 1, max(length(obj),length(a)));
@@ -357,12 +357,12 @@ classdef (Abstract) RTBPose
                     end
                 else
                     error('RTB:RTBPose:badops', 'unequal vector lengths to / operator');
-                end 
+                end
             else
                 error('RTB:RTBPose:badops', 'invalid operand types to / operator');
             end
         end
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%  COMPATABILITY/CONVERSION METHODS
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -374,7 +374,7 @@ classdef (Abstract) RTBPose
             %
             % Compatible with matrix function [R,t] = tr2rt(T)
             n = numcols(obj.data);
-            
+
             assert(isSE(obj), 'only applicable to SE2/3 class');
             if length(obj) > 1
                 R = zeros(3,3,length(obj));
@@ -388,7 +388,7 @@ classdef (Abstract) RTBPose
                 t = obj.t;
             end
         end
-        
+
         function R = t2r(obj)
             %t2r  Get rotation matrix  (compatibility)
             %
@@ -396,7 +396,7 @@ classdef (Abstract) RTBPose
             %
             % Compatible with matrix function R = t2r(T)
             n = numcols(obj.data);
-            
+
             assert(isSE(obj), 'only applicable to SE2/3 class');
             if length(obj) > 1
                 R = zeros(3,3,length(obj));
@@ -407,8 +407,8 @@ classdef (Abstract) RTBPose
                 R = obj.R;
             end
         end
-        
-                
+
+
         function d = double(obj)
             %RTBPose.double  Convert to matrix
             %
@@ -419,7 +419,7 @@ classdef (Abstract) RTBPose
             %
             % Notes::
             % - If the pose is symbolic the result will be a symbolic matrix.
-            
+
             if ~isa(obj(1).data, 'sym')
                 d = zeros( [size(obj(1).data) length(obj)] );
             end
@@ -427,8 +427,8 @@ classdef (Abstract) RTBPose
                 d(:,:,i) = obj(i).data;
             end
         end
-        
-        
+
+
         function out = trprint(obj, varargin)
             %TRPRINT Compact display of homogeneous transformation  (compatibility)
             %
@@ -453,7 +453,7 @@ classdef (Abstract) RTBPose
                 out = print(obj, varargin{:});
             end
         end
-        
+
         function out = trprint2(obj, varargin)
             %TRPRINT2 Compact display of homogeneous transformation  (compatibility)
             %
@@ -474,9 +474,9 @@ classdef (Abstract) RTBPose
             else
                 out = print(obj, varargin{:});
             end
-            
+
         end
-        
+
         function trplot(obj, varargin)
             %TRPLOT Draw a coordinate frame (compatibility)
             %
@@ -514,7 +514,7 @@ classdef (Abstract) RTBPose
             % See also RTBPose.plot, trplot.
             obj.plot(varargin{:});
         end
-        
+
         function trplot2(obj, varargin)
             %TRPLOT2 Draw a coordinate frame (compatibility)
             %
@@ -540,7 +540,7 @@ classdef (Abstract) RTBPose
             % See also RTBPose.plot, trplot2.
             obj.plot(varargin{:});
         end
-        
+
         function tranimate(obj, varargin)
             %TRANIMATE Animate a coordinate frame (compatibility)
             %
@@ -567,31 +567,31 @@ classdef (Abstract) RTBPose
             %  Additional options are passed through to TRPLOT.
             %
             % See also RTBPose.animate, tranimate.
-            
+
             obj.animate(varargin{:});
         end
-        
+
         function tranimate2(obj, varargin)
             obj.animate(varargin{:});
         end
-        
+
         function v = isrot(obj)
             v = obj.dim == 3 && ~obj.isSE;
         end
-        
+
         function v = isrot2(obj)
             v = obj.dim == 2 && ~obj.isSE;
         end
-        
+
         function v = ishomog(obj)
             v = obj.dim == 4 && obj.isSE;
         end
-        
+
         function v = ishomog2(obj)
             v = obj.dim == 3 && obj.isSE;
         end
-        
-        
+
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%  DISPLAY METHODS
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -608,15 +608,15 @@ classdef (Abstract) RTBPose
             %   rotational elements in red, translational in blue.
             %
             % See also SO2, SO3, SE2, SE3.
-            
+
             loose = strcmp( get(0, 'FormatSpacing'), 'loose');
             if loose
                 disp(' ');
             end
-            
+
             obj.render(inputname(1));  % the hard work done in render
         end
-        
+
         function s2 = char(obj)
             %RTBPose.char Convert to string
             %
@@ -630,7 +630,7 @@ classdef (Abstract) RTBPose
             end
         end
 
-        
+
         function out = print(obj, varargin)
             %RTBPose.print Compact display of pose
             %
@@ -648,13 +648,13 @@ classdef (Abstract) RTBPose
                 end
             else
                 out = '';
-                
+
                 for T=obj
                     out = strvcat(out, trprint(T.T, varargin{:}));
                 end
             end
         end
-        
+
         function animate(obj, varargin)
             %RTBPose.animate Animate a coordinate frame
             %
@@ -681,20 +681,20 @@ classdef (Abstract) RTBPose
             %  Additional options are passed through to TRPLOT.
             %
             % See also tranimate.
-            
+
             % invoke classic functions
             if length(varargin) > 0 && isa(varargin{1}, 'RTBPose')
                 % tranimate(T1, T2, args)
                 switch class(obj)
                     case 'SO2'
                         tranimate2(obj.R, varargin{1}.R, varargin{2:end});
-                        
+
                     case 'SE2'
                         tranimate2(obj.T, varargin{1}.T, varargin{2:end});
-                        
+
                     case 'SO3'
                         tranimate(obj.R, varargin{1}.R, varargin{2:end});
-                        
+
                     case 'SE3'
                         tranimate(obj.T, varargin{1}.T, varargin{2:end});
                 end
@@ -703,21 +703,21 @@ classdef (Abstract) RTBPose
                 switch class(obj)
                     case 'SO2'
                         tranimate2(obj.R, varargin{:});
-                        
+
                     case 'SE2'
                         tranimate2(obj.T, varargin{:});
-                        
+
                     case 'SO3'
                         tranimate(obj.R, varargin{:});
-                        
+
                     case 'SE3'
                         tranimate(obj.T, varargin{:});
                 end
             end
-            
+
 
         end
-        
+
         function varargout = plot(obj, varargin)
             %TRPLOT Draw a coordinate frame (compatibility)
             %
@@ -730,29 +730,29 @@ classdef (Abstract) RTBPose
             % type.
             %
             % See also trplot, trplot2.
-             
-             
+
+
             switch class(obj)
                 case 'SO2'
                     [varargout{1:nargout}] = trplot2(obj.R, varargin{:});
-                    
+
                 case 'SE2'
                     [varargout{1:nargout}] = trplot2(obj.T, varargin{:});
-                    
+
                 case 'SO3'
                     [varargout{1:nargout}] = trplot(obj.R, varargin{:});
-                    
+
                 case 'SE3'
                     [varargout{1:nargout}] = trplot(obj.T, varargin{:});
             end
         end
-        
-        
+
+
     end
-    
+
     methods (Access=private)
         function render(obj, varname)
-            
+
             if isa(obj(1).data, 'sym')
                 % use MATLAB default disp() function for symbolic object
                 disp(obj.data);
@@ -772,23 +772,23 @@ classdef (Abstract) RTBPose
                     case 'SO3',  nr = 3; nt = 0;
                     case 'SE3',  nr = 3; nt = 1;
                 end
-                
+
                 for i=1:length(obj)
                     M = obj(i).data;
                     if length(obj) > 1
                         fprintf('\n%s(%d) = \n', varname, i);
                     else
                         fprintf('\n%s = \n', varname);
-                        
+
                     end
                     M(abs(M)<1000*eps) = 0;
-                    
+
                     for row=1:nr
                         for col=1:(nr+nt)
                             if col <= nr
                                 % rotation matrix
                                 v = M(row,col);
-                                
+
                                 if fix(v) == v
                                     print('Errors', fmt0, v); % red
                                 else
@@ -812,5 +812,5 @@ classdef (Abstract) RTBPose
             end
         end
     end
-    
+
 end

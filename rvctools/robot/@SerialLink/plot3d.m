@@ -26,7 +26,7 @@
 % 'perspective'     Perspective view
 % 'view',V          Specify view V='x', 'y', 'top' or [az el] for side elevations,
 %                   plan view, or general view by azimuth and elevation
-%                   angle. 
+%                   angle.
 %-
 % '[no]wrist'       Enable display of wrist coordinate frame
 % 'xyz'             Wrist axis label is XYZ
@@ -71,17 +71,17 @@
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -89,32 +89,32 @@
 
 
 function plot3d(robot, q, varargin)
-    
-    
+
+
     assert( ~robot.mdh, 'RTB:plot3d:badmodel', '3D models are defined for standard, not modified, DH parameters');
-    
+
     opt = plot_options(robot, varargin);
-    
+
     %-- load the shape if need be
-    
+
     nshapes = robot.n+1;
-    
+
     if isempty(robot.faces)
         % no 3d model defined, let's try to load one
-        
+
         if isempty(opt.path)
             % first find the path to the models
             pth = which('rotx.m');
             if ~pth
                 error('RTB:plot3d:nomodel', 'no 3D model found, install the RTB contrib zip file');
             end
-            
+
             % find the path to this specific model
             pth = fullfile(fileparts(pth), 'data/ARTE', robot.model3d);
         else
             pth = opt.path;
         end
-        
+
         % now load the STL files
         robot.points = cell(1, robot.n+1);
         robot.faces = cell(1, robot.n+1);
@@ -128,7 +128,7 @@ function plot3d(robot, q, varargin)
         end
         fprintf('\n');
     end
-    
+
     % if a base is specified set the floor height to this
     if isempty(opt.workspace)
         % workspace not provided, fall through the options for setting floor level
@@ -154,25 +154,25 @@ function plot3d(robot, q, varargin)
         axis(opt.ws);
         hold on
     end
-    
+
 
     if opt.raise
         % note this is a very time consuming operation
         figure(gcf);
     end
-    
+
     if strcmp(opt.projection, 'perspective')
         set(gca, 'Projection', 'perspective');
     end
-    
+
     grid on
     xlabel('X'); ylabel('Y'); zlabel('Z');
-    
+
     %--- create floor if required
     if opt.tiles
         create_tiled_floor(opt);
     end
-    
+
     %--- configure view and lighting
     if isstr(opt.view)
         switch opt.view
@@ -194,9 +194,9 @@ function plot3d(robot, q, varargin)
     daspect([1 1 1]);
     light('Position', [0 0 opt.reach*2]);
     light('Position', [1 0.5 1]);
-    
-    
-    %-- figure the colors for each shape 
+
+
+    %-- figure the colors for each shape
     if isempty(opt.color)
         % if not given, use the axis color order
         C = get(gca,'ColorOrder');
@@ -206,20 +206,20 @@ function plot3d(robot, q, varargin)
             C = [C; colorname(c{1})];
         end
     end
-    
+
 
     %--- create the robot
     %  one patch per shape, use hgtransform to animate them later
     group = hggroup('Tag', robot.name);
     ncolors = numrows(C);
-    
+
     h = [];
-    for link=0:robot.n    
+    for link=0:robot.n
         if link == 0
             if ~opt.base
                 continue;
             end
-            
+
             patch('Faces', robot.faces{link+1}, 'Vertices', robot.points{link+1}, ...
                 'FaceColor', C(mod(link,ncolors)+1,:), 'EdgeAlpha', 0, 'FaceAlpha', opt.alpha);
         else
@@ -230,7 +230,7 @@ function plot3d(robot, q, varargin)
             'Parent', h.link(link));
         end
     end
-    
+
         % display the wrist coordinate frame
     if opt.wrist
         if opt.arrow
@@ -243,16 +243,16 @@ function plot3d(robot, q, varargin)
     else
         h.wrist = [];
     end
-    
+
     % enable mouse-based 3D rotation
     rotate3d on
-    
+
     h.robot = robot;
     h.link = [0 h.link];
     set(group, 'UserData', h);
-    
+
     robot.animate(q);
-    
+
     if ~ish
         hold off
     end
@@ -262,17 +262,17 @@ function opt = plot_options(robot, optin)
     opt.color = [];
     opt.path = [];  % override path
     opt.alpha = 1;
-    
+
         % timing/looping
     opt.delay = 0.1;
     opt.fps = [];
     opt.loop = false;
-    
+
     opt.raise = false;
-    
+
     % general appearance
     opt.scale = 1;
-    
+
     opt.workspace = [];
     opt.floorlevel = [];
 
@@ -280,14 +280,14 @@ function opt = plot_options(robot, optin)
     opt.projection = {'ortho', 'perspective'};
     opt.view = [];
 
-    
+
     % tiled floor
     opt.tiles = true;
     opt.tile1color = [0.5 1 0.5];  % light green
     opt.tile2color = [1 1 1];  % white
     opt.tilesize = 0.2;
-    
-     
+
+
     % the base or pedestal
     opt.base = true;
 
@@ -295,11 +295,11 @@ function opt = plot_options(robot, optin)
     opt.wrist = true;
     opt.wristlabel = {'xyz', 'noa'};
     opt.arrow = true;
-    
+
     % joint rotation axes
     opt.jaxes = false;
-    
-    
+
+
     % misc
     opt.movie = [];
 
@@ -312,18 +312,18 @@ function opt = plot_options(robot, optin)
     else
         options = [robot.plotopt3d optin];
     end
-    
+
     % parse the options
     [opt,args] = tb_optparse(opt, options);
     if ~isempty(args)
         error(['unknown option: ' args{1}]);
     end
-    
+
     if ~isempty(opt.fps)
         opt.delay = 1/opt.fps;
     end
     % figure the size of the figure
-    
+
     if isempty(opt.workspace)
         %
         % simple heuristic to figure the maximum reach of the robot
@@ -336,19 +336,19 @@ function opt = plot_options(robot, optin)
         for i=1:robot.n
             reach = reach + abs(L(i).a) + abs(L(i).d);
         end
-        
+
 %         if opt.wrist
 %             reach = reach + 1;
 %         end
-        
+
         % if we have a floor, quantize the reach to a tile size
         if opt.tiles
             reach = opt.tilesize * ceil(reach/opt.tilesize);
         end
-        
+
         % now create a 3D volume based on this reach
         opt.ws = [-reach reach -reach reach -reach reach];
-        
+
         % if a floorlevel has been given, ammend the 3D volume
         if ~isempty(opt.floorlevel)
             opt.ws(5) = opt.floorlevel;
@@ -362,38 +362,38 @@ function opt = plot_options(robot, optin)
             opt.ws(5:6) = opt.workspace(5:6);
         end
     end
-    
+
     opt.reach = reach;
-    
+
     % update the fundamental scale factor (given by the user as a multiplier) by a length derived from
     % the overall workspace dimension
     %  we need that a lot when creating the robot model
     opt.scale = opt.scale * reach/40;
-    
+
     % deal with a few options that need to be stashed in the SerialLink object
     % movie mode has not already been flagged
     if opt.movie
         robot.moviepath = opt.movie;
-    end 
-    
+    end
+
     if ~isempty(opt.movie)
         mkdir(opt.movie);
         framenum = 1;
     end
-    
+
     robot.delay = opt.delay;
-    robot.loop = opt.loop;   
+    robot.loop = opt.loop;
 end
 
 
 % draw a tiled floor in the current axes
 function create_tiled_floor(opt)
-     
+
     xmin = opt.ws(1);
     xmax = opt.ws(2);
     ymin = opt.ws(3);
     ymax = opt.ws(4);
-    
+
     % create a colored tiled floor
     xt = xmin:opt.tilesize:xmax;
     yt = ymin:opt.tilesize:ymax;

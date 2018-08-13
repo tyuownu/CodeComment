@@ -51,10 +51,10 @@
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
-% 
+%
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -62,11 +62,11 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 
 classdef Curvilinear < Shape
-    
+
     properties
         %RADIUS Radius profile
         % Radius profile. May be an anonymous function or sym object
@@ -76,23 +76,23 @@ classdef Curvilinear < Shape
         % (0,1), where 0 is at the origin). For cylinders, radius may
         % instead be a scalar number which is scaled by s.
         radius
-        
+
         %FACES  Logical vector of which faces to plot
         % For Curvilinears, faces is a 1x2 vector, whose elements
         %  correspond to the end faces whose centres are at the origin
         %  and not at the origin, with respect to that shape's frame,
         %  in that order
         faces = true(1,2)
-        
+
         %N "Resolution" of the shape, for plotting
         % For Curvilinears, it is the equivalent of cylinder(n)
         n = 10
     end
-    
+
     properties (Dependent)
         volume
     end
-    
+
     methods
         function curvilinear = Curvilinear(T, s, radius, varargin)
             if ~nargin
@@ -100,14 +100,14 @@ classdef Curvilinear < Shape
                 s = [1 1 0.4];
                 radius = @(t) 0.1 - 0.05*sin(50*t);
             end
-            
+
             if iscell(T) % Syntax mode (3)
                 a = T{1};
                 b = T{2};
-                
+
                 s_z = norm(b-a);
                 s = [s s s_z];
-                
+
                 T_z = (b(:)-a(:))/s_z;
                 T_t = a(:);
                 T_x = cross([0; 1; 0], T_z);
@@ -115,12 +115,12 @@ classdef Curvilinear < Shape
                     T_x = cross([0; 0; -1], T_z);
                 end
                 T_y = cross(T_z, T_x);
-                
+
                 T = [T_x, T_y, T_z, T_t; 0, 0, 0, 1];
             end
-                        
+
             curvilinear = curvilinear@Shape(T, s, varargin{:});
-            
+
             if isnumeric(radius)
                 if isscalar(radius)
                     curvilinear.radius = radius;
@@ -143,12 +143,12 @@ classdef Curvilinear < Shape
                 end
             end
         end
-           
+
         function vargout = plot(curvilinear, varargin)
             [curvilinear, frames] = curvilinear.parseopts(varargin{:});
-            
+
             [X, Y, Z] = curvilinear.cloud;
-            
+
             h = zeros(1,3);
             h(1) = surface(X,Y,Z);
             if curvilinear.faces(1)
@@ -158,28 +158,28 @@ classdef Curvilinear < Shape
                 h(3) = patch(X(end,:),Y(end,:),Z(end,:),'b');
             end
             h = h([true, curvilinear.faces]);
-            
+
             set(h, ...
                 'FaceColor', curvilinear.FaceColor, ...
                 'FaceAlpha', curvilinear.FaceAlpha, ...
                 'EdgeColor', curvilinear.EdgeColor, ...
                 'EdgeAlpha', curvilinear.EdgeAlpha);
-            
-            if ~isempty(frames), h = curvilinear.animate(h,frames); end  
+
+            if ~isempty(frames), h = curvilinear.animate(h,frames); end
             if nargout, vargout = h; end
         end
-        
+
         function [X, Y, Z] = cloud(curvilinear)
             if ~isa(curvilinear.radius,'function_handle')
                 r = curvilinear.radius;
             else
                 r = curvilinear.radius(linspace(0,1,curvilinear.n));
             end
-            
+
             [x, y, z] = cylinder(r);
             [X, Y, Z] = curvilinear.sat(x, y, z);
         end
-        
+
         function inside = check(curvilinear, varargin)
             switch length(varargin)
                 case 0
@@ -198,13 +198,13 @@ classdef Curvilinear < Shape
                     z = varargin{3}(:);
                     points = [x, y, z, ones(size(x))];
             end
-            
+
             tpts = curvilinear.transform \ points';
             tpts = tpts';
-            
-            zpts = tpts(:,3);            
+
+            zpts = tpts(:,3);
             inSegment = 0 < zpts & zpts < curvilinear.scale(3);
-            
+
             if ~isa(curvilinear.radius,'function_handle')
                 r1 = curvilinear.scale(1) * curvilinear.radius;
                 r2 = curvilinear.scale(2) * curvilinear.radius;
@@ -213,15 +213,15 @@ classdef Curvilinear < Shape
                     curvilinear.radius(zpts/curvilinear.scale(3));
                 r2 = curvilinear.scale(2) * ...
                     curvilinear.radius(zpts/curvilinear.scale(3));
-            end            
+            end
             inEllipse = ...
                 (tpts(:,1).^2./r1.^2) + (tpts(:,2).^2./r2.^2) < 1;
-            
+
             inside = inSegment & inEllipse;
-            
+
             if isa(inside,'sym'), inside = sym2func(inside); end
         end
-        
+
         function profile(curvilinear, n)
             %PROFILE View how the curvilinear's radius is plotted
             %
@@ -231,7 +231,7 @@ classdef Curvilinear < Shape
             % of n.
             %
             % Copyright (C) Bryan Moutrie, 2013-2014
-            % Licensed under the GNU General Public License, see file 
+            % Licensed under the GNU General Public License, see file
             % for statement
             %
             % Syntax:
@@ -246,16 +246,16 @@ classdef Curvilinear < Shape
             %  n : See the Shape property
             %
             % See also Curvilinear.n Curvilinear.plot
-            
+
             if ~isa(curvilinear.radius,'function_handle')
                 plot([curvilinear.radius, curvilinear.radius],[0, 1]);
             else
                 if nargin == 1, n = curvilinear.n; end
-                
+
                 N = linspace(0,1,n);
                 hires = 1000;
                 Nhr = linspace(0,1,hires);
-                
+
                 figure;
                 hold on
                 plot(curvilinear.radius(N), N, 'o--k');
@@ -263,7 +263,7 @@ classdef Curvilinear < Shape
                 hold off
             end
         end
-        
+
         function v = get.volume(s)
             if ~isa(s.radius,'function_handle')
                 v = s.radius^2*pi*prod(s.scale);
@@ -273,11 +273,11 @@ classdef Curvilinear < Shape
                 v = integral(r_sq,0,1)*pi*prod(s.scale);
             end
         end
-        
+
         function s = set.faces(s, f)
             s.faces = f & [1 1];
         end
     end
-    
+
 end
 

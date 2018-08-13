@@ -12,11 +12,11 @@
 %  getHIDInfoString         Get the relevant hid info from the hid device
 %  getManufacturersString   Get the manufacturers string from the hid device
 %  getProductString         Get the product string from the hid device
-%  getSerialNumberString    Get the serial number from the hid device 
+%  getSerialNumberString    Get the serial number from the hid device
 %  setNonBlocking           Set non blocking hid read
 %  init                     Init the hidapi (executed in open by default)
 %  exit                     Exit the hidapi
-%  error                    Return the error string 
+%  error                    Return the error string
 %  enumerate                Enumerate the connected hid devices
 %
 % Example::
@@ -26,7 +26,7 @@
 % - Developed from the hidapi available from http://www.signal11.us/oss/hidapi/
 % - Windows: need the hidapi.dll file
 % - Mac: need the hidapi.dylib file. Will also need Xcode installed to run load library
-% - Linux: will need to compile on host system and copy the resulting .so file 
+% - Linux: will need to compile on host system and copy the resulting .so file
 
 classdef hidapi < handle
     properties
@@ -49,12 +49,12 @@ classdef hidapi < handle
         % isOpen flag
         isOpen = 0;
     end
-    
+
     methods
-        
+
         function hid = hidapi(debug,vendorID,productID,nReadBuffer,nWriteBuffer)
             %hidapi.hidapi Create a hidapi library interface object
-            % 
+            %
             % hid = hidapi(debug,vendorID,productID,nReadBuffer,nWriteButter)
             % is an object which initialises the hidapi from the corresponding
             % OS library. Other parameters are also initialised. Some OS
@@ -67,7 +67,7 @@ classdef hidapi < handle
             % - productID is the product ID of the hid device (decimal not hex).
             % - nReadBuffer is the length of the read buffer.
             % - nWriteBuffer is the length of the write buffer.
-            
+
             hid.debug = debug;
             if hid.debug > 0
                 fprintf('hidapi init\n');
@@ -82,7 +82,7 @@ classdef hidapi < handle
             warning('off','MATLAB:loadlibrary:TypeNotFoundForStructure');
             % check if the library is loaded
             if ~libisloaded('hidapiusb')
-                % check the operating system type and load slib 
+                % check the operating system type and load slib
                 if (ispc == 1)
                     % check the bit version
                     if (strcmp(mexext,'mexw32'))
@@ -90,12 +90,12 @@ classdef hidapi < handle
                         % load the library via the proto file
                         loadlibrary(hid.slib,@hidapi32_proto,'alias','hidapiusb')
                     end
-                    
+
                     if (strcmp(mexext,'mexw64'))
                         hid.slib = 'hidapi64';
                         % load the library via the proto file
                         loadlibrary(hid.slib,@hidapi64_proto,'alias','hidapiusb')
-                    end                    
+                    end
                 else if (ismac == 1)
                         hid.slib = 'hidapi64';
                         % load the library via the proto file
@@ -111,16 +111,16 @@ classdef hidapi < handle
             % remove the library extension
             hid.slib = 'hidapiusb';
         end
-        
+
         function delete(hid)
             %hidapi.delete Delete hid object
             %
-            % delete(hid) closes an open hid device connection. 
+            % delete(hid) closes an open hid device connection.
             %
             % Notes::
-            % - You cannot unloadlibrary in this function as the object is 
+            % - You cannot unloadlibrary in this function as the object is
             % still present in the MATLAB work space.
-            
+
             if hid.debug > 0
                 fprintf('hidapi delete\n');
             end
@@ -140,11 +140,11 @@ classdef hidapi < handle
             % Notes::
             % - The pointer return value from this library call is always
             % null so it is not possible to know if the open was
-            % successful. 
+            % successful.
             % - The final paramter to the open hidapi library call has
             % different types depending on OS. In windows it is uint16 but
             % linux/mac it is int32.
-            
+
             if hid.debug > 0
                 fprintf('hidapi open\n');
             end
@@ -160,12 +160,12 @@ classdef hidapi < handle
             % set open flag
             hid.isOpen = 1;
         end
-        
+
         function close(hid)
             %hidapi.close Close hid object
             %
             % hid.close() closes the connection to a hid device.
-            
+
             if hid.debug > 0
                 fprintf('hidapi close\n');
             end
@@ -176,20 +176,20 @@ classdef hidapi < handle
                 hid.isOpen = 0;
             end
         end
-        
+
 
         function rmsg = read(hid)
             %hidapi.rmsg Read from hid object
             %
             % rmsg = hid.read() reads from a hid device and returns the
             % read bytes. Will print an error if no data was read.
- 
+
             if hid.debug > 0
                 fprintf('hidapi read\n');
             end
             % read buffer of nReadBuffer length
             buffer = zeros(1,hid.nReadBuffer);
-            % create a unit8 pointer 
+            % create a unit8 pointer
             pbuffer = libpointer('uint8Ptr', uint8(buffer));
             % read data from HID deivce
             [res,h] = calllib(hid.slib,'hid_read',hid.handle,pbuffer,uint64(length(buffer)));
@@ -207,7 +207,7 @@ classdef hidapi < handle
             % hid.write() writes to a hid device. Will print an error if
             % there is a mismach between the buffer size and the reported
             % number of bytes written.
-            
+
             if hid.debug > 0
                 fprintf('hidapi write\n');
             end
@@ -215,16 +215,16 @@ classdef hidapi < handle
             wmsg = [reportID wmsg];
             % pad with zeros for nWriteBuffer length
             wmsg(end+(hid.nWriteBuffer-length(wmsg))) = 0;
-            % create a unit8 pointer 
+            % create a unit8 pointer
             pbuffer = libpointer('uint8Ptr', uint8(wmsg));
             % write the message
             [res,h] = calllib(hid.slib,'hid_write',hid.handle,pbuffer,uint64(length(wmsg)));
             % check the response
             if res ~= length(wmsg)
-                fprintf('hidapi write error: wrote %d, sent %d\n',(length(wmsg)-1),res); 
+                fprintf('hidapi write error: wrote %d, sent %d\n',(length(wmsg)-1),res);
             end
         end
-        
+
         function str = getHIDInfoString(hid,info)
             %hidapi.getHIDInfoString get hid information from object
             %
@@ -233,7 +233,7 @@ classdef hidapi < handle
             %
             % Notes::
             % - info is the hid information string.
-            
+
             if hid.debug > 0
                 fprintf(['hidapi ' info '\n']);
             end
@@ -255,34 +255,34 @@ classdef hidapi < handle
             % return the string value
             str = sprintf('%s',char(pbuffer.Value));
         end
-        
+
         function str = getManufacturersString(hid)
             %hidapi.getManufacturersString get manufacturers string from hid object
             %
             % hid.getManufacturersString() returns the manufacturers string
             % from the hid device using getHIDInfoString.
-            
+
             str = getHIDInfoString(hid,'hid_get_manufacturer_string');
         end
-        
+
         function str = getProductString(hid)
             %hidapi.getProductString get product string from hid object
             %
             % hid.getProductString() returns the product string from the
             % hid device using getProductString.
-            
+
             str = getHIDInfoString(hid,'hid_get_product_string');
         end
-        
+
         function str = getSerialNumberString(hid)
             %hidapi.getSerialNumberString get product string from hid object
             %
-            % hid.getSerialNumberString() returns the serial number string  
+            % hid.getSerialNumberString() returns the serial number string
             % from the hid device using getSerialNumberString.
-            
+
             str = getHIDInfoString(hid,'hid_get_serial_number_string');
-        end  
-        
+        end
+
         function setNonBlocking(hid,nonblock)
             %hidapi.setNonBlocking sets non blocking on the hid object
             %
@@ -291,7 +291,7 @@ classdef hidapi < handle
             %
             % Notes::
             % nonblock - 0 disables nonblocking, 1 enables nonblocking
-            
+
             if hid.debug > 0
                 fprintf('hidapi setNonBlocking\n');
             end
@@ -302,7 +302,7 @@ classdef hidapi < handle
                fprintf('hidapi setNonBlocking error\n');
             end
         end
-        
+
         function init(hid)
             %hidapi.init Init hidapi
             %
@@ -311,7 +311,7 @@ classdef hidapi < handle
             %
             % Notes::
             % - You should not have to call this function directly.
-            
+
             if hid.debug > 0
                 fprintf('hidapi init\n');
             end
@@ -324,11 +324,11 @@ classdef hidapi < handle
         function exit(hid)
             %hidapi.exit Exit hidapi
             %
-            % hid.exit() exits the hidapi library. 
+            % hid.exit() exits the hidapi library.
             %
             % Notes::
             % - You should not have to call this function directly.
-            
+
             if hid.debug > 0
                 fprintf('hidapi exit\n');
             end
@@ -337,7 +337,7 @@ classdef hidapi < handle
                fprintf('hidapi exit error\n');
             end
         end
-        
+
         function str = error(hid)
             %hidapi.error Output the hid object error string
             %
@@ -347,17 +347,17 @@ classdef hidapi < handle
             % Notes::
             % - This function must be called explicitly if you think an
             % error was generated from the hid device.
-            
+
             if hid.debug > 0
                 fprintf('hidapi error\n');
             end
             [h,str] = calllib(hid.slib,'hid_error',hid.handle);
         end
-        
+
         function str = enumerate(hid,vendorID,productID)
             %hidapi.enumerate Enumerates the hid object
             %
-            % str = hid.enumerate(vendorID,productID) enumerates the hid 
+            % str = hid.enumerate(vendorID,productID) enumerates the hid
             % device with the given vendorID and productID and returns a
             % string with the returned hid information.
             %
@@ -369,12 +369,12 @@ classdef hidapi < handle
             % - MATLAB does not have the hid_device_infoPtr struct so some
             % of the returned information will need to be resized and cast
             % into uint8 or chars.
-            
+
             if hid.debug > 0
                 fprintf('hidapi enumerate\n');
             end
             % enumerate the hid devices
             str = calllib(u.slib,'hid_enumerate',uint16(vendorID),uint16(productID));
         end
-    end 
+    end
 end

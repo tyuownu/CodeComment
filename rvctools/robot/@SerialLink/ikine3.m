@@ -15,16 +15,16 @@
 %
 % Notes::
 % - The same as IKINE6S without the wrist.
-% - The inverse kinematic solution is generally not unique, and 
+% - The inverse kinematic solution is generally not unique, and
 %   depends on the configuration string.
-% - Joint offsets, if defined, are added to the inverse kinematics to 
+% - Joint offsets, if defined, are added to the inverse kinematics to
 %   generate Q.
 %
 % Trajectory operation::
 %
 % In all cases if T is a vector of SE3 objects (1xM) or a homogeneous
 % transform sequence (4x4xM) then returns the joint coordinates
-% corresponding to each of the transforms in the sequence.  Q is Mx3. 
+% corresponding to each of the transforms in the sequence.  Q is Mx3.
 %
 % Reference::
 %
@@ -43,13 +43,13 @@
 
 function theta = ikine3(robot, T, varargin)
 
-    assert( strncmp(robot.config, 'RRR', 3), 'Solution only applicable for 3DOF all-revolute manipulator');    
+    assert( strncmp(robot.config, 'RRR', 3), 'Solution only applicable for 3DOF all-revolute manipulator');
     assert( robot.mdh ~= 0, 'Solution only applicable for standard DH conventions');
 
     if isa(T, 'SE3')
         T = T.T;
     end
-    
+
     if ndims(T) == 3
         theta = zeros(size(T,3),robot.n);
         for k=1:size(T,3)
@@ -70,7 +70,7 @@ function theta = ikine3(robot, T, varargin)
     % undo base transformation
     T = robot.base \ T;
 
-    % The following parameters are extracted from the Homogeneous 
+    % The following parameters are extracted from the Homogeneous
     % Transformation as defined in equation 1, p. 34
 
     Px = T(1,4);
@@ -113,9 +113,9 @@ function theta = ikine3(robot, T, varargin)
 
     %
     % Solve for theta(1)
-    % 
+    %
     % r is defined in equation 38, p. 39.
-    % theta(1) uses equations 40 and 41, p.39, 
+    % theta(1) uses equations 40 and 41, p.39,
     % based on the configuration parameter n1
     %
 
@@ -132,7 +132,7 @@ function theta = ikine3(robot, T, varargin)
     % V114 is defined in equation 43, p.39.
     % r is defined in equation 47, p.39.
     % Psi is defined in equation 49, p.40.
-    % theta(2) uses equations 50 and 51, p.40, based on the configuration 
+    % theta(2) uses equations 50 and 51, p.40, based on the configuration
     % parameter n2
     %
 

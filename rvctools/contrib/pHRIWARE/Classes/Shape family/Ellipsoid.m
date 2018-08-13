@@ -2,7 +2,7 @@
 %
 % Subclass of the Shape class. The x, y and z axes of the transform
 % describes the direction of the ellipsoid's radii, and the translation
-% component describes the centre of the ellipsoid. The scale vector 
+% component describes the centre of the ellipsoid. The scale vector
 % defines the size of the radii.
 %
 % Copyright (C) Bryan Moutrie, 2013-2014
@@ -34,10 +34,10 @@
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
-% 
+%
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -45,57 +45,57 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 
 classdef Ellipsoid < Shape
-    
+
     properties
         %FACES  Logical vector of which faces to plot
         % For Ellipsoids, faces is not currently used
         faces
-        
+
         %N "Resolution" of the shape, for plotting
         % For Ellipsoids, it is the equivalent of sphere(n)
         n = 20
     end
-    
+
     properties (Dependent)
         volume
     end
-    
+
     methods
         function ellipsoid = Ellipsoid(T, s, varargin)
             if ~nargin
                 T = [];
                 s = [1 1.5 2];
             end
-            
-            ellipsoid = ellipsoid@Shape(T, s, varargin{:}); 
+
+            ellipsoid = ellipsoid@Shape(T, s, varargin{:});
         end
-           
+
         function vargout = plot(ellipsoid, varargin)
             [ellipsoid, frames] = ellipsoid.parseopts(varargin{:});
-            
+
             [X, Y, Z] = ellipsoid.cloud;
-            
+
             h = surface(X,Y,Z);
-            
+
             set(h, ...
                 'FaceColor', ellipsoid.FaceColor, ...
                 'FaceAlpha', ellipsoid.FaceAlpha, ...
                 'EdgeColor', ellipsoid.EdgeColor, ...
                 'EdgeAlpha', ellipsoid.EdgeAlpha);
-            
+
             if ~isempty(frames), h = ellipsoid.animate(h, frames); end
             if nargout, vargout = h; end
         end
-        
+
         function [X, Y, Z] = cloud(ellipsoid)
             [x, y, z] = sphere(ellipsoid.n);
             [X, Y, Z] = ellipsoid.sat(x, y, z);
         end
-             
+
         function inside = check(ellipsoid, varargin)
             switch length(varargin)
                 case 0
@@ -114,26 +114,26 @@ classdef Ellipsoid < Shape
                     z = varargin{3}(:);
                     points = [x, y, z, ones(size(x))];
             end
-            
+
             tpts = ellipsoid.transform \ points';
             tpts = tpts';
-            
+
             r1 = ellipsoid.scale(1);
-            
+
             r2 = ellipsoid.scale(2);
-            
+
             r3 = ellipsoid.scale(3);
-            
+
             inside = (tpts(:,1).^2/r1^2) + (tpts(:,2).^2/r2^2) + ...
                 (tpts(:,3).^2/r3^2) < 1;
-            
+
             if isa(inside,'sym'), inside = sym2func(inside); end
         end
-        
+
         function v = get.volume(ellipsoid)
             v = 4*pi*prod(ellipsoid.scale)/3;
         end
     end
-    
+
 end
 

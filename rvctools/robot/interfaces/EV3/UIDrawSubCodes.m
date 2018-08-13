@@ -5,30 +5,30 @@
 % (bytecodes.h)
 % - USE SCREEN FOR GRAPHICS
 %   -----------------------
-%   
+%
 %     opUI_DRAW,LC0(FILLWINDOW),LC0(0),LC0(0),LC0(0)
-%   
+%
 %       (clear entire screen by filling it with zero - background color)
-%       
-%       
-%     opUI_DRAW, - - - - - - 
-%     opUI_DRAW, - - - - - - 
-%     opUI_DRAW, - - - - - - 
-%     
+%
+%
+%     opUI_DRAW, - - - - - -
+%     opUI_DRAW, - - - - - -
+%     opUI_DRAW, - - - - - -
+%
 %       (draw graphical stuff on the screen)
-%       
-%     
-%     opUI_DRAW,LC0(UPDATE)  
-%   
+%
+%
+%     opUI_DRAW,LC0(UPDATE)
+%
 %       (show the stuff by updating the screen)
-%   
-% 
-% 
+%
+%
+%
 %   RESTORE RUN SCREEN
 %   ------------------
-%   
+%
 %     opUI_WRITE,LC0(INIT_RUN)
-% 
+%
 %       (enable the animated run screen)
 
 classdef UIDrawSubCodes < uint8

@@ -5,13 +5,13 @@
 % [YP,I] = PEAK(Y, OPTIONS) as above but also returns the indices of the maxima
 % in the vector Y.
 %
-% [YP,XP] = PEAK(Y, X, OPTIONS) as above but also returns the corresponding 
+% [YP,XP] = PEAK(Y, X, OPTIONS) as above but also returns the corresponding
 % x-coordinates of the maxima in the vector Y.  X is the same length as Y
 % and contains the corresponding x-coordinates.
 %
 % Options::
 % 'npeaks',N    Number of peaks to return (default all)
-% 'scale',S     Only consider as peaks the largest value in the horizontal 
+% 'scale',S     Only consider as peaks the largest value in the horizontal
 %               range +/- S points.
 % 'interp',M    Order of interpolation polynomial (default no interpolation)
 % 'plot'        Display the interpolation polynomial overlaid on the point data
@@ -32,17 +32,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -57,10 +57,10 @@ function [yp,xpout] = peak(y, varargin)
     opt.scale = 1;
     opt.interp = 0;
     opt.plot = false;
-    
+
     [opt,args] = tb_optparse(opt, varargin);
-    
-    
+
+
     % if second argument is a matrix we take this as the corresponding x
     % coordinates
     if ~isempty(args)
@@ -70,9 +70,9 @@ function [yp,xpout] = peak(y, varargin)
     else
         x = [1:length(y)]';
     end
-    
+
     y = y(:);
-    
+
     % find the maxima
     if opt.scale > 1
         % compare to a moving window max filtered version
@@ -82,7 +82,7 @@ function [yp,xpout] = peak(y, varargin)
         dv = diff(y);
         k = find( ([dv; 0]<0) & ([0; dv]>0) );
     end
-    
+
     % sort the maxima into descending magnitude
     [m,i] = sort(y(k), 'descend');
     k = k(i);    % indice of the maxima
@@ -94,15 +94,15 @@ function [yp,xpout] = peak(y, varargin)
 
     % optionally plot the discrete data
     if opt.plot
-        plot(x, y, '-o');      
+        plot(x, y, '-o');
         hold on
     end
-    
+
 
     % interpolate the peaks if required
     if opt.interp
         assert(opt.interp >= 2, 'RTB:peak:badarg',  'interpolation polynomial must be at least second order');
-        
+
         xp = [];
         yp = [];
         N = opt.interp;
@@ -119,16 +119,16 @@ function [yp,xpout] = peak(y, varargin)
                 warning('Peak at %f too close to start or finish of data, skipping', x(i));
                 continue;
             end
-            
+
             % find the roots of the polynomial closest to the coarse peak
             r = roots( polydiff(pp) );
             [mm,j] = min(abs(r-x(i)));
             xx = r(j);
-            
+
             % store x, y for the refined peak
             xp = [xp; xx];
             yp = [y; polyval(pp, xx)];
-            
+
             if opt.plot
                 % overlay the fitted polynomial and refined peak
                 xr = linspace(x(i-N2), x(i+N2), 50);
@@ -139,14 +139,14 @@ function [yp,xpout] = peak(y, varargin)
     else
         xp = x(k);
     end
-    
+
     if opt.plot
         grid
         xlabel('x');
         ylabel('y');
         hold off
     end
-    
+
     % return values
     yp = y(k)';
     if nargout > 1

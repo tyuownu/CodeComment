@@ -80,17 +80,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -105,17 +105,17 @@
 % update to use map.container class
 
 classdef PGraph < matlab.mixin.Copyable
-    
+
     properties (SetAccess=private, GetAccess=public)
         vertexlist      % vertex coordinates, columnwise, vertex number is the column number
         edgelist        % 2xNe matrix, each column is vertex index of edge start and end
         edgelen         % length (cost) of this edge
-        
+
         labels          % label of each vertex (1xN)
         maxlabel        % set of all labels (1xNc)
-        
+
         goaldist        % distance from goal, after planning
-        
+
         vertexdata      % per vertex data, cell array
         edgedata        % per edge data, cell array
         ndims           % number of coordinate dimensions, height of vertices matrix
@@ -125,15 +125,15 @@ classdef PGraph < matlab.mixin.Copyable
         ncvalid
         names
     end
-    
+
     properties (Dependent)
         n               % number of nodes/vertices
         ne              % number of edges
         nc              % number of components
     end
-    
+
     methods
-        
+
         function g = PGraph(ndims, varargin)
             %PGraph.PGraph Graph class constructor
             %
@@ -150,7 +150,7 @@ classdef PGraph < matlab.mixin.Copyable
             %   in position and angle modulo 2pi.
             % - To use a different distance metric create a subclass of PGraph and
             %   override the method distance_metric().
-            
+
 
             if nargin < 1
                 ndims = 2;  % planar by default
@@ -163,7 +163,7 @@ classdef PGraph < matlab.mixin.Copyable
             opt.distance = 'Euclidean';
             opt.dweight = 1;
             opt = tb_optparse(opt, varargin);
-            
+
             g.clear();
             g.verbose = opt.verbose;
             g.measure = opt.distance;
@@ -174,12 +174,12 @@ classdef PGraph < matlab.mixin.Copyable
             g.names = strings(0,0);
         end
 
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%% GRAPH MAINTENANCE
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        
+
+
         function v = add_node(g, coord, varargin)
             %PGraph.add_node Add a node
             %
@@ -195,37 +195,37 @@ classdef PGraph < matlab.mixin.Copyable
             %   constructor.
             %
             % See also PGraph.add_edge, PGraph.data, PGraph.getdata.
-            
+
             if length(coord) ~= g.ndims
                 error('coordinate length different to graph coordinate dimensions');
             end
-            
+
             opt.from = [];
             opt.name = [];
-            
+
             opt = tb_optparse(opt, varargin);
-            
+
             % append the coordinate as a column in the vertex matrix
             g.vertexlist = [g.vertexlist coord(:)];
             v = g.n;
-            
+
             if g.verbose
                 fprintf('add node (%d) = ', v);
                 fprintf('%f ', coord);
                 fprintf('\n');
             end
-            
+
             % optionally add an edge
             if ~isempty(opt.from)
                 g.add_edge(vfrom, v, opt.from);
             end
-            
+
             if ~isempty(opt.name)
                 g.names(v) = opt.name;
             end
             g.ncvalid = false;  % mark connectivity as suspect
         end
-        
+
         function e = add_edge(g, v1, v2, d)
             %PGraph.add_edge Add an edge
             %
@@ -253,40 +253,40 @@ classdef PGraph < matlab.mixin.Copyable
                 g.edgelen = [g.edgelen d];
             end
             g.ncvalid = false;  % mark connectivity as suspect
-            
+
         end
-        
-        
+
+
         function delete_node(g, vv)
-            
+
             for v=sort(vv(:)', 2, 'descend')
                 % remove all its edges
                 el = g.edges(v);
                 g.delete_edge(el);
-                
+
                 % remove the column from the vertex table
                 g.vertexlist(:,v) = [];
-                
+
                 % now renumber all the edges that might have changed
                 k = find(g.edgelist > v);
                 g.edgelist(k) = g.edgelist(k) - 1;
-                
+
                 g.ncvalid = false;  % mark connectivity as suspect
             end
         end
-        
+
         function delete_edge(g, e)
             g.edgelist(:,e) = [NaN; NaN];
             g.ncvalid = false;  % mark connectivity as suspect
-            
+
         end
-        
-        
+
+
         function clear(g)
             %PGraph.clear Clear the graph
             %
             % G.clear() removes all vertices, edges and components.
-            
+
             % set the orientation of the edge and vertex tables
             g.labels = zeros(1, 0);
             g.edgelist = zeros(2, 0);
@@ -295,11 +295,11 @@ classdef PGraph < matlab.mixin.Copyable
             g.ncvalid = false;  % mark connectivity as suspect
             g.maxlabel = 0;
         end
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%% GRAPH STRUCTURE
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         % which edges contain v
         %  elist = g.edges(v)
         function e = edges(g, v)
@@ -311,7 +311,7 @@ classdef PGraph < matlab.mixin.Copyable
 
             e = [find(g.edgelist(1,:) == v) find(g.edgelist(2,:) == v)];
         end
-        
+
         function e = edges_in(g, v)
             %PGraph.edges Find edges given vertex
             %
@@ -320,7 +320,7 @@ classdef PGraph < matlab.mixin.Copyable
             % See also PGraph.edgedir.
             e = find(g.edgelist(2,:) == v);
         end
-        
+
         function e = edges_out(g, v)
             %PGraph.edges Find edges given vertex
             %
@@ -329,7 +329,7 @@ classdef PGraph < matlab.mixin.Copyable
             % See also PGraph.edgedir.
             e = find(g.edgelist(1,:) == v);
         end
-        
+
         function dir = edgedir(g, v1, v2)
             %PGraph.edgedir Find edge direction
             %
@@ -354,15 +354,15 @@ classdef PGraph < matlab.mixin.Copyable
                 dir = 0;
             end
         end
-        
+
         function v = vertices(g, e)
             %PGraph.vertices Find vertices given edge
             %
             % V = G.vertices(E) return the id of the vertices that define edge E.
             v = g.edgelist(:,e);
         end
-        
-        
+
+
         function [n,c] = neighbours(g, v)
             %PGraph.neighbours Neighbours of a vertex
             %
@@ -379,7 +379,7 @@ classdef PGraph < matlab.mixin.Copyable
                 c = g.cost(e);
             end
         end
-        
+
         function [n,c] = neighbours_out(g, v)
             %PGraph.neighbours Outgoing neighbours of a vertex
             %
@@ -413,7 +413,7 @@ classdef PGraph < matlab.mixin.Copyable
                 c = g.cost(e);
             end
         end
-        
+
         function [n,c] = neighbours_d(g, v)
             %PGraph.neighbours_d Directed neighbours of a vertex
             %
@@ -431,7 +431,7 @@ classdef PGraph < matlab.mixin.Copyable
                 c = g.cost(e);
             end
         end
-        
+
         function c = connectivity(g,nn)
             %PGraph.connectivity Node connectivity
             %
@@ -443,7 +443,7 @@ classdef PGraph < matlab.mixin.Copyable
             %
             % and the minimum vertex connectivity is
             %         min(g.connectivity())
-            
+
             if nargin == 1
                 for k=1:g.n
                     c(k) = length(g.edges(k));
@@ -455,7 +455,7 @@ classdef PGraph < matlab.mixin.Copyable
                 end
             end
         end
-        
+
         function c = connectivity_in(g,n )
             %PGraph.connectivity Graph connectivity
             %
@@ -467,7 +467,7 @@ classdef PGraph < matlab.mixin.Copyable
             %
             % and the minimum vertex connectivity is
             %         min(g.connectivity())
-            
+
             if nargin == 1
                 for k=1:g.n
                     c(k) = length(g.edges_in(k));
@@ -476,7 +476,7 @@ classdef PGraph < matlab.mixin.Copyable
                 c = length(g.edges_in(n));
             end
         end
-        
+
         function c = connectivity_out(g,n )
             %PGraph.connectivity Graph connectivity
             %
@@ -488,7 +488,7 @@ classdef PGraph < matlab.mixin.Copyable
             %
             % and the minimum vertex connectivity is
             %         min(g.connectivity())
-            
+
             if nargin == 1
                 for k=1:g.n
                     c(k) = length(g.edges_out(k));
@@ -497,44 +497,44 @@ classdef PGraph < matlab.mixin.Copyable
                 c = length(g.edges_out(n));
             end
         end
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%% NODE PROPERTIES
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         function p = coord(g, v)
             %PGraph.coord Coordinate of node
             %
             % X = G.coord(V) is the coordinate vector (Dx1) of vertex id V.
-            
+
             if nargin < 2
                 p = g.vertexlist;
             else
                 p = g.vertexlist(:,v);
             end
         end
-        
+
         function p = name(g, v)
             %PGraph.coord Name of node
             %
             % X = G.name(V) is the name (string) of vertex id V.
-            
+
             if nargin < 2
                 p = [g.names];
             else
                 p = g.names(v);
             end
         end
-        
+
         function p = lookup(g, name)
             p  = find( [g.names] == name );
         end
-        
+
         function p = setcoord(g, v, c)
             %PGraph.coord Coordinate of node
             %
             % X = G.coord(V) is the coordinate vector (Dx1) of vertex id V.
-            
+
             if nargin < 3
                 if ~all(size(v) == size(g.vertexlist))
                     error('RTB:PGraph:badarg', 'value must be size of vertex table');
@@ -544,7 +544,7 @@ classdef PGraph < matlab.mixin.Copyable
                 g.vertexlist(:,v) = c;
             end
                 end
-        
+
         function u = vdata(g, v)
             %PGraph.data Get user data for node
             %
@@ -554,7 +554,7 @@ classdef PGraph < matlab.mixin.Copyable
             % See also PGraph.setdata.
             u = g.vertexdata{v};
         end
-                
+
         function u = setvdata(g, v, u)
             %PGraph.setdata Set user data for node
             %
@@ -562,7 +562,7 @@ classdef PGraph < matlab.mixin.Copyable
             % type such as a number, struct, object or cell array.
             %
             % See also PGraph.data.
-            
+
             g.vertexdata{v} = u;
         end
 
@@ -573,11 +573,11 @@ classdef PGraph < matlab.mixin.Copyable
             % the vertices V1 and V2.
             %
             % See also PGraph.distances.
-            
+
             d = g.distance_metric( g.vertexlist(:,v1), g.vertexlist(:,v2));
-            
+
         end
-        
+
         function [d,k] = distances(g, p)
             %PGraph.distances Distances from point to vertices
             %
@@ -592,11 +592,11 @@ classdef PGraph < matlab.mixin.Copyable
             %   constructor.
             %
             % See also PGraph.closest.
-            
+
             d = g.distance_metric(p(:), g.vertexlist);
             [d,k] = sort(d, 'ascend');
         end
-        
+
         function [c,dn] = closest(g, p, tol)
             %PGraph.closest Find closest vertex
             %
@@ -607,58 +607,58 @@ classdef PGraph < matlab.mixin.Copyable
             % See also PGraph.distances.
             d = g.distance_metric(p(:), g.vertexlist);
             [mn,c] = min(d);
-            
+
             if nargin > 2 && mn > tol
                 c = []; dn = [];
             end
-            
+
             if nargout > 1
                 dn = mn;
             end
-          
+
         end
-        
+
         function about(g, vv)
             if nargin < 2
                 disp('pick a node using the mouse');
                 vv = g.pick()
             end
-            
+
             if ~g.ncvalid
                 g.graphcolor();
             end
-            
+
             for v=vv
                 fprintf('Node %d #%d@ (', v, g.labels(v)); fprintf('%g ', g.coord(v)); fprintf(')\n');
-                fprintf('  neighbours: '); 
-                fprintf('%d ', g.neighbours_in(v)); fprintf(' >-o-> '); 
+                fprintf('  neighbours: ');
+                fprintf('%d ', g.neighbours_in(v)); fprintf(' >-o-> ');
                 fprintf('%d ', g.neighbours_out(v)); fprintf('\n');
-                
-                fprintf('  edges: '); 
-                fprintf('%d ', g.edges_in(v)); fprintf(' >-o-> '); 
+
+                fprintf('  edges: ');
+                fprintf('%d ', g.edges_in(v)); fprintf(' >-o-> ');
                 fprintf('%d ', g.edges_out(v)); fprintf('\n');
             end
         end
-        
+
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%% EDGE PROPERTIES
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         function d = cost(g, e)
             %PGraph.cost Cost of edge
             %
             % C = G.cost(E) is the cost of edge id E.
             d = g.edgelen(e);
         end
-        
+
         function d = setcost(g, e, c)
             %PGraph.cost Set cost of edge
             %
             % G.setcost(E, C) set cost of edge id E to C.
             g.edgelen(e) = c;
         end
-        
+
         function u = edata(g, e)
             %PGraph.data Get user data for node
             %
@@ -668,7 +668,7 @@ classdef PGraph < matlab.mixin.Copyable
             % See also PGraph.setdata.
             u = g.edgedata{e};
         end
-                
+
         function u = setedata(g, e, u)
             %PGraph.setdata Set user data for node
             %
@@ -676,14 +676,14 @@ classdef PGraph < matlab.mixin.Copyable
             % type such as a number, struct, object or cell array.
             %
             % See also PGraph.data.
-            
+
             g.edgedata{e} = u;
         end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%% GRAPH INFORMATION
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         function n = get.n(g)
             %Pgraph.n Number of vertices
             %
@@ -692,7 +692,7 @@ classdef PGraph < matlab.mixin.Copyable
             % See also PGraph.ne.
             n = numcols(g.vertexlist);
         end
-        
+
         function ne = get.ne(g)
             %Pgraph.ne Number of edges
             %
@@ -701,20 +701,20 @@ classdef PGraph < matlab.mixin.Copyable
             % See also PGraph.n.
             ne = numcols(g.edgelist);
         end
-        
+
         function ne = get.nc(g)
             %Pgraph.nc Number of components
             %
             % G.nc is the number of components in the graph.
             %
             % See also PGraph.component.
-            
+
             if ~g.ncvalid
                 g.graphcolor();
             end
             ne = g.maxlabel;
         end
-        
+
         function display(g)
             %PGraph.display Display graph
             %
@@ -729,29 +729,29 @@ classdef PGraph < matlab.mixin.Copyable
             disp([inputname(1), ' = '])
             disp( char(g) );
         end % display()
-        
+
         function s = char(g)
             %PGraph.char Convert graph to string
             %
             % S = G.char() is a compact human readable representation of the
             % state of the graph including the number of vertices, edges and components.
-            
+
             s = '';
             s = strvcat(s, sprintf('  %d dimensions', g.ndims));
             s = strvcat(s, sprintf('  %d vertices', g.n));
             s = strvcat(s, sprintf('  %d edges', numcols(g.edgelist)));
             s = strvcat(s, sprintf('  %d components', g.nc));
         end
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%% GRAPH COMPONENTS
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         function graphcolor(g)
             % color the graph
-            
+
             g.labels = repmat(NaN, 1, g.n);
-            
+
             function colorComponent(g, v, l)
                 g.labels(v) = l;
                 for n = g.neighbours(v)
@@ -760,7 +760,7 @@ classdef PGraph < matlab.mixin.Copyable
                     end
                 end
             end
-            
+
             for label = 1:g.n
                 % find first vertex with no label
                 v = find(isnan(g.labels));
@@ -769,13 +769,13 @@ classdef PGraph < matlab.mixin.Copyable
                     break;
                 end
                 v = v(1);
-                
+
                 colorComponent(g, v, label);
             end
             g.ncvalid = true;
 
         end
-        
+
         function c = component(g, v)
             %PGraph.component Graph component
             %
@@ -783,7 +783,7 @@ classdef PGraph < matlab.mixin.Copyable
             % V.
             c = g.labels(v);
         end
-        
+
         function v = componentnodes(g, c)
             %PGraph.component Graph component
             %
@@ -791,26 +791,26 @@ classdef PGraph < matlab.mixin.Copyable
             % V.
             v = find(g.labels == c);
         end
-        
+
 
         function c = samecomponent(g, v1, v2)
             %PGraph.component Graph component
             %
             % C = G.component(V) is the id of the graph component that contains vertex
             % V.
-            
+
             if ~g.ncvalid
                 % lazy graph coloring
                 g.graphcolor();
             end
             c = g.labels(v1) == g.labels(v2);
         end
-        
-        
+
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%% GRAPHICS
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         function plot(g, varargin)
             %PGraph.plot Plot the graph
             %
@@ -831,12 +831,12 @@ classdef PGraph < matlab.mixin.Copyable
             %  'EdgeLabelColor',C    Edge label text color (default black)
             %  'componentcolor'      Node color is a function of graph component
             %  'only',N              Only show these nodes
-            
-            
+
+
             % show vertices
             holdon = ishold;
             hold on
-            
+
             % parse options
             opt.componentcolor = false;
             opt.labels = false;
@@ -853,21 +853,21 @@ classdef PGraph < matlab.mixin.Copyable
             opt.EdgeWidth = 0.5;
             opt.dims = g.ndims;
             opt.only = [1:g.n];
-            
+
             [opt,args] = tb_optparse(opt, varargin);
-            
+
             % set default color if none specified
             if ~isempty(args)
                 mcolor = args{1};
             else
                 mcolor = 'b';
             end
-            
-            
+
+
             if opt.componentcolor
-                
+
                 colororder = get(gca, 'ColorOrder');
-                
+
                 % step through each component
                 for c=1:g.nc
                     vertices = g.componentnodes(c);
@@ -878,11 +878,11 @@ classdef PGraph < matlab.mixin.Copyable
                         % otherwise use next color from the axis color order
                         color = colororder(mod(c+1,numrows(colororder)-1)+1,:);
                     end
-                    
+
                                         % plot the edges
                     if opt.edges
                         coords = [];
-                        
+
                         for v = vertices
                             p0 = g.coord(v); p0 = p0(1:opt.dims);
                             for n = g.neighbours(v)
@@ -898,14 +898,14 @@ classdef PGraph < matlab.mixin.Copyable
                             end
                         end
                     end
-                    
+
                     % plot the nodes
                     args = {'LineStyle', 'None', ...
                         'Marker', 'o', ...
                         'MarkerFaceColor', color, ...
                         'MarkerSize', opt.NodeSize, ...
                         'MarkerEdgeColor', color };
-                    
+
                     for v = vertices
                         if ~ismember(v, opt.only)
                             continue;
@@ -917,21 +917,21 @@ classdef PGraph < matlab.mixin.Copyable
                             plot(p(1), p(2), args{:});
                         end
                     end
-                    
+
                     if length(vertices) == 1
                         continue; % no edges to plot
                     end
-                    
 
-                    
+
+
                 end
             else
-                
+
 
                 %% user selected colors
-                
-                
-                
+
+
+
                 % show edges
                 if opt.edges
                 for e=g.edgelist
@@ -946,7 +946,7 @@ classdef PGraph < matlab.mixin.Copyable
                     end
                 end
                 end
-                
+
                 % show the vertices as filled circles
                 for i=1:g.n
                     % for each node
@@ -965,7 +965,7 @@ classdef PGraph < matlab.mixin.Copyable
                     end
                 end
             end
-                            
+
 
 
             % show the edge labels
@@ -974,7 +974,7 @@ classdef PGraph < matlab.mixin.Copyable
                     e = g.edgelist(:,i);
                     v1 = g.vertexlist(:,e(1));
                     v2 = g.vertexlist(:,e(2));
-                    
+
                     text('String', sprintf('  %g', g.cost(i)), ...
                         'Position', (v1 + v2)/2, ...
                         'HorizontalAlignment', 'left', ...
@@ -1001,7 +1001,7 @@ classdef PGraph < matlab.mixin.Copyable
             end
             grid on
         end
-        
+
         function v = pick(g)
             %PGraph.pick Graphically select a vertex
             %
@@ -1011,10 +1011,10 @@ classdef PGraph < matlab.mixin.Copyable
             % See also PGraph.plot.
             [x,y] = ginput(1);
             d = colnorm( bsxfun(@minus,[x; y], g.vertexlist(1:2,:)) );
-                                   
+
             [~,v] = min(d);
         end
-        
+
         function highlight_node(g, verts, varargin)
             %PGraph.highlight_node Highlight a node
             %
@@ -1027,21 +1027,21 @@ classdef PGraph < matlab.mixin.Copyable
             %  'NodeEdgeColor',C     Node circle edge color (default blue)
             %
             % See also PGraph.highlight_edge, PGraph.highlight_path, PGraph.highlight_component.
-            
+
             hold on
-            
+
             % parse options
             opt.NodeSize = 12;
             opt.NodeFaceColor = 'y';
             opt.NodeEdgeColor = 'b';
-            
+
             [opt,args] = tb_optparse(opt, varargin);
             markerprops = {'LineStyle', 'None', ...
                 'Marker', 'o', ...
                 'MarkerFaceColor', opt.NodeFaceColor, ...
                 'MarkerSize', opt.NodeSize, ...
                 'MarkerEdgeColor', opt.NodeEdgeColor };
-            
+
             for v=verts
                 if g.ndims == 3
                     plot3(g.vertexlist(1,v), g.vertexlist(2,v), g.vertexlist(3,v), ...
@@ -1051,7 +1051,7 @@ classdef PGraph < matlab.mixin.Copyable
                 end
             end
         end
-        
+
         function highlight_component(g, c, varargin)
             %PGraph.highlight_component Highlight a graph component
             %
@@ -1069,7 +1069,7 @@ classdef PGraph < matlab.mixin.Copyable
                 g.highlight_node(v, varargin{:});
             end
         end
-        
+
         function highlight_edge(g, e, varargin)
             %PGraph.highlight_node Highlight a node
             %
@@ -1082,19 +1082,19 @@ classdef PGraph < matlab.mixin.Copyable
             % 'EdgeThickness',T     Edge thickness (default 1.5)
             %
             % See also PGraph.highlight_node, PGraph.highlight_path, PGraph.highlight_component.
-            
+
             % parse options
             opt.EdgeColor = 'k';
             opt.EdgeThickness = 1.5;
-            
+
             [opt,args] = tb_optparse(opt, varargin);
-            
+
             hold on
             if (length(args) > 0) && isnumeric(args{1})
                 % highlight_edge(V1, V2)
                 v1 = e;
                 v2 = args{1};
-                
+
                 v1 = g.vertexlist(:,v1);
                 v2 = g.vertexlist(:,v2);
             else
@@ -1103,19 +1103,19 @@ classdef PGraph < matlab.mixin.Copyable
                 v1 = g.vertexlist(:,e(1));
                 v2 = g.vertexlist(:,e(2));
             end
-            
+
             % create the line properties for the edges
             lineprops = {
                 'Color', opt.EdgeColor, ...
                 'LineWidth', opt.EdgeThickness };
-            
+
             if g.ndims == 3
                 plot3([v1(1) v2(1)], [v1(2) v2(2)], [v1(3) v2(3)], lineprops{:});
             else
                 plot([v1(1) v2(1)], [v1(2) v2(2)], lineprops{:});
             end
         end
-        
+
         function highlight_path(g, path, varargin)
             %PGraph.highlight_path Highlight path
             %
@@ -1131,7 +1131,7 @@ classdef PGraph < matlab.mixin.Copyable
             %
             % See also PGraph.highlight_node, PGraph.highlight_edge, PGraph.highlight_component.
             g.highlight_node(path, varargin{:});
-            
+
             % highlight the edges
             for i=1:numel(path)-1
                 v1 = path(i);
@@ -1139,7 +1139,7 @@ classdef PGraph < matlab.mixin.Copyable
                 g.highlight_edge(v1, v2, varargin{:});
             end
         end
-        
+
         function dotfile(g, varargin)
             %Pgraph.dotfile Create a GraphViz dot file
             %
@@ -1154,28 +1154,28 @@ classdef PGraph < matlab.mixin.Copyable
             % Notes::
             % - An undirected graph is default
             % - Use neato rather than dot to get the embedded layout
-            
+
             opt.directed = false;
-            
+
             [opt,args] = tb_optparse(opt, varargin);
-            
+
             if length(args) == 0
                 fp = 1;
             else
                 fp = fopen(args{1}, 'w');
             end
-            
+
             if opt.directed
                 fprintf(fp, 'digraph {\n');
             else
                 fprintf(fp, 'graph {\n');
             end
-            
+
             % add the nodes including name and position
             for i=1:g.n
                 fprintf(fp, '"%s" [pos="%d,%d"]\n', g.names{i}, g.vertexlist(:,i));
             end
-            
+
             % add the edges
             for i=1:g.ne
                 edge = g.edgelist(:,i);
@@ -1190,12 +1190,12 @@ classdef PGraph < matlab.mixin.Copyable
                 fclose(fp);
             end
         end
-        
-        
+
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%% MATRIX REPRESENTATIONS
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         function L = laplacian(g)
             %Pgraph.laplacian Laplacian matrix of graph
             %
@@ -1208,10 +1208,10 @@ classdef PGraph < matlab.mixin.Copyable
             %   in the graph.
             %
             % See also PGraph.adjacency, PGraph.incidence, PGraph.degree.
-            
+
             L = g.degree() - (g.adjacency() > 0);
         end
-        
+
         function D = degree(g)
             %Pgraph.degree Degree matrix of graph
             %
@@ -1219,10 +1219,10 @@ classdef PGraph < matlab.mixin.Copyable
             % of edges connected to vertex id i.
             %
             % See also PGraph.adjacency, PGraph.incidence, PGraph.laplacian.
-            
+
             D = diag( g.connectivity() );
         end
-        
+
         function A = adjacency(g)
             %Pgraph.adjacency Adjacency matrix of graph
             %
@@ -1237,7 +1237,7 @@ classdef PGraph < matlab.mixin.Copyable
             %   of A^N are the number of walks of length N from vertex I to vertex J.
             %
             % See also PGraph.degree, PGraph.incidence, PGraph.laplacian.
-            
+
             A = zeros(g.n, g.n);
             for i=1:g.n
                 [n,c] = g.neighbours(i);
@@ -1247,7 +1247,7 @@ classdef PGraph < matlab.mixin.Copyable
                 end
             end
         end
-        
+
         function I = incidence(g)
             %Pgraph.degree Incidence matrix of graph
             %
@@ -1262,12 +1262,12 @@ classdef PGraph < matlab.mixin.Copyable
                 end
             end
         end
-        
-        
+
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%% PATH PLANNING
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         function [path,cost] = Astar(g, vstart, vgoal, varargin)
             %PGraph.Astar path finding
             %
@@ -1290,29 +1290,29 @@ classdef PGraph < matlab.mixin.Copyable
             %   SIGART Newsletter 37: 28-29, 1972.
             %
             % See also PGraph.goal, PGraph.path.
-            
-            
+
+
             opt.directed = false;
-            
+
             opt = tb_optparse(opt, varargin);
-            
+
             % The set of vertices already evaluated.
             closedSet = [];
-            
+
             % The set of tentative vertices to be evaluated, initially containing the start node
             openSet = [vstart];
             came_from(vstart) = 0;    % The map of navigated vertices.
-            
+
             g_score(vstart) = 0;    % Cost from start along best known path.
             h_score(vstart) = g.distance(vstart, vgoal);
             % Estimated total cost from start to goal through y.
             f_score(vstart) = g_score(vstart) + h_score(vstart);
-            
+
             while ~isempty(openSet)
                 % current := the node in openSet having the lowest f_score[] value
                 [mn,k] = min(f_score(openSet));
                 vcurrent = openSet(k);
-                
+
                 if vcurrent == vgoal
                     % we have arrived!
                     path = [];
@@ -1329,28 +1329,28 @@ classdef PGraph < matlab.mixin.Copyable
                     end
                     return
                 end
-                
+
                 %remove current from openSet
                 openSet = setdiff(openSet, vcurrent);
                 %add current to closedSet
                 closedSet = union(closedSet, vcurrent);
-                
+
                 if opt.directed
                     [neighbours,costs] = g.neighbours_out(vcurrent);
-                    
+
                 else
                     [neighbours,costs] = g.neighbours(vcurrent);
                 end
-                
+
                 for k=1:length(neighbours)
-                    
+
                     neighbour = neighbours(k);
-                    
+
                     if ismember(neighbour, closedSet)
                         continue;
                     end
                     tentative_g_score = g_score(vcurrent) + costs(k);
-                    
+
                     if ~ismember(neighbour, openSet)
                         %add neighbor to openSet
                         openSet = union(openSet, neighbour);
@@ -1363,7 +1363,7 @@ classdef PGraph < matlab.mixin.Copyable
                     end
                     if tentative_is_better
                         % we found an edge that belongs to the path
-                        
+
                         % came_from is an array that records the path taken
                         %  - length g.n
                         %  -  came_from(A) = B means a path segment from A -> B
@@ -1378,10 +1378,10 @@ classdef PGraph < matlab.mixin.Copyable
             end
             path = [];
         end
-        
-      
+
+
         function d = distance_metric(g, x1, x2)
-            
+
             % distance between coordinates x1 and x2 using the relevant metric
             % x2 can be multiple points represented by multiple columns
             if isa(g.measure, 'function_handle')
@@ -1392,12 +1392,12 @@ classdef PGraph < matlab.mixin.Copyable
             else switch g.measure
                     case 'Euclidean'
                         d = colnorm( bsxfun(@minus, x1, x2) );
-                        
+
                     case 'SE2'
                         d = bsxfun(@minus, x1, x2) * g.dweight;
                         d(3,:) = angdiff(x1(3), x2(3,:));
                         d = colnorm( d );
-                        
+
                     case 'Lattice'
                         d = bsxfun(@minus, x1, x2) * g.dweight;
                         d(3,:) = angdiff(x1(3)*pi/2, x2(3,:)*pi/2);
@@ -1408,5 +1408,5 @@ classdef PGraph < matlab.mixin.Copyable
             end
         end
     end %  methods
-    
+
 end % classdef

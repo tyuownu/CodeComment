@@ -1,6 +1,6 @@
 %RandomPath Vehicle driver class
 %
-% Create a "driver" object capable of steering a Vehicle subclass object through random 
+% Create a "driver" object capable of steering a Vehicle subclass object through random
 % waypoints within a rectangular region and at constant speed.
 %
 % The driver object is connected to a Vehicle object by the latter's
@@ -12,7 +12,7 @@
 %  demand     speed and steer angle to next waypoint
 %  display    display the state and parameters in human readable form
 %  char       convert to string
-%plot      
+%plot
 % Properties::
 %  goal          current goal/waypoint coordinate
 %  veh           the Vehicle object being controlled
@@ -47,17 +47,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -100,10 +100,10 @@ classdef RandomPath < handle
             % 'dthresh',D    Distance from goal at which next goal is chosen.
             %
             % See also Vehicle.
-            
+
             % TODO options to specify region, maybe accept a Map object?
             % dim can be a 4-vector
-            
+
             switch length(dim)
                 case 1
                     driver.xrange = [-dim dim];
@@ -117,13 +117,13 @@ classdef RandomPath < handle
                 otherwise
                     error('bad dimension specified');
             end
-            
+
             opt.speed = 1;
             opt.dthresh = 0.05 * diff(driver.xrange) / 2;
             opt.show = true;
-            
+
             driver = tb_optparse(opt, varargin, driver);
-            
+
             drive.d_prev = Inf;
             driver.randstream = RandStream.create('mt19937ar');
         end
@@ -155,7 +155,7 @@ classdef RandomPath < handle
 
         % private method, invoked from demand() to compute a new waypoint
         function setgoal(driver)
-            
+
            % choose a uniform random goal within inner 80% of driving area
            while true
                r = driver.randstream.rand()*0.8+0.1;
@@ -168,7 +168,7 @@ classdef RandomPath < handle
                    break;
                end
            end
-           
+
            if driver.verbose
                fprintf('set goal: (%.1f %.1f)\n', driver.goal);
            end
@@ -232,8 +232,8 @@ classdef RandomPath < handle
         function s = char(driver)
         %RandomPath.char Convert to string
         %
-        % s = R.char() is a string showing driver parameters and state in in 
-        % a compact human readable format. 
+        % s = R.char() is a string showing driver parameters and state in in
+        % a compact human readable format.
             s = 'RandomPath driver object';
             s = char(s, sprintf('  current goal=(%g,%g), X %f : %f; Y %f : %f, dthresh %g', ...
                 driver.goal, driver.xrange, driver.yrange, driver.dthresh));

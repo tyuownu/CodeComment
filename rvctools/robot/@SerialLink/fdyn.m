@@ -15,7 +15,7 @@
 % [TI,Q,QD] = R.fdyn(T, FTFUN, Q0, QD0) as above but allows the initial
 % joint position Q0 (1xN) and velocity QD0 (1x)  to be specified.
 %
-% [T,Q,QD] = R.fdyn(T1, FTFUN, Q0, QD0, ARG1, ARG2, ...) allows optional 
+% [T,Q,QD] = R.fdyn(T1, FTFUN, Q0, QD0, ARG1, ARG2, ...) allows optional
 % arguments to be passed through to the user-supplied control function:
 %
 %        TAU = FTFUN(T, Q, QD, ARG1, ARG2, ...)
@@ -32,7 +32,7 @@
 %
 % Note::
 % - This function performs poorly with non-linear joint friction, such as
-%   Coulomb friction.  The R.nofriction() method can be used to set this 
+%   Coulomb friction.  The R.nofriction() method can be used to set this
 %   friction to zero.
 % - If FTFUN is not specified, or is given as 0 or [],  then zero torque
 %   is applied to the manipulator joints.
@@ -47,17 +47,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -66,7 +66,7 @@
 function [t, q, qd] = fdyn(robot, t1, torqfun, q0, qd0, varargin)
 
     % check the Matlab version, since ode45 syntax has changed
-    if verLessThan('matlab', '7')  
+    if verLessThan('matlab', '7')
         error('fdyn now requires Matlab version >= 7');
     end
 
@@ -84,7 +84,7 @@ function [t, q, qd] = fdyn(robot, t1, torqfun, q0, qd0, varargin)
 
     % concatenate q and qd into the initial state vector
     q0 = [q0(:); qd0(:)];
-        
+
     [t,y] = ode45(@fdyn2, [0 t1], q0, [], robot, torqfun, varargin{:});
     q = y(:,1:n);
     qd = y(:,n+1:2*n);
@@ -119,7 +119,7 @@ function xd = fdyn2(t, x, robot, torqfun, varargin)
     else
         tau = zeros(1,n);
     end
-    
+
     qdd = robot.accel(x(1:n,1)', x(n+1:2*n,1)', tau);
     xd = [x(n+1:2*n,1); qdd];
 end

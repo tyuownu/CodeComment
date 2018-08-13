@@ -69,24 +69,24 @@
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 classdef VREP < handle
-        
+
     properties(GetAccess=public, SetAccess=protected)
         vrep    % the remApi object
         client  % the comms handle
@@ -95,10 +95,10 @@ classdef VREP < handle
         libpath  % list of libraries added to path
         version  % the version as given by user 304, 311 etc.
     end
-    
-    
+
+
     methods
-    
+
         function obj = VREP(varargin)
             %VREP.VREP VREP object constructor
             %
@@ -114,7 +114,7 @@ classdef VREP < handle
             %
             % Notes::
             % - The default path is taken from the environment variable VREP
-            
+
             opt.timeout = 2000;
             opt.cycle = 5;
             opt.port = 19997;
@@ -122,36 +122,36 @@ classdef VREP < handle
             opt.path = getenv('VREP');
 
             [opt,args] = tb_optparse(opt, varargin);
-                        
-            
+
+
             % setup paths
             if isempty(opt.path)
                 error('RTB:VREP:badargs', 'no VREP path specified');
             end
-            
+
             if ~exist(opt.path, 'dir')
                 error('RTB:VREP:badargs', 'Root VREP folder %s does not exist', opt.path);
             end
             obj.path = opt.path;
-            
-            
+
+
             % % for 3.0.4
             %   libpath = { fullfile(path, 'programming', 'remoteApi')
             %   fullfile(path, 'programming', 'Matlab')
             %  fullfile(path, 'programming', 'remoteApiSharedLib')
             %  };
             %  port = 19998;
-            
+
             % for 3.1.x
             libpath = { fullfile(opt.path, 'programming', 'remoteApi')
                 fullfile(opt.path, 'programming', 'remoteApiBindings', 'matlab', 'matlab')
                 fullfile(opt.path, 'programming', 'remoteApiBindings', 'lib', 'lib')
                 };
-            
+
             addpath( libpath{:} );
-            
+
             obj.libpath = libpath;
-            
+
             obj.vrep = remApi('remoteApi','extApi.h');
 
             % IP address and port
@@ -159,18 +159,18 @@ classdef VREP < handle
             % do not attempt to reconnect
             % timeout is 2000ms
             % comms cycle time is 5ms
-            
-            
+
+
             % establish the connection
             obj.client = obj.vrep.simxStart('127.0.0.1', opt.port, true, ...
                 ~opt.reconnect, opt.timeout, opt.cycle);
-            
+
             if obj.client < 0
                 error('RTB:VREP:noconnect', 'Can''t connect to V-REP simulator');
             end
-            
+
             obj.mode = obj.vrep.simx_opmode_oneshot_wait;
-            
+
             % get actual version number as a string
             vint = obj.getversion();
             v = '';
@@ -183,7 +183,7 @@ classdef VREP < handle
             end
             obj.version = v;
         end
-        
+
         function display(v)
             %VREP.display Display parameters
             %
@@ -202,7 +202,7 @@ classdef VREP < handle
             disp([inputname(1), ' = '])
             disp( char(v) );
         end % display()
-        
+
         function s = char(obj)
             %VREP.char Convert to string
             %
@@ -223,20 +223,20 @@ classdef VREP < handle
                     s = strvcat(s, 'mode: simx_opmode_streaming (non-blocking)');
             end
         end
-        
+
         function delete(obj)
             %VREP.delete VREP object destructor
             %
             % delete(v) closes the connection to the V-REP simulator
-            
+
             disp('--VREP destructor called');
             obj.vrep.simxFinish(obj.client);
             obj.vrep.delete(); % explicitly call the destructor!
             obj.vrep = [];
-            
+
             rmpath( obj.libpath{:} );
         end
-        
+
         %---- wrapper functions for getting object handles
         function [h,s] = gethandle(obj, fmt, varargin)
             %VREP.gethandle Return handle to VREP object
@@ -249,7 +249,7 @@ classdef VREP < handle
             % See also sprintf.
             [s,h] = obj.vrep.simxGetObjectHandle(obj.client, sprintf(fmt, varargin{:}), obj.mode);
         end
-        
+
         function children = getchildren(obj, h)
             %VREP.getchildren Find children of object
             %
@@ -265,7 +265,7 @@ classdef VREP < handle
             children(i) = ch;
             end
         end
-        
+
         function out = getobjname(obj, h)
             %VREP.getname Find names of objects
             %
@@ -278,13 +278,13 @@ classdef VREP < handle
             if s ~= 0
                 throw( obj.except(s) );
             end
-            
+
             if nargin < 2
                 name = strd(:,1);
             else
                 name = strd{handles == h,1};
             end
-            
+
             if (nargout == 0) && (nargin < 2)
                 for i=1:length(name)
                     fprintf('%3d: %s\n', handles(i), strd{i});
@@ -293,25 +293,25 @@ classdef VREP < handle
             end
             out = name;
         end
-        
+
         % HOW DO I GET OBJECT TYPE FROM V-REP??
-%         		% Scene object types
-%  		sim_object_shape_type           =0;
-% 		sim_object_joint_type           =1;
-% 		sim_object_graph_type           =2;
-% 		sim_object_camera_type          =3;
-% 		sim_object_dummy_type           =4;
-% 		sim_object_proximitysensor_type =5;
-% 		sim_object_reserved1            =6;
-% 		sim_object_reserved2            =7;
-% 		sim_object_path_type            =8;
-% 		sim_object_visionsensor_type    =9;
-% 		sim_object_volume_type          =10;
-% 		sim_object_mill_type            =11;
-% 		sim_object_forcesensor_type     =12;
-% 		sim_object_light_type           =13;
-% 		sim_object_mirror_type          =14;
-        
+%                 % Scene object types
+%          sim_object_shape_type           =0;
+%         sim_object_joint_type           =1;
+%         sim_object_graph_type           =2;
+%         sim_object_camera_type          =3;
+%         sim_object_dummy_type           =4;
+%         sim_object_proximitysensor_type =5;
+%         sim_object_reserved1            =6;
+%         sim_object_reserved2            =7;
+%         sim_object_path_type            =8;
+%         sim_object_visionsensor_type    =9;
+%         sim_object_volume_type          =10;
+%         sim_object_mill_type            =11;
+%         sim_object_forcesensor_type     =12;
+%         sim_object_light_type           =13;
+%         sim_object_mirror_type          =14;
+
         %---- simulation control
         function simstart(obj)
             %VREP.simstart Start V-REP simulation
@@ -321,7 +321,7 @@ classdef VREP < handle
             % See also VREP.simstop, VREP.simpause.
             s = obj.vrep.simxStartSimulation(obj.client, obj.mode);
         end
-        
+
         function simstop(obj)
             %VREP.simstop Stop V-REP simulation
             %
@@ -330,7 +330,7 @@ classdef VREP < handle
             % See also VREP.simstart.
             s = obj.vrep.simxStopSimulation(obj.client, obj.mode);
         end
-        
+
         function simpause(obj)
             %VREP.pause Pause V-REP simulation
             %
@@ -340,7 +340,7 @@ classdef VREP < handle
             % See also VREP.simstart.
             s = obj.vrep.simxPauseSimulation(obj.client, obj.mode);
         end
-        
+
         function v = getversion(obj)
             %VREP.getversion Get version of the V-REP simulator
             %
@@ -356,20 +356,20 @@ classdef VREP < handle
             % V.checkcomms() is true if a valid connection to the V-REP simulator exists.
             s = obj.vrep.simxGetConnectionId(obj.client);
         end
-        
+
         function pausecomms(obj, onoff)
             %VREP.pausecomms Pause communcations to the V-REP simulator
             %
             % V.pausecomms(P) pauses communications to the V-REP simulation engine if P is true
             % else resumes it.  Useful to ensure an atomic update of
             % simulator state.
-            
+
             s = obj.vrep.simxPauseCommunication(obj.client, onoff, obj.mode);
             if s ~= 0
                 throw( obj.except(s) );
             end
         end
-        
+
         function loadscene(obj, name, varargin)
             %VREP.loadscene Load a scene into the V-REP simulator
             %
@@ -390,9 +390,9 @@ classdef VREP < handle
             % See also VREP.clearscene.
 
             opt.local = false;
-            
+
             opt = tb_optparse(opt, varargin);
-            
+
             if ~opt.local
                 if name(1) ~= '/'
                     % its a relative path, add in full path
@@ -404,7 +404,7 @@ classdef VREP < handle
                 throw( obj.except(s) );
             end
         end
-        
+
         function clearscene(obj, name, varargin)
             %VREP.clearscene Clear current scene in the V-REP simulator
             %
@@ -418,7 +418,7 @@ classdef VREP < handle
                 throw( obj.except(s) );
             end
         end
-        
+
         function m = loadmodel(obj, model, varargin)
             %VREP.loadmodel Load a model into the V-REP simulator
             %
@@ -442,7 +442,7 @@ classdef VREP < handle
             opt.local = false;
             opt.name = [];
             opt = tb_optparse(opt, varargin);
-            
+
             if ~opt.local
                 if model(1) ~= '/'
                     % its a relative path, add in full path
@@ -456,8 +456,8 @@ classdef VREP < handle
             m = obj.object(bh, varargin{:});
             pause(0.5);
         end
-        
-        
+
+
         %---- signals
 
         function signal_int(obj, name, val)
@@ -468,9 +468,9 @@ classdef VREP < handle
             s = obj.vrep.simxSetIntegerSignal(obj.client, name, val, obj.mode);
             if s ~= 0
                 throw( obj.except(s) );
-            end            
+            end
         end
-        
+
         function signal_float(obj, name, val)
             %VREP.signal_float Send a float signal to the V-REP simulator
             %
@@ -481,7 +481,7 @@ classdef VREP < handle
                 throw( obj.except(s) );
             end
         end
-        
+
         function signal_str(obj, name, val)
             %VREP.signal_str Send a string signal to the V-REP simulator
             %
@@ -492,7 +492,7 @@ classdef VREP < handle
                 throw( obj.except(s) );
             end
         end
-        
+
         %---- set/get simulator parameters
         function setparam_bool(obj, paramid, val)
             %VREP.setparam_bool Set boolean parameter of the V-REP simulator
@@ -525,7 +525,7 @@ classdef VREP < handle
                 throw( obj.except(s) );
             end
         end
-        
+
         function setparam_str(obj, paramid, val)
             %VREP.setparam_str Set string parameter of the V-REP simulator
             %
@@ -541,7 +541,7 @@ classdef VREP < handle
                 throw( obj.except(s) );
             end
         end
-        
+
         function setparam_float(obj, paramid, val)
             %VREP.setparam_float Set float parameter of the V-REP simulator
             %
@@ -557,7 +557,7 @@ classdef VREP < handle
                 throw( obj.except(s) );
             end
         end
-        
+
         function v = getparam_bool(obj, paramid)
             %VREP.getparam_bool Get boolean parameter of the V-REP simulator
             %
@@ -589,7 +589,7 @@ classdef VREP < handle
             %         v.getparam_int('sim_intparam_settings')
             %
             % See also VREP.setparam_int.
-            
+
             if isstr(paramid)
                 paramid = eval(['obj.vrep.' paramid]);
             end
@@ -610,7 +610,7 @@ classdef VREP < handle
             %         v.getparam_str('sim_stringparam_application_path')
             %
             % See also VREP.setparam_str.
-            
+
             if isstr(paramid)
                 paramid = eval(['obj.vrep.' paramid]);
             end
@@ -618,8 +618,8 @@ classdef VREP < handle
             if s ~= 0
                 throw( obj.except(s) );
             end
-        end 
-        
+        end
+
         function v = getparam_float(obj, paramid)
             %VREP.getparam_float Get float parameter of the V-REP simulator
             %
@@ -639,7 +639,7 @@ classdef VREP < handle
                 throw( obj.except(s) );
             end
         end
-        
+
         %---- set/get object parameters
         function setobjparam_bool(obj, h, paramid, val)
             %VREP.setobjparam_bool Set boolean parameter of a V-REP object
@@ -673,7 +673,7 @@ classdef VREP < handle
                 throw( obj.except(s) );
             end
         end
-        
+
         function val = getobjparam_bool(obj, h, paramid)
             %VREP.getobjparam_bool Get boolean parameter of a V-REP object
             %
@@ -706,8 +706,8 @@ classdef VREP < handle
                 throw( obj.except(s) );
             end
         end
-        
-        %---- wrapper functions for using joint objects    
+
+        %---- wrapper functions for using joint objects
         function setjoint(obj, h, q)
             %VREP.setjoint Set value of V-REP joint object
             %
@@ -715,46 +715,46 @@ classdef VREP < handle
             % to the value Q.
             s = obj.vrep.simxSetJointPosition(obj.client, h, q, obj.mode);
         end
-        
+
         function q = getjoint(obj, h)
             %VREP.getjoint Get value of V-REP joint object
             %
             % V.getjoint(H, Q) is the position of joint object with integer handle H.
             [s,q] = obj.vrep.simxGetJointPosition(obj.client, h, obj.mode);
-            
+
             if s ~= 0
                 throw( obj.except(s) );
             end
         end
-        
+
         function setjointtarget(obj, h, q)
             %VREP.setjointtarget Set target value of V-REP joint object
             %
             % V.setjointtarget(H, Q) sets the target position of joint object with integer handle H
             % to the value Q.
             s = obj.vrep.simxSetJointTargetPosition(obj.client, h, q, obj.mode);
-            
+
             if s ~= 0
                 throw( obj.except(s) );
             end
         end
-        
+
         function setjointvel(obj, h, qd)
             %VREP.setjointvel Set velocity of V-REP joint object
             %
             % V.setjointvel(H, QD) sets the target velocity of joint object with integer handle H
             % to the value QD.
             s = obj.vrep.simxSetJointTargetVelocity(obj.client, h, qd, obj.mode);
-            
+
             if s ~= 0
                 throw( obj.except(s) );
             end
         end
-        
+
 
         %---- wrapper functions for position of objects
         function setpos(obj, h, t, relto)
-            %VREP.setpos Set position of V-REP object             
+            %VREP.setpos Set position of V-REP object
             %
             % V.setpos(H, T) sets the position of V-REP object with integer
             % handle H to T (1x3).
@@ -767,15 +767,15 @@ classdef VREP < handle
             if nargin < 4
                 relto = -1;
             end
-            
+
             s = obj.vrep.simxSetObjectPosition(obj.client, h, relto, t, obj.mode);
             if s ~= 0
                 throw( obj.except(s) );
             end
         end
-        
+
         function t = getpos(obj, h, relto)
-            %VREP.getpos Get position of V-REP object             
+            %VREP.getpos Get position of V-REP object
             %
             % V.getpos(H) is the position (1x3) of the V-REP object with integer
             % handle H.
@@ -787,17 +787,17 @@ classdef VREP < handle
             if nargin < 4
                 relto = -1;
             end
-            
+
             [s,t] = obj.vrep.simxGetObjectPosition(obj.client, h, relto, obj.mode);
             if s ~= 0
                 throw( obj.except(s) );
             end
         end
-        
+
        %---- wrapper functions for pose of objects
 
         function setpose(obj, h, T, relto)
-            %VREP.setpose Set pose of V-REP object             
+            %VREP.setpose Set pose of V-REP object
             %
             % V.setpos(H, T) sets the pose of V-REP object with integer
             % handle H according to homogeneous transform T (4x4).
@@ -812,7 +812,7 @@ classdef VREP < handle
             elseif isa(relto, 'VREP_base')
                 relto = relto.h;
             end
-            
+
             pos = transl(T);
             eul = tr2eul(T, 'deg');
             s = obj.vrep.simxSetObjectPosition(obj.client, h, relto, pos, obj.mode);
@@ -824,9 +824,9 @@ classdef VREP < handle
                 throw( obj.except(s) );
             end
         end
-        
+
         function T = getpose(obj, h, relto)
-            %VREP.getpose Get pose of V-REP object             
+            %VREP.getpose Get pose of V-REP object
             %
             % T = V.getpose(H) is the pose of the V-REP object with integer
             % handle H as a homogeneous transformation matrix (4x4).
@@ -840,7 +840,7 @@ classdef VREP < handle
             elseif isa(relto, 'VREP_base')
                 relto = relto.h;
             end
-            
+
             [s,pos] = obj.vrep.simxGetObjectPosition(obj.client, h, relto, obj.mode);
             if s ~= 0
                 throw( obj.except(s) );
@@ -849,14 +849,14 @@ classdef VREP < handle
             if s ~= 0
                 throw( obj.except(s) );
             end
-            
+
             T = transl(pos) * eul2tr(eul, 'deg');
         end
-        
+
         %---- wrapper functions for orientation of objects
 
         function setorient(obj, h, R, relto)
-            %VREP.setorient Set orientation of V-REP object             
+            %VREP.setorient Set orientation of V-REP object
             %
             % V.setorient(H, R) sets the orientation of V-REP object with integer
             % handle H to that given by rotation matrix R (3x3).
@@ -878,21 +878,21 @@ classdef VREP < handle
             elseif isa(relto, 'VREP_base')
                 relto = relto.h;
             end
-            
+
             if isrot(R) || ishomog(R)
                 eul = tr2eul(R);
             elseif isvec(R, 3)
                 eul = R;
             end
-            
+
             s = obj.vrep.simxSetObjectOrientation(obj.client, h, relto, eul, obj.mode);
             if s ~= 0
                 throw( obj.except(s) );
             end
         end
-        
+
         function R = getorient(obj, h, relto, varargin)
-            %VREP.getorient Get orientation of V-REP object             
+            %VREP.getorient Get orientation of V-REP object
             %
             % R = V.getorient(H) is the orientation  of the V-REP object with integer
             % handle H as a rotation matrix (3x3).
@@ -910,28 +910,28 @@ classdef VREP < handle
             % See tr2eul.
             %
             % See also VREP.setorient, VREP.getpos, VREP.getpose.
-            
+
             if nargin < 4
                 relto = -1;
             elseif isa(relto, 'VREP_base')
                 relto = relto.h;
             end
-            
+
             opt.euler = false;
             [opt,args] = tb_optparse(opt, varargin);
-            
+
             [s,eul] = obj.vrep.simxGetObjectOrientation(obj.client, h, relto, obj.mode);
             if s ~= 0
                 throw( obj.except(s) );
             end
-            
+
             if opt.euler
                 R = eul;
             else
                 R = eul2tr(eul, args{:});
             end
         end
-        
+
         %---- factory methods to create instances of specific objects that mirror VREP objects
         function a = arm(obj, name)
             %VREP.arm Return VREP_arm object
@@ -943,14 +943,14 @@ classdef VREP < handle
             %         vrep.arm('IRB 140');
             %
             % See also VREP_arm.
-            
+
             if isa(name, 'VREP_obj')
                 h = name.h;
                 name = name.getname();
             end
             a = VREP_arm(obj, name);
         end
-        
+
         function o = object(obj, varargin)
             %VREP.arm Return VREP_obj object
             %
@@ -962,7 +962,7 @@ classdef VREP < handle
             % See also VREP_obj.
             o = VREP_obj(obj, varargin{:});
         end
-        
+
         function m = mobile(obj, name)
             %VREP.mobile Return VREP_mobile object
             %
@@ -972,7 +972,7 @@ classdef VREP < handle
             % See also VREP_mobile.
             m = VREP_mobile(obj, name);
         end
-        
+
         function m = camera(obj, name)
             %VREP.camera Return VREP_camera object
             %
@@ -982,17 +982,17 @@ classdef VREP < handle
             % See also VREP_camera.
             m = VREP_camera(obj, name);
         end
-        
+
         function m = hokuyo(obj, name)
             %VREP.hokuyo Return VREP_hokuyo object
             %
-            % V.hokuyo(name) is a factory method that returns a VREP_hokuyo 
+            % V.hokuyo(name) is a factory method that returns a VREP_hokuyo
             % object for the V-REP Hokuyo laser scanner object named NAME.
             %
             % See also VREP_hokuyo.
             m = VREP_mobile(obj, name);
         end
-        
+
         function m = youbot(obj, name)
             %VREP.youbot Return VREP_youbot object
             %
@@ -1028,7 +1028,7 @@ classdef VREP < handle
                     msgid = 'VREP:nostarted';
                     err = 'simxStart was not yet called'
             end
-            
+
             e = MException(msgid, err);
         end
 end

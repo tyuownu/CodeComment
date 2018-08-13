@@ -18,7 +18,7 @@
 %  (3) c = robot.collisions(q, cmdl, dyn_cmdl)
 %  (4) c = robot.collisions(q, [], ...)
 %
-%  (2) is as per (1) but also checks CollisionModel dyn_cmdl, whose 
+%  (2) is as per (1) but also checks CollisionModel dyn_cmdl, whose
 %       primitives move as specified by the frames in dyn_T
 %  (3) is as per (2) but assumes dyn_cmdl is the robot's tool, i.e. the
 %       the robot's end-effector frame (including tool transform) is
@@ -45,10 +45,10 @@
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
-% 
+%
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -56,7 +56,7 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 %
 % RTB LIBRARY:
@@ -128,7 +128,7 @@ for p = notnan
             prevPts = nextPts;
         end
     end
-    
+
     % Does same thing as cmdl.collision(trPoints(1:3,:)'), but
     % Does not have to access object every time - quicker
     for i = 1: length(checkfuns)
@@ -137,7 +137,7 @@ for p = notnan
             break;
         end
     end
-    
+
     % Then check the dynamic collision models, if any
     for i = 1: length(dyn_checkfuns)
         if isempty(dyn_T)
@@ -151,6 +151,6 @@ for p = notnan
             break;
         end
     end
-    
+
 end
 end

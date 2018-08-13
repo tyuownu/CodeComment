@@ -1,6 +1,6 @@
 function [Current] = CurrentTesterRoomba(serPort);
 %[Current] = CurrentTesterRoomba(serPort)
-% Displays the current (in amps) flowing into or out of Create's battery. 
+% Displays the current (in amps) flowing into or out of Create's battery.
 % Negative currents indicate that current is flowing out of the battery.
 % Positive currents indicate that current is flowing into the battery.
 
@@ -12,9 +12,9 @@ Current = nan;
 
 try
 
-%Flush Buffer    
+%Flush Buffer
 N = serPort.BytesAvailable();
-while(N~=0) 
+while(N~=0)
 fread(serPort,N);
 N = serPort.BytesAvailable();
 end

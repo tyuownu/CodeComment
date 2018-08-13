@@ -26,34 +26,34 @@
 % Copyright (C) 1993-2014, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 function runscript(fname, varargin)
-    
+
     opt.path = [];
     opt.delay = [];
     opt.begin = true;
     opt.cdelay = 0;
     opt.dock = false;
-    
+
     opt = tb_optparse(opt, varargin);
-        
+
     close all
-    
+
     prevDockStatus = get(0,'DefaultFigureWindowStyle');
     if opt.dock
         set(0,'DefaultFigureWindowStyle','docked');
@@ -61,27 +61,27 @@ function runscript(fname, varargin)
         set(0,'DefaultFigureWindowStyle','normal');
     end
 
-    
+
     if ~isempty(opt.path)
         fname = fullfile(opt.path, [fname '.m']);
     else
         fname = [fname '.m'];
     end
-    
+
     fp = fopen(fname, 'r');
-    
+
     clc
     fprintf('--- runscript <-- %s\n', fname);
-    
+
     running = false;
     shouldPause = false;
     loopText = [];
         if ~opt.begin
         running = true;
     end
-    
+
     lineNum = 1;
-    
+
     % stashMode
     %  0 normal
     %  1 loop
@@ -94,7 +94,7 @@ function runscript(fname, varargin)
             break
         end
         lineNum = lineNum+1;
-        
+
         % logic to skip lines until we see one beginning with %%begin
         if ~running
             if strcmp(line, '%%begin')
@@ -102,7 +102,7 @@ function runscript(fname, varargin)
             end
             continue;
         end;
-        
+
 
         % display the line and if executable execute it
         if length(strtrim(line)) == 0
@@ -116,15 +116,15 @@ function runscript(fname, varargin)
             % line was a comment
             disp(line)
             pause(opt.cdelay)
-            
+
         else
             % line is executable
             if shouldPause
                 scriptwait(opt);
-                
+
                 shouldPause = false;
             end
-            
+
             % if the start of a loop, stash the text for now
             if startswith(line, 'for') || startswith(line, 'while')
                 % found a loop, don't eval it until we get to the end
@@ -151,7 +151,7 @@ function runscript(fname, varargin)
                 end
                 continue;
             end
-            
+
             if stashMode > 0
                 % we're in stashing mode
                 if stashMode == 1
@@ -159,13 +159,13 @@ function runscript(fname, varargin)
                 else
                     loopText = strcat(loopText, line(end-2:end));
                 end
-                
-                % display the line 
+
+                % display the line
                 if exist('cprintf')
                     cprintf('blue', '%s\n', line)
                 else
                     disp(line)
-                end                
+                end
                 % if the end of a loop, unstash the text and eval it
                 if startswith(line, 'end') && ~isempty(loopText)
                     loopText
@@ -236,4 +236,4 @@ function res = endswith(s1, s2)
     end
 
 end
-    
+

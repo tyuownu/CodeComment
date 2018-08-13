@@ -45,7 +45,7 @@
 % Create a vehicle with this noisy odometry
 %       v = Unicycle( 'covar', diag([0.1 0.01].^2 );
 % and display its initial state
-%       v 
+%       v
 % now apply a speed (0.2m/s) and steer angle (0.1rad) for 1 time step
 %       odo = v.step(0.2, 0.1)
 % where odo is the noisy odometry estimate, and the new true vehicle state
@@ -76,17 +76,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -97,7 +97,7 @@ classdef Unicycle < Vehicle
     properties
         % state
         W           % wheel separation
-        
+
         accelmax
         vprev
         steerprev
@@ -108,7 +108,7 @@ classdef Unicycle < Vehicle
         function veh = Unicycle(varargin)
         %Unicycle.Unicycle Unicycle object constructor
         %
-        % V = Unicycle(VA, OPTIONS)  creates a Unicycle object with actual odometry 
+        % V = Unicycle(VA, OPTIONS)  creates a Unicycle object with actual odometry
         % covariance VA (2x2) matrix corresponding to the odometry vector [dx dtheta].
         %
         % Options::
@@ -122,9 +122,9 @@ classdef Unicycle < Vehicle
         % Notes::
         % - Subclasses the MATLAB handle class which means that pass by reference semantics
         %   apply.
-            
+
             veh = veh@Vehicle(varargin{:});
-            
+
             opt.W = 1;
             opt.accelmax = Inf;
 
@@ -165,7 +165,7 @@ classdef Unicycle < Vehicle
 
         function dx = deriv(veh, t, x, u)
             % to be called from a continuous time integrator such as ode45 or Simulink
-            
+
             % implement acceleration limit if required
             if ~isinf(veh.accelmax)
                 if (u(1) - veh.vprev)/veh.dt > veh.accelmax
@@ -175,7 +175,7 @@ classdef Unicycle < Vehicle
                 end
                 veh.vprev = u(1);
             end
-            
+
             % implement speed and steer angle limits
             u(1) = min(veh.speedmax, max(u(1), -veh.speedmax));
 
@@ -185,7 +185,7 @@ classdef Unicycle < Vehicle
             dx(2) = u(1)*sin(x(3));
             dx(3) = u(2)/veh.W;
         end
-        
+
         function odo = update(veh, u)
             %Unicycle.update Update the vehicle state
             %
@@ -245,8 +245,8 @@ classdef Unicycle < Vehicle
         function s = char(veh)
         %Unicycle.char Convert to a string
         %
-        % s = V.char() is a string showing vehicle parameters and state in 
-        % a compact human readable format. 
+        % s = V.char() is a string showing vehicle parameters and state in
+        % a compact human readable format.
         %
         % See also Unicycle.display.
 

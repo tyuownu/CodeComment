@@ -40,10 +40,10 @@
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
-% 
+%
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -51,7 +51,7 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 %
 % RTB LIBRARY:
@@ -86,13 +86,13 @@ omega = diag([1 1 1 3/reach]);
 for t = 1:T_sz
     problem.objective = ...
         @(x) sumsqr(((T(:,:,t) \ robot.fkine(x)) - eye(4)) * omega);
-    
+
     [q_t, err_t, ef_t] = fminunc(problem);
-    
+
     qstar(t,:) = q_t;
     error(t) = err_t;
     exitflag(t) = ef_t;
-    
+
     problem.x0 = q_t;
 end
 

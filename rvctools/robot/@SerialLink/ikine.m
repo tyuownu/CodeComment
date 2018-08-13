@@ -14,7 +14,7 @@
 % 'lambdamin',M     minimum allowable value of lambda (default 0)
 % 'quiet'           be quiet
 % 'verbose'         be verbose
-% 'mask',M          mask vector (6x1) that correspond to translation in X, Y and Z, 
+% 'mask',M          mask vector (6x1) that correspond to translation in X, Y and Z,
 %                   and rotation about X, Y and Z respectively.
 % 'q0',Q            initial joint configuration (default all zeros)
 % 'search'          search over all configurations
@@ -86,17 +86,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -106,11 +106,11 @@
 % search do a broad search from random points in configuration space
 
 function qt = ikine(robot, tr, varargin)
-    
+
     n = robot.n;
-    
+
     TT = SE3.check(tr);
-        
+
     %  set default parameters for solution
     opt.ilimit = 500;
     opt.rlimit = 100;
@@ -124,16 +124,16 @@ function qt = ikine(robot, tr, varargin)
     opt.mask = [1 1 1 1 1 1];
     opt.q0 = zeros(1, n);
     opt.transpose = NaN;
-    
+
     [opt,args] = tb_optparse(opt, varargin);
-    
+
     if opt.search
         % randomised search for a starting point
-        
+
         opt.search = false;
         opt.quiet = true;
         %args = args{2:end};
-        
+
         for k=1:opt.slimit
             for j=1:n
                 qlim = robot.links(j).qlim;
@@ -148,7 +148,7 @@ function qt = ikine(robot, tr, varargin)
                 end
             end
             fprintf('Trying q = %s\n', num2str(q));
-            
+
             q = robot.ikine(tr, q, args{:}, 'setopt', opt);
             if ~isempty(q)
                 qt = q;
@@ -159,32 +159,32 @@ function qt = ikine(robot, tr, varargin)
         qt = [];
         return
     end
-    
+
     assert(numel(opt.mask) == 6, 'RTB:ikine:badarg', 'Mask matrix should have 6 elements');
     assert(n >= numel(find(opt.mask)), 'RTB:ikine:badarg', 'Number of robot DOF must be >= the same number of 1s in the mask matrix');
     W = diag(opt.mask);
-    
-    
+
+
     qt = zeros(length(TT), n);  % preallocate space for results
     tcount = 0;              % total iteration count
     rejcount = 0;            % rejected step count
-    
+
     q = opt.q0;
-    
+
     failed = false;
     revolutes = robot.isrevolute();
-    
+
     for i=1:length(TT)
         T = TT(i);
         lambda = opt.lambda;
 
         iterations = 0;
-        
+
         if opt.debug
             e = tr2delta(robot.fkine(q), T);
             fprintf('Initial:  |e|=%g\n', norm(W*e));
         end
-        
+
         while true
             % update the count and test against iteration limit
             iterations = iterations + 1;
@@ -196,32 +196,32 @@ function qt = ikine(robot, tr, varargin)
                 failed = true;
                 break
             end
-            
+
             e = tr2delta(robot.fkine(q), T);
-            
+
             % are we there yet
             if norm(W*e) < opt.tol
                 break;
             end
-            
+
             % compute the Jacobian
             J = jacobe(robot, q);
-            
+
             JtJ = J'*W*J;
-            
+
             if ~isnan(opt.transpose)
                 % do the simple Jacobian transpose with constant gain
                 dq = opt.transpose * J' * e;
             else
                 % do the damped inverse Gauss-Newton with Levenberg-Marquadt
                 dq = inv(JtJ + (lambda + opt.lambdamin) * eye(size(JtJ)) ) * J' * W * e;
-                
+
                 % compute possible new value of
                 qnew = q + dq';
-                
+
                 % and figure out the new error
                 enew = tr2delta(robot.fkine(qnew), T);
-                
+
                 % was it a good update?
                 if norm(W*enew) < norm(W*e)
                     % step is accepted
@@ -250,18 +250,18 @@ function qt = ikine(robot, tr, varargin)
                     continue;  % try again
                 end
             end
-            
-            
+
+
             % wrap angles for revolute joints
             k = (q > pi) & revolutes;
             q(k) = q(k) - 2*pi;
-            
+
             k = (q < -pi) & revolutes;
             q(k) = q(k) + 2*pi;
-            
+
             nm = norm(W*e);
-            
-            
+
+
         end  % end ikine solution for this pose
         qt(i,:) = q';
         tcount = tcount + iterations;
@@ -275,11 +275,11 @@ function qt = ikine(robot, tr, varargin)
             qt = [];
         end
     end
-    
-    
+
+
     if opt.verbose && length(TT) > 1
         fprintf('TOTAL %d iterations\n', tcount);
     end
-    
-    
+
+
 end

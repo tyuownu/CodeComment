@@ -12,7 +12,7 @@
 %  'sequence'               Label points sequentially
 %  'label',L                Label for point
 %
-% Additional options to PLOT can be used: 
+% Additional options to PLOT can be used:
 % - standard MATLAB LineStyle such as 'r' or 'b---'
 % - any MATLAB LineProperty options can be given such as 'LineWidth', 2.
 %
@@ -45,17 +45,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -77,7 +77,7 @@ function ho = plot_point(p, varargin)
         % if single point, convert single label to a cell array
         opt.label = {opt.label};
     end
-    
+
     % default marker style
     if isempty(ls)
         ls = {'bs'};    % blue square
@@ -90,12 +90,12 @@ function ho = plot_point(p, varargin)
     end
 
     holdon = ishold();
-	hold on
-	for i=1:numcols(p)
-        if opt.solid 
+    hold on
+    for i=1:numcols(p)
+        if opt.solid
             arglist = [ 'MarkerFaceColor', ls{1}(1), arglist];
         end
-		h(i) = plot(p(1,i), p(2,i), ls{:}, arglist{:});
+        h(i) = plot(p(1,i), p(2,i), ls{:}, arglist{:});
         if opt.sequence
             show(p(:,i), '%d', i, opt);
         end
@@ -106,7 +106,7 @@ function ho = plot_point(p, varargin)
             show(p(:,i), opt.printf{1}, opt.printf{2}(i), opt);
         end
 
-	end
+    end
     if ~holdon
         hold off
     end

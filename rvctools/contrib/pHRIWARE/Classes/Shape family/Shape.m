@@ -22,16 +22,16 @@
 % See documentation for information on properties and methods
 % (type doc Shape into the command window)
 %
-% See also Box.Box CollisionModel Cone Curvilinear Cylinder.Cylinder 
+% See also Box.Box CollisionModel Cone Curvilinear Cylinder.Cylinder
 % Ellipsoid.Ellipsoid Sphere.Sphere surface
 
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
-% 
+%
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -39,12 +39,12 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 
 classdef (Abstract) Shape
-    
-    properties 
+
+    properties
         % Short text description of object for user reference
         note = '<Add a description with note property>'
         transform = eye(4) % Transformation matrix of the shape
@@ -54,10 +54,10 @@ classdef (Abstract) Shape
         EdgeColor = pHRIWARE('navy'); % The surface property
         EdgeAlpha = 1 % The surface property
     end
-    
+
     properties (Abstract)
         volume % Volume of shape
-        
+
         %FACES  Logical vector of which faces to plot
         % For Boxes, faces is a 1x6 vector, whose elements correspond
         % to the faces in the negative y-z, x-z, x-y and positive y-z,
@@ -69,18 +69,18 @@ classdef (Abstract) Shape
         %  in that order
         % For Ellipsoids, faces is not currently used
         faces
-        
+
         %N "Resolution" of the shape, for plotting
         % For Boxes, each face will comprise of an nxn grid of points
         % For Curvilinears, it is the equivalent of cylinder(n)
         % For Ellipsoids, it is the equivalent of sphere(n)
         n
     end
-    
+
     properties (Constant)
         sym = exist('sym','class'); % Symbolic Math Toolbox install flag
     end
-       
+
     methods (Abstract)
         %PLOT Plot the shape
         %
@@ -112,9 +112,9 @@ classdef (Abstract) Shape
         %  ... : Plotting options (which are Shape properties), in
         %         name-value pairs
         %
-        % See also Shape.cloud Shape.parseopts  
+        % See also Shape.cloud Shape.parseopts
         h = plot(shape, varargin)
-        
+
         %CLOUD Generate point cloud from shape
         %
         % Generates three arrays corresponding to the x, y and z points
@@ -136,11 +136,11 @@ classdef (Abstract) Shape
         %  Z : array of z-coordinates
         %
         % See also Shape.plot surface
-        [X, Y, Z] = cloud(shape)  
-        
+        [X, Y, Z] = cloud(shape)
+
         %CHECK Check if point(s) are inside the shape
         %
-        % Check to see if point(s) lie inside a primitive shape. 
+        % Check to see if point(s) lie inside a primitive shape.
         % Points on the surface are treated as outside the shape.
         %
         % Copyright (C) Bryan Moutrie, 2013-2014
@@ -163,7 +163,7 @@ classdef (Abstract) Shape
         %       shape
         %  f : anonymous function, f(x, y, z), which reduces check to a
         %       simplified, one-line evaluation
-        %  h : function handle, h(x, y, z), OR h(p), which reduces 
+        %  h : function handle, h(x, y, z), OR h(p), which reduces
         %       check to a simplified, one-line evaluation
         %
         % Inputs:
@@ -173,16 +173,16 @@ classdef (Abstract) Shape
         %  p : An mx3 matrix, where each column is x, y, z. m may be 1.
         %
         % See also CollisionModel SerialLink.collisions sym2func
-        c = check(shape, varargin)   
+        c = check(shape, varargin)
     end
-    
+
     methods
         function shape = Shape(T, s, varargin)
             shape = shape.parseopts(varargin{:});
             if ~isempty(T), shape.transform = T; end
             if ~isempty(s), shape.scale = s; end
         end
-        
+
         function disp(shape)
             w = whos('shape');
             line1 = [w.class,': ',shape.note];
@@ -207,7 +207,7 @@ classdef (Abstract) Shape
                 ' | EdgeAlpha = ',num2str(shape.EdgeAlpha)];
             line11 = ['n = ',num2str(shape.n),' | faces = ',...
                 mat2str(shape.faces),];
-            
+
             disp(line1);
             disp(line2);
             disp(line3);
@@ -221,11 +221,11 @@ classdef (Abstract) Shape
             disp(line10);
             disp(line11);
         end
-        
+
         function [shape, frames] = parseopts(shape, varargin)
             %PARSEOPTS Set plot options (and more) in one line
             %
-            % Parses multiple plot options to shape properties (faces, 
+            % Parses multiple plot options to shape properties (faces,
             % n, FaceColor, FaceAlpha, EdgeColor, EdgeAlpha) in
             % name-value pairs. The note property can also be set.
             % Additionally, the pair "'animate', frames" may be used to
@@ -233,7 +233,7 @@ classdef (Abstract) Shape
             % within the plot method. If not specified, is identity.
             %
             % Copyright (C) Bryan Moutrie, 2013-2014
-            % Licensed under the GNU General Public License, see file 
+            % Licensed under the GNU General Public License, see file
             % for statement
             %
             % Syntax:
@@ -270,18 +270,18 @@ classdef (Abstract) Shape
                 end
             end
         end
-        
+
         function vargout = animate(shape, h, frames)
             %ANIMATE Animate a plotted shape
             %
             % Animate a plotted shape by applying a series of
-            % transformations to its graphics handle. A handle can be 
+            % transformations to its graphics handle. A handle can be
             % returned by a call to plot. Transformations for each
             % frame are applied before the shape's own transformation.
             % Animation is at a fixed 100 fps.
             %
             % Copyright (C) Bryan Moutrie, 2013-2014
-            % Licensed under the GNU General Public License, see file 
+            % Licensed under the GNU General Public License, see file
             % for statement
             %
             % Syntax:
@@ -299,17 +299,17 @@ classdef (Abstract) Shape
             %  frames: 4x4xm array of m frames/transformation matrices
             %
             % See also Shape.plot
-                        
+
             t = hgtransform;
             set(h,'Parent',t);
             for i = 1: size(frames,3)
                 set(t, 'Matrix', frames(:,:,i));
                 pause(0.01);
             end
-            
+
             if nargout == 1, vargout = h; end
         end
-             
+
         function shape = set.note(shape, note)
             if ~ischar(note)
                 error(pHRIWARE('error','inputType'));
@@ -317,11 +317,11 @@ classdef (Abstract) Shape
                 shape.note = note;
             end
         end
-        
+
         function shape = set.scale(shape, scale)
             shape.scale = scale .* [1 1 1]; % Allows scalar or 3-vector
         end
-        
+
 %         function f = dyncheck(s, points)
 %             s.transform = symT * s.transform;
 %             switch nargin
@@ -340,18 +340,18 @@ classdef (Abstract) Shape
 %             end
 %         end
     end
-    
+
     methods (Access = protected)
         function [Xst, Yst, Zst] = sat(shape, X, Y, Z)
             %SAT Scale and transform point cloud data
             X_sz = size(X);
             Y_sz = size(Y);
             Z_sz = size(Z);
-            
+
             X = X(:) * shape.scale(1);
             Y = Y(:) * shape.scale(2);
             Z = Z(:) * shape.scale(3);
-            
+
             P = shape.transform * [X, Y, Z, ones(size(X))]';
             Xst = reshape(P(1,:), X_sz);
             Yst = reshape(P(2,:), Y_sz);

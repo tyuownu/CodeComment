@@ -3,7 +3,7 @@
 % For so(3)::
 %
 % R = TREXP(OMEGA) is the matrix exponential (3x3) of the so(3) element OMEGA that
-% yields a rotation matrix (3x3). 
+% yields a rotation matrix (3x3).
 %
 % R = TREXP(OMEGA, THETA) as above, but so(3) motion of THETA*OMEGA.
 %
@@ -15,10 +15,10 @@
 % For se(3)::
 %
 % T = TREXP(SIGMA) is the matrix exponential (4x4) of the se(3) element SIGMA that
-% yields a homogeneous transformation  matrix (4x4). 
+% yields a homogeneous transformation  matrix (4x4).
 %
 % T = TREXP(TW) as above, but the se(3) value is expressed as a twist vector TW
-% (1x6). 
+% (1x6).
 %
 % T = TREXP(SIGMA, THETA) as above, but se(3) motion of SIGMA*THETA, the
 % rotation part of SIGMA (4x4) must be unit norm.
@@ -45,17 +45,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -64,7 +64,7 @@ function T = trexp(S, theta)
 
     if ishomog(S) || isvec(S,6)
         % input is se(3)
-        
+
         if nargin == 1
             % twist vector 1x6 or augmented skew matrix 4x4
             if isvec(S,6)
@@ -82,16 +82,16 @@ function T = trexp(S, theta)
                 v = S(1:3); v= v(:);
                 skw = skew(S(4:6));
             end
-            
+
             % use an efficient solution
             R = trexp(skw, theta);
             t = (eye(3,3)*theta + (1-cos(theta))*skw + (theta-sin(theta))*skw^2)*v;
-            
+
             T = rt2tr(R,t);
-        end         
+        end
     elseif ishomog2(S) || isvec(S,3)
         % input is so(3)
-        
+
         if isrot(S)
             % input is 3x3 skew symmetric
             w = vex(S);
@@ -99,15 +99,15 @@ function T = trexp(S, theta)
             % input is a 3-vector
              w = S;
         else
-            error('RTB:trexp:badarg', 'expecting 1x3 or 3x3');     
+            error('RTB:trexp:badarg', 'expecting 1x3 or 3x3');
         end
-        
+
         % for a zero so(3) return unit matrix, theta not relevant
         if norm(w) < 10*eps
             T = eye(3,3);
             return;
         end
-        
+
         if nargin == 1
             %  theta is not given, extract it
             theta = norm(w);
@@ -116,11 +116,11 @@ function T = trexp(S, theta)
             % theta is given
             assert(isunit(w), 'RTB:trexp:badarg',  'w must be a unit twist');
         end
-        
+
         S = skew(w);
-        
+
         T = eye(3,3) + sin(theta)*S + (1-cos(theta))*S^2;
-        
+
     else
         error('RTB:trexp:badarg', 'first argument must be so(3), 3-vector, se(3) or 6-vector');
     end

@@ -38,10 +38,10 @@
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
-% 
+%
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -49,7 +49,7 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 %
 % RTB LIBRARY:
@@ -67,7 +67,7 @@ if size(q1,2) == 3 % For upper arm case, set others to zero
     q1(:,4:7) = 0;
     q2(:,4:7) = 0;
 end
-    
+
 I1 = hal.islimit(q1); % Find the angles which are out of limits
 I2 = hal.islimit(q2); % For the two families
 

@@ -19,7 +19,7 @@
 %  j  : The joint which hits its limit at wM
 %
 % Inputs:
-% q    : Joint co-ordinates of the robot, may be a matrix where each 
+% q    : Joint co-ordinates of the robot, may be a matrix where each
 %        row is a configuration, in which case wM and j are vectors
 % w    : Wrench vector (column). The magnitude of w is ignored.
 % f    : Reference frame, '0' for world frame or 'n' for end-effector
@@ -31,10 +31,10 @@
 % LICENSE STATEMENT:
 %
 % This file is part of pHRIWARE.
-% 
+%
 % pHRIWARE is free software: you can redistribute it and/or modify
-% it under the terms of the GNU Lesser General Public License as 
-% published by the Free Software Foundation, either version 3 of 
+% it under the terms of the GNU Lesser General Public License as
+% published by the Free Software Foundation, either version 3 of
 % the License, or (at your option) any later version.
 %
 % pHRIWARE is distributed in the hope that it will be useful,
@@ -42,7 +42,7 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 %
-% You should have received a copy of the GNU Lesser General Public 
+% You should have received a copy of the GNU Lesser General Public
 % License along with pHRIWARE.  If not, see <http://www.gnu.org/licenses/>.
 %
 % RTB LIBRARY:
@@ -61,7 +61,7 @@ elseif f == '0'
     tauP = pay(unit(w), J);
 elseif f == 'n'
     tauB = grav(robot, q);
-    tauP = pay(robot, unit(w), q, 'n'); 
+    tauP = pay(robot, unit(w), q, 'n');
 end
 
 M = tauP > 0;

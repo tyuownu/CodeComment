@@ -39,9 +39,9 @@ classdef wfBrickIO < BrickIO
         % brick serial number
         serialNum = '0016533dbaf5';
     end
-    
+
     methods
-        
+
         function brickIO = wfBrickIO(debug,addr,port,serialNum)
             %wfBrickIO.wfBrickIO Create a wfBrickIO object
             %
@@ -50,9 +50,9 @@ classdef wfBrickIO < BrickIO
             % and the brick using java functions. The following string is
             % sent to the brick
             % ['GET /target?sn=' brickIO.serialNum ' VMTP1.0' char(10) 'Protocol: EV3']
-            % which initialises the conncetion. The brick returns 
+            % which initialises the conncetion. The brick returns
             % ['Accept:EV340']
-            % 
+            %
             % Notes::
             % - debug is a flag specifying output printing (0 or 1).
             % - addr is the IP address of the brick
@@ -60,7 +60,7 @@ classdef wfBrickIO < BrickIO
             % - serialNum is the serial number of the brick. The serial
             % number can be found in the menu on the EV3 brick or obtained
             % through the emitted UDP packet on port 3015.
-            
+
             if nargin > 0
                 brickIO.debug = debug;
                 brickIO.addr = addr;
@@ -94,45 +94,45 @@ classdef wfBrickIO < BrickIO
                 fprintf('Returned: [ %s ]\n',char(rmsg));
             end
         end
-        
+
         function delete(brickIO)
             %wfBrickIO.delete Delete the wfBrickIO object
             %
             % delete(brickIO) closes the wifi connection handle
-            
+
             if brickIO.debug > 0
                 fprintf('wfBrickIO delete\n');
             end
-            % delete the wf handle 
+            % delete the wf handle
             brickIO.close
         end
-        
+
         function handle = open(brickIO)
             %wfBrickIO.open Open the wfBrickIO object
             %
-            % handle = wfBrickIO.open() returns a handle to the wifi 
-            % socket connection using the initialised IP address and TCP 
+            % handle = wfBrickIO.open() returns a handle to the wifi
+            % socket connection using the initialised IP address and TCP
             % port values from the wfBrickIO constructor.
-            
+
             if brickIO.debug > 0
                 fprintf('wfBrickIO open\n');
             end
             % open the socket handle
             handle = Socket(brickIO.addr, brickIO.port);
         end
-        
+
         function close(brickIO)
             %wfBrickIO.close Close the wfBrickIO object
             %
             % wfBrickIO.close() closes the wifi socket connection
-            
+
             if brickIO.debug > 0
                 fprintf('wfBrickIO close\n');
-            end 
+            end
             % close the close handle
             brickIO.handle.close();
         end
-        
+
         function rmsg = read(brickIO)
             %wfBrickIO.read Read data from the wfBrickIO object
             %
@@ -142,13 +142,13 @@ classdef wfBrickIO < BrickIO
             % Notes::
             % - This function is blocking with no time out in the current
             % implementation.
-            
+
             if brickIO.debug > 0
                 fprintf('wfBrickIO read\n');
-            end 
+            end
             % block until bytes have been received
             while (brickIO.inputStream.available == 0)
-                
+
             end
             % get the number of bytes to be read from the input stream
             nLength = brickIO.inputStream.available;
@@ -162,19 +162,19 @@ classdef wfBrickIO < BrickIO
             % change from int8 to uint8 (cannot do this in one step)
             rmsg = typecast(rmsg,'uint8');
         end
-        
+
         function write(brickIO,wmsg)
             %wfBrickIO.write Write data to the wfBrickIO object
             %
             % wfBrickIO.write(wmsg) writes data to the brick through wifi.
             %
             % Notes::
-            % - wmsg is the data to be written to the brick via wifi in  
+            % - wmsg is the data to be written to the brick via wifi in
             % uint8 format.
-            
+
             if brickIO.debug > 0
                 fprintf('wfBrickIO write\n');
-            end 
+            end
             % add the message to the output stream
             brickIO.outputStream.addtoBufferN(char(wmsg),length(wmsg));
             % send the output stream data
@@ -182,5 +182,5 @@ classdef wfBrickIO < BrickIO
             % clear the output stream
             brickIO.outputStream.clear();
         end
-    end 
+    end
 end

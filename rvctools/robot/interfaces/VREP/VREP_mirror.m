@@ -36,40 +36,40 @@
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 classdef (Abstract=true) VREP_mirror < handle
-    
+
     properties(GetAccess=public, SetAccess=protected)
         vrep
         h
         name
     end
 
-            
+
         methods
-            
+
             function obj = VREP_mirror(vrep, varargin)
             %VREP_mirror.VREP_mirror Construct VREP_mirror object
             %
             % OBJ = VREP_mirror(NAME) is a V-REP mirror object that represents the
             % object named NAME in the V-REP simulator.
                 obj.vrep = vrep;
-                
+
                 if nargin > 1
                     if isstr(varargin{1})
                         % passed a string name, convert to handle
@@ -85,7 +85,7 @@ classdef (Abstract=true) VREP_mirror < handle
                     end
                 end
             end
-            
+
             function name = getname(obj)
                 %VREP_mirror.getname Get object name
                 %
@@ -123,7 +123,7 @@ classdef (Abstract=true) VREP_mirror < handle
                 % VREP_mirror.setparam_int.
                 obj.vrep.setobjparam_float(obj.h, paramid, val);
             end
-            
+
             function val = getparam_bool(obj, paramid)
                 %VREP_mirror.getparam_bool Get boolean parameter of V-REP object
                 %
@@ -154,15 +154,15 @@ classdef (Abstract=true) VREP_mirror < handle
                 % VREP_mirror.getparam_int.
                 val = obj.vrep.getobjparam_float(obj.h, paramid);
             end
-            
+
             function remove(obj)
                 s = obj.vrep.vrep.simxRemoveModel(obj.vrep.client, obj.h, obj.vrep.mode);
                 if s ~= 0
                     throw( obj.vrep.except(s) );
                 end
             end
-        
-            
+
+
             function display(l)
                 %VREP_mirror.display Display parameters
                 %
@@ -181,7 +181,7 @@ classdef (Abstract=true) VREP_mirror < handle
                 disp([inputname(1), ' = '])
                 disp( char(l) );
             end % display()
-            
+
             function s = char(obj)
                 %VREP_mirror.char Convert to string
                 %
@@ -189,7 +189,7 @@ classdef (Abstract=true) VREP_mirror < handle
                 % readable foramt.
                 %
                 % See also VREP.display.
-                                
+
                 s = sprintf('VREP mirror object: %s', obj.name);
             end
         end

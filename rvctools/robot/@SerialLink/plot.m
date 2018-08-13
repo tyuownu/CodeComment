@@ -179,17 +179,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -199,36 +199,36 @@
 % deal with base transform and tool
 % more consistent option names, scale, mag etc.
 function plot(robot, qq, varargin)
-    
+
     % check the joint angle data matches the robot
     n = robot.n;
     assert(numcols(qq) == n, 'RTB:SerialLink:plot:badarg', 'Insufficient columns in q')
 
-    
+
     % process options, these come from:
     %  - passed arguments
     %  - the robot object itself
     %  - the file plotopt.m
     opt = RTBPlot.plot_options(robot, varargin);
-    
+
 
     % logic to handle where the plot is drawn, are old figures updated or
     % replaced?
     %  calls create_floor() and create_robot() as required.
-    
+
     if strcmp(get(gca,'Tag'), 'RTB.plot')
         % this axis is an RTB plot window
-        
+
         rhandles = findobj('Tag', robot.name);
-        
+
         if isempty(rhandles)
             % this robot doesnt exist here, create it or add it
-            
+
             if ishold
                 % hold is on, add the robot, don't change the floor
                 handle = create_robot(robot, opt);
-                
-                
+
+
                 % tag one of the graphical handles with the robot name and hang
                 % the handle structure off it
 %                 set(handle.joint(1), 'Tag', robot.name);
@@ -242,9 +242,9 @@ function plot(robot, qq, varargin)
                 handle = create_robot(robot, opt);
                 set(gca, 'Tag', 'RTB.plot');
             end
-            
+
         end
-        
+
     else
         % this axis never had a robot drawn in it before, let's use it
         RTBPlot.create_floor(opt);
@@ -256,24 +256,24 @@ function plot(robot, qq, varargin)
 %             set(gcf, 'Position', [0.1 1-pf(4) pf(3) pf(4)]);
 %         end
     end
-    
+
     % deal with a few options that need to be stashed in the SerialLink object
     % movie mode has not already been flagged
     if opt.movie
         robot.movie = Animate(opt.movie);
     end
     robot.delay = opt.delay;
-    robot.loop = opt.loop;   
-    
+    robot.loop = opt.loop;
+
     if opt.raise
         % note this is a very time consuming operation
         figure(gcf);
     end
-    
+
     if strcmp(opt.projection, 'perspective')
         set(gca, 'Projection', 'perspective');
     end
-    
+
     if isstr(opt.view)
         switch opt.view
             case 'top'
@@ -289,14 +289,14 @@ function plot(robot, qq, varargin)
     elseif isnumeric(opt.view) && length(opt.view) == 2
         view(opt.view)
     end
-    
+
     % enable mouse-based 3D rotation
     rotate3d on
-    
+
     robot.trail = []; % clear the previous trail
-    
+
     robot.animate(qq);
-    
+
     if opt.movie
         robot.movie.close();
     end
@@ -314,12 +314,12 @@ end
 % The top-level group has user data which is the handle structure.
 
 function h = create_robot(robot, opt)
-    
+
     %disp('creating new robot');
-    
+
     links = robot.links;
     s = opt.scale;
-    
+
     % create an axis
     ish = ishold();
     if ~ishold
@@ -327,9 +327,9 @@ function h = create_robot(robot, opt)
         axis(opt.workspace);
         hold on
     end
-    
+
     N = robot.n;
-    
+
     % create the base
     if opt.base
         bt = robot.base.t;
@@ -337,7 +337,7 @@ function h = create_robot(robot, opt)
         bt(1,3) = opt.floorlevel;
         line(bt(:,1), bt(:,2), bt(:,3), 'LineWidth', opt.basewidth, 'Color', opt.basecolor);
     end
-    
+
     % add the robot's name
     if opt.name
         b = robot.base.t;
@@ -349,16 +349,16 @@ function h = create_robot(robot, opt)
     end
     group = hggroup('Tag', robot.name);
     h.group = group;
-    
+
     % create the graphical joint and link elements
     for L=1:N
         if opt.debug
             fprintf('create graphics for joint %d\n', L);
         end
-        
+
         % create the transform for displaying this element (joint cylinder + link)
         h.link(L) = hgtransform('Tag', sprintf('link%d', L), 'Parent', group);
-        
+
         % create a joint cylinder
         if opt.joints
             % create the body of the joint
@@ -377,9 +377,9 @@ function h = create_robot(robot, opt)
                 end
             end
         end
-        
+
         % create the body of the link
-        
+
         % create elements to represent translation between joint frames, ie. the link itself.
         % This is drawn to resemble orthogonal plumbing.
         if robot.mdh
@@ -414,7 +414,7 @@ function h = create_robot(robot, opt)
                 %line([0 t(1)]', [0 t(2)]', [0 t(3)]', 'Parent', h.link(L));
             end
         end
-        
+
         assert( ~(opt.jaxes && opt.jvec), 'RTB:plot:badopt', 'Can''t specify ''jaxes'' and ''jvec''')
         % create the joint axis line
         if opt.jaxes
@@ -422,7 +422,7 @@ function h = create_robot(robot, opt)
                 'YData', [0 0], ...
                 'ZData', 14*s*[-1 1], ...
                 'LineStyle', ':', 'Parent', h.link(L));
-            
+
             % create the joint axis label
             text(0, 0, 14*s, sprintf('q%d', L), 'Parent', h.link(L))
         end
@@ -431,7 +431,7 @@ function h = create_robot(robot, opt)
             daspect([1 1 1]);
             ha = arrow3([0 0 -12*s], [0 0 15*s], 'c');
             set(ha, 'Parent', h.link(L));
-            
+
             % create the joint axis label
             text(0, 0, 20*s, sprintf(' q%d', L), 'Parent', h.link(L))
         end
@@ -459,7 +459,7 @@ function h = create_robot(robot, opt)
     if t(3) ~= 0
         RTBPlot.cyl('z', s, [s t(3)], 'r', [t(1) t(2) 0], 'Parent', h.link(N+1));
     end
-    
+
     % display the wrist coordinate frame
     if opt.wrist
         if opt.arrow
@@ -476,18 +476,18 @@ function h = create_robot(robot, opt)
     else
         h.wrist = [];
     end
-    
+
     % display a shadow on the floor
     if opt.shadow
         % create the polyline which is the shadow on the floor
         h.shadow = line('LineWidth', opt.shadowwidth, 'Color', opt.shadowcolor);
     end
-    
+
     if opt.trail
         h.trail = plot(0, 0, opt.trail);
         robot.trail = [];
     end
-    
+
     % deal with some display options
     if opt.shading
         lighting gouraud
@@ -497,7 +497,7 @@ function h = create_robot(robot, opt)
     ylabel('Y')
     zlabel('Z')
     grid on
-    
+
     % restore hold setting
     if ~ish
         hold off
@@ -505,7 +505,7 @@ function h = create_robot(robot, opt)
     h.floorlevel = opt.floorlevel;
     h.robot = robot;
     h.opt = opt;
-    
+
     % attach the handle structure to the top graphical element
     set(group, 'UserData', h);
 end

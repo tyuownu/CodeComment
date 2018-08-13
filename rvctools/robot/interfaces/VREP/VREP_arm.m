@@ -15,7 +15,7 @@
 %          q = arm.getq();
 %          arm.setq(zeros(1,6));
 %          arm.setpose(T);  % set pose of base
-%   
+%
 % Methods::
 %
 %  getq              get joint coordinates
@@ -26,7 +26,7 @@
 %
 % Superclass methods (VREP_obj)::
 %  getpos              get position of object
-%  setpos              set position of object 
+%  setpos              set position of object
 %  getorient           get orientation of object
 %  setorient           set orientation of object
 %  getpose             get pose of object given
@@ -53,34 +53,34 @@
 % Copyright (C) 1993-2015, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 classdef VREP_arm < VREP_obj
-    
+
     properties(GetAccess=public, SetAccess=protected)
         q
         joint   % VREP joint object handles
         n       % number of joints
-        
+
     end
-    
-    
+
+
     methods
-        
+
         function arm = VREP_arm(vrep, name, varargin)
             %VREP_arm.VREP_arm Create a robot arm mirror object
             %
@@ -96,19 +96,19 @@ classdef VREP_arm < VREP_obj
             %   default named NAME_N where N is the joint number starting at 0.
             %
             % See also VREP.arm.
-            
+
 
             h = vrep.gethandle(name);
             if h == 0
                 error('no such object as %s in the scene', name);
             end
             arm = arm@VREP_obj(vrep, name);
-            
+
             opt.fmt = '%s_joint%d';
             opt = tb_optparse(opt, varargin);
-            
+
             arm.name = name;
-            
+
             % find all the _joint objects, we don't know how many joints so we
             % keep going till we get an error
             j = 1;
@@ -118,18 +118,18 @@ classdef VREP_arm < VREP_obj
                     break
                 end
                 arm.joint(j) = h;
-                
+
                 j = j+1;
             end
-            
+
             arm.n = j - 1;
-            
+
             % set all joints to passive mode
             %             for j=1:arm.n
             %                 arm.vrep.simxSetJointMode(arm.client, arm.joint(j), arm.vrep.sim_jointmode_passive, arm.vrep.simx_opmode_oneshot_wait);
             %             end
         end
-        
+
         function q = getq(arm)
             %VREP_arm.getq  Get joint angles of V-REP robot
             %
@@ -141,7 +141,7 @@ classdef VREP_arm < VREP_obj
                 q(j) = arm.vrep.getjoint(arm.joint(j));
             end
         end
-        
+
         function setq(arm, q)
             %VREP_arm.setq  Set joint angles of V-REP robot
             %
@@ -153,7 +153,7 @@ classdef VREP_arm < VREP_obj
                 arm.vrep.setjoint(arm.joint(j), q(j));
             end
         end
-        
+
         function setqt(arm, q)
             %VREP_arm.setq  Set joint angles of V-REP robot
             %
@@ -163,17 +163,17 @@ classdef VREP_arm < VREP_obj
                 arm.vrep.setjointtarget(arm.joint(j), q(j));
             end
         end
-        
+
         function setjointmode(arm, motor, control)
             %VREP_arm.setjointmode Set joint mode
             %
             % ARM.setjointmode(M, C) sets the motor enable M (0 or 1) and motor control
             % C (0 or 1) parameters for all joints of this robot arm.
-            
+
             for j=1:arm.n
                 arm.vrep.setobjparam_int(arm.joint(j), 2000, 1);  %motor enable
                 arm.vrep.setobjparam_int(arm.joint(j), 2001, 1);  %motor control enable
-                
+
             end
 
         end
@@ -195,11 +195,11 @@ classdef VREP_arm < VREP_obj
             opt.fps = [];
             opt.loop = false;
             opt = tb_optparse(opt, varargin);
-            
+
             if ~isempty(opt.fps)
                 opt.delay = 1/opt.fps;
             end
-            
+
             while true
                 for i=1:numrows(qt)
                     arm.setq(qt(i,:));
@@ -210,7 +210,7 @@ classdef VREP_arm < VREP_obj
                 end
             end
         end
-        
+
 
         function teach(obj, varargin)
             %VREP_arm.teach Graphical teach pendant
@@ -226,9 +226,9 @@ classdef VREP_arm < VREP_obj
             % - The slider limits are all assumed to be [-pi, +pi]
             %
             % See also SerialLink.plot.
-            
+
             n = obj.n;
-            
+
             %-------------------------------
             % parameters for teach panel
             bgcol = [135 206 250]/255;  % background color
@@ -237,19 +237,19 @@ classdef VREP_arm < VREP_obj
             opt.degrees = false;
             opt.q0 = [];
             % TODO: options for rpy, or eul angle display
-            
+
             opt = tb_optparse(opt, varargin);
-            
+
             % drivebot(r, q)
             % drivebot(r, 'deg')
-            
-            
+
+
             if isempty(opt.q0)
                 q = obj.getq();
             else
                 q = opt.q0;
             end
-            
+
             % set up scale factor, from actual limits in radians/metres to display units
             qscale = ones(n,1);
             for j=1:n
@@ -258,9 +258,9 @@ classdef VREP_arm < VREP_obj
                 end
                 qlim(j,:) = [-pi pi];
             end
-            
+
             handles.qscale = qscale;
-            
+
             panel = figure(...
                 'BusyAction', 'cancel', ...
                 'HandleVisibility', 'off', ...
@@ -271,8 +271,8 @@ classdef VREP_arm < VREP_obj
             set(panel,'MenuBar','none')
             set(panel, 'name', 'Teach');
             delete( get(panel, 'Children') )
-            
-            
+
+
             %---- now make the sliders
             for j=1:n
                 % slider label
@@ -283,7 +283,7 @@ classdef VREP_arm < VREP_obj
                     'FontUnits', 'normalized', ...
                     'FontSize', 0.5, ...
                     'String', sprintf('q%d', j));
-                
+
                 % slider itself
                 q(j) = max( qlim(j,1), min( qlim(j,2), q(j) ) ); % clip to range
                 handles.slider(j) = uicontrol(panel, 'Style', 'slider', ...
@@ -293,7 +293,7 @@ classdef VREP_arm < VREP_obj
                     'Max', qlim(j,2), ...
                     'Value', q(j), ...
                     'Tag', sprintf('Slider%d', j));
-                
+
                 % text box showing slider value, also editable
                 handles.edit(j) = uicontrol(panel, 'Style', 'edit', ...
                     'Units', 'normalized', ...
@@ -305,7 +305,7 @@ classdef VREP_arm < VREP_obj
                     'FontSize', 0.4, ...
                     'Tag', sprintf('Edit%d', j));
             end
-            
+
             %---- robot name text box
             uicontrol(panel, 'Style', 'text', ...
                 'Units', 'normalized', ...
@@ -315,21 +315,21 @@ classdef VREP_arm < VREP_obj
                 'Position', [0.05 1-height*1.5 0.9 height], ...
                 'BackgroundColor', 'white', ...
                 'String', obj.name);
-            
+
             handles.arm = obj;
-            
+
             % now assign the callbacks
             for j=1:n
                 % text edit box
                 set(handles.edit(j), ...
                     'Interruptible', 'off', ...
                     'Callback', @(src,event)teach_callback(j, handles, src));
-                
+
                 % slider
                 set(handles.slider(j), ...
                     'Interruptible', 'off', ...
                     'BusyAction', 'queue', ...
-                    'Callback', @(src,event)teach_callback(j, handles, src));        
+                    'Callback', @(src,event)teach_callback(j, handles, src));
             end
         end
     end

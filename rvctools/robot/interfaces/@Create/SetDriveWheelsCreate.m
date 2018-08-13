@@ -2,15 +2,15 @@ function [] = SetDriveWheelsCreate(serPort, rightWheelVel, leftWheelVel )
 %[] = SetDriveWheelsCreate(serPort, rightWheelVel, leftWheelVel )
 %  Specify linear velocity of left wheel and right wheel in meters/ sec
 %  [-0.5, 0.5].   Negative velocity is backward.  Caps overflow.
-%  Note that if you prefer to specify ANGULAR velocity of wheels (omega in rad/sec) 
+%  Note that if you prefer to specify ANGULAR velocity of wheels (omega in rad/sec)
 %  you must determine radius of wheel (r in meters).   Ex:   rightWheelVel =omegaRight*r
 % only works with Creater I think...not Roomba?
 % By; Joel Esposito, US Naval Academy, 2011
 try
-    
-%Flush Buffer    
+
+%Flush Buffer
 N = serPort.BytesAvailable();
-while(N~=0) 
+while(N~=0)
 fread(serPort,N);
 N = serPort.BytesAvailable();
 end

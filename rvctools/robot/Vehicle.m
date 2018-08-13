@@ -64,17 +64,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -104,14 +104,14 @@ classdef Vehicle < handle
     methods(Abstract)
         f
     end
-    
+
     methods
 
         function veh = Vehicle(varargin)
         %Vehicle Vehicle object constructor
         %
         % V = Vehicle(OPTIONS)  creates a Vehicle object that implements the
-        % kinematic model of a wheeled vehicle. 
+        % kinematic model of a wheeled vehicle.
         %
         % Options::
         % 'covar',C       specify odometry covariance (2x2) (default 0)
@@ -123,20 +123,20 @@ classdef Vehicle < handle
         % 'verbose'       Be verbose
         %
         % Notes::
-        % - The covariance is used by a "hidden" random number generator within the class. 
+        % - The covariance is used by a "hidden" random number generator within the class.
         % - Subclasses the MATLAB handle class which means that pass by reference semantics
         %   apply.
-            
-          
+
+
             % vehicle common
             opt.covar = [];
             opt.rdim = 0.2;
             opt.dt = 0.1;
             opt.x0 = zeros(3,1);
             opt.speedmax = 1;
-            
+
             [opt,args] = tb_optparse(opt, varargin);
-            
+
             veh.V = opt.covar;
             veh.rdim = opt.rdim;
             veh.dt = opt.dt;
@@ -151,20 +151,20 @@ classdef Vehicle < handle
         function init(veh, x0)
             %Vehicle.init Reset state
             %
-            % V.init() sets the state V.x := V.x0, initializes the driver 
+            % V.init() sets the state V.x := V.x0, initializes the driver
             % object (if attached) and clears the history.
             %
             % V.init(X0) as above but the state is initialized to X0.
-            
+
             % TODO: should this be called from run?
-            
+
             if nargin > 1
                 veh.x = x0(:);
             else
                 veh.x = veh.x0;
             end
             veh.x_hist = [];
-            
+
             if ~isempty(veh.driver)
                 veh.driver.init();
             end
@@ -257,14 +257,14 @@ classdef Vehicle < handle
                     steer = 0;
                 end
             end
-            
+
             % clip the speed
             if isempty(veh.speedmax)
                 u(1) = speed;
             else
                 u(1) = min(veh.speedmax, max(-veh.speedmax, speed));
             end
-            
+
             % clip the steering angle
             if isempty(veh.steermax)
                 u(2) = steer;
@@ -338,11 +338,11 @@ classdef Vehicle < handle
         %
         % V.plot(OPTIONS) plots the vehicle on the current axes at a pose given by
         % the current robot state.  If the vehicle has been previously plotted its
-        % pose is updated.  
+        % pose is updated.
         %
         % V.plot(X, OPTIONS) as above but the robot pose is given by X (1x3).
         %
-        % H = V.plotv(X, OPTIONS) draws a representation of a ground robot as an 
+        % H = V.plotv(X, OPTIONS) draws a representation of a ground robot as an
         % oriented triangle with pose X (1x3) [x,y,theta].  H is a graphics handle.
         %
         % V.plotv(H, X) as above but updates the pose of the graphic represented
@@ -370,7 +370,7 @@ classdef Vehicle < handle
                 h = Vehicle.plotv(veh.x, varargin{:});
                 set(h, 'Tag', 'Vehicle.plot');  % tag it
             end
-            
+
             if ~isempty(varargin) && isnumeric(varargin{1})
                 % V.plot(X)
                 pos = varargin{1}; % use passed value
@@ -379,7 +379,7 @@ classdef Vehicle < handle
                 pos = veh.x;    % use current state
             end
             Vehicle.plotv(h, pos);
-            
+
             h = findobj(gcf, 'Tag', 'Vehicle.trail');
             if ~isempty(h)
                 if length(h.XData) == 1
@@ -399,7 +399,7 @@ classdef Vehicle < handle
             %
             % Notes::
             % - The path is extracted from the x_hist property.
-            
+
             xyt = veh.x_hist;
             if nargout == 0
                 plot(xyt(:,1), xyt(:,2), varargin{:});
@@ -414,11 +414,11 @@ classdef Vehicle < handle
         % V.verbosity(A) set verbosity to A.  A=0 means silent.
             veh.verbose = v;
         end
-            
+
         function display(nav)
         %Vehicle.display Display vehicle parameters and state
         %
-        % V.display() displays vehicle parameters and state in compact 
+        % V.display() displays vehicle parameters and state in compact
         % human readable form.
         %
         % Notes::
@@ -435,12 +435,12 @@ classdef Vehicle < handle
             disp([inputname(1), ' = '])
             disp( char(nav) );
         end % display()
-        
+
         function s = char(veh)
         %Vehicle.char Convert to string
         %
-        % s = V.char() is a string showing vehicle parameters and state in 
-        % a compact human readable format. 
+        % s = V.char() is a string showing vehicle parameters and state in
+        % a compact human readable format.
         %
         % See also Vehicle.display.
 
@@ -454,7 +454,7 @@ classdef Vehicle < handle
                 '    V=(%g, %g)', ...
                     veh.V(1,1), veh.V(2,2)));
             end
-            s = char(s, sprintf('    configuration: x=%g, y=%g, theta=%g', veh.x)); 
+            s = char(s, sprintf('    configuration: x=%g, y=%g, theta=%g', veh.x));
             if ~isempty(veh.driver)
                 s = char(s, '    driven by::');
                 s = char(s, [['      '; '      '] char(veh.driver)]);
@@ -468,7 +468,7 @@ classdef Vehicle < handle
         function h_ = plotv(x, varargin)
         %Vehicle.plotv Plot ground vehicle pose
         %
-        % H = Vehicle.plotv(X, OPTIONS) draws a representation of a ground robot as an 
+        % H = Vehicle.plotv(X, OPTIONS) draws a representation of a ground robot as an
         % oriented triangle with pose X (1x3) [x,y,theta].  H is a graphics handle.
         % If X (Nx3) is a matrix it is considered to represent a trajectory in which case
         % the vehicle graphic is animated.
@@ -512,7 +512,7 @@ classdef Vehicle < handle
             opt.fillcolor = [];
             opt.fps = 10;
             opt.trail = [];  % not exposed, used by plot() method
-            
+
             [opt,args] = tb_optparse(opt, varargin);
 
 %HACK             lineprops = { 'Color', opt.color' };
@@ -520,7 +520,7 @@ classdef Vehicle < handle
 %                 lineprops = [lineprops 'fill' opt.color ];
 %             end
             lineprops = { 'fillcolor', 'b', 'alpha', 0.5 };
-            
+
             % compute the dimensions of the robot
             if ~isempty(opt.size)
                 d = opt.size;
@@ -529,14 +529,14 @@ classdef Vehicle < handle
                 a = axis;
                 d = (a(2)+a(4) - a(1)-a(3)) * opt.scale;
             end
-            
+
             % draw it
             points = [
                 d 0
                 -d -0.6*d
                 -d 0.6*d
             ]';
-            
+
             h = hgtransform();
             hp = plot_poly(points, lineprops{:});
             for hh=hp
@@ -553,14 +553,14 @@ classdef Vehicle < handle
             elseif (numel(x) == 3)
                 % compute the pose
                 % convert vector form of pose to SE(3)
-            
+
                 x = x(:)';
                 T = transl([x(1:2) 0]) * trotz( x(3) );
                 set(h, 'Matrix', T);
             else
                 error('bad pose');
             end
-            
+
             if ~isempty(opt.trail)
                 if iscell(opt.trail)
                     line(0, 0, 'Tag', 'Vehicle.trail', opt.trail{:});
@@ -568,7 +568,7 @@ classdef Vehicle < handle
                     line(0, 0, 'Tag', 'Vehicle.trail', opt.trail)
                 end
             end
-                
+
 
             if nargout > 0
                 h_ = h;

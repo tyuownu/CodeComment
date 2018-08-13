@@ -37,7 +37,7 @@
 %
 % For the particle filter we need to define two covariance matrices.  The
 % first is is the covariance of the random noise added to the particle
-% states at each iteration to represent uncertainty in configuration.   
+% states at each iteration to represent uncertainty in configuration.
 %    Q = diag([0.1, 0.1, 1*pi/180]).^2;
 % and the covariance of the likelihood function applied to innovation
 %    L = diag([0.1 0.1]);
@@ -45,7 +45,7 @@
 %    pf = ParticleFilter(veh, sensor, Q, L, 1000);
 % which is configured with 1000 particles.  The particles are initially
 % uniformly distributed over the 3-dimensional configuration space.
-%    
+%
 % We run the simulation for 1000 time steps
 %    pf.run(1000);
 % then plot the map and the true vehicle path
@@ -60,8 +60,8 @@
 %    pf.plot_pdf()
 %
 % Acknowledgement::
-% 
-% Based on code by Paul Newman, Oxford University, 
+%
+% Based on code by Paul Newman, Oxford University,
 % http://www.robots.ox.ac.uk/~pnewman
 %
 % Reference::
@@ -77,17 +77,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -145,11 +145,11 @@ classdef ParticleFilter < handle
             % 'x0'          Initial particle states (Nx3)
             %
             % Notes::
-            % - ParticleFilter subclasses Handle, so it is a reference object. 
+            % - ParticleFilter subclasses Handle, so it is a reference object.
             % - If initial particle states not given they are set to a uniform
             %   distribution over the map, essentially the kidnapped robot problem
             %   which is quite unrealistic.
-            % - Initial particle weights are always set to unity. 
+            % - Initial particle weights are always set to unity.
             % - The 'private' option creates a private random number stream for the
             %   methods rand, randn and randi.  If not given the global stream is used.
             %
@@ -199,7 +199,7 @@ classdef ParticleFilter < handle
 
             % save the current state in case it later turns out to give interesting results
             pf.seed0 = pf.randstream.State;
-            
+
             if opt.x0
                 pf.x0 = opt.x0;
             end
@@ -261,9 +261,9 @@ classdef ParticleFilter < handle
             % display the initial particles
             pf.h = plot3(pf.x(:,1), pf.x(:,2), pf.x(:,3), 'g.');
             set(pf.h, 'Tag', 'particles');
-            
+
             pf.robot.plot();
-            
+
             if ~isempty(pf.anim)
                 pf.anim.add();
             end
@@ -275,7 +275,7 @@ classdef ParticleFilter < handle
          end
 
          function step(pf, opt)
-             
+
             %fprintf('---- step\n');
             odo = pf.robot.step();        % move the robot
 
@@ -283,7 +283,7 @@ classdef ParticleFilter < handle
             pf.predict(odo);
 
             % get a sensor reading
-            [z,jf] = pf.sensor.reading();         
+            [z,jf] = pf.sensor.reading();
 
             if ~isnan(jf)
                 pf.observe(z, jf);
@@ -307,7 +307,7 @@ classdef ParticleFilter < handle
                 pf.robot.plot();
                 drawnow
             end
-            
+
             if ~isempty(pf.anim)
                 pf.anim.add();
             end
@@ -349,7 +349,7 @@ classdef ParticleFilter < handle
             % LS are passed to plot.
             plot(pf.x_est(:,1), pf.x_est(:,2), varargin{:});
         end
-        
+
         function display(pf)
             %ParticleFilter.display Display status of particle filter object
             %
@@ -362,7 +362,7 @@ classdef ParticleFilter < handle
             %   semicolon.
             %
             % See also ParticleFilter.char.
-            
+
             loose = strcmp( get(0, 'FormatSpacing'), 'loose');
             if loose
                 disp(' ');
@@ -401,32 +401,32 @@ classdef ParticleFilter < handle
             % Straightforward code:
             %
             % for i=1:pf.nparticles
-            %    x = pf.robot.f( pf.x(i,:), odo)' + sqrt(pf.Q)*pf.randn(3,1);   
+            %    x = pf.robot.f( pf.x(i,:), odo)' + sqrt(pf.Q)*pf.randn(3,1);
             %    x(3) = angdiff(x(3));
             %    pf.x(i,:) = x;
             %
             % Vectorized code:
 
             randvec = pf.randn(pf.nparticles,3);
-            pf.x = pf.robot.f( pf.x, odo) + randvec*sqrt(pf.Q);   
+            pf.x = pf.robot.f( pf.x, odo) + randvec*sqrt(pf.Q);
             pf.x(:,3) = angdiff(pf.x(:,3));
         end
 
         % step 3
         % predict observation and score the particles
         function observe(pf, z, jf)
-        
+
             % Straightforward code:
             %
             % for p = 1:pf.nparticles
             %    % what do we expect observation to be for this particle?
             %    % use the sensor model h(.)
             %    z_pred = pf.sensor.h( pf.x(p,:), jf);
-            %    
+            %
             %    % how different is it
             %    innov(1) = z(1) - z_pred(1);
             %    innov(2) = angdiff(z(2), z_pred(2));
-            %    
+            %
             %    % get likelihood (new importance). Assume Gaussian but any PDF works!
             %    % If predicted obs is very different from actual obs this score will be low
             %    %  ie. this particle is not very good at predicting the observation.
@@ -444,13 +444,13 @@ classdef ParticleFilter < handle
 
             LL = -0.5*[invL(1,1); invL(2,2); 2*invL(1,2)];
             e = [z_pred(:,1).^2 z_pred(:,2).^2 z_pred(:,1).*z_pred(:,2)]*LL;
-            pf.weight = exp(e) + pf.w0;  
+            pf.weight = exp(e) + pf.w0;
         end
 
         % step 4
         % select particles based on their weights
         function select(pf)
-            
+
             % particles with large weights will occupy a greater percentage of the
             % y axis in a cummulative plot
             CDF = cumsum(pf.weight)/sum(pf.weight);

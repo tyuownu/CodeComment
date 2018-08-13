@@ -22,40 +22,40 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
 % http://www.petercorke.com
 
 function s = trchain(robot, varargin)
-    
+
     opt.sym = false;
     opt.deg = true;
     opt = tb_optparse(opt, varargin);
-    
+
     if opt.deg
         conv = 180/pi;
     else
         conv = 1;
     end
-    
+
     s = '';
     varcount = 1;
-    
+
     for j=1:robot.n
         L = robot.links(j);
-        
+
         if L.isrevolute()
             s = append(s, 'Rz(q%d)', j);
             if L.d ~= 0
@@ -72,7 +72,7 @@ function s = trchain(robot, varargin)
             end
             s = append(s, 'Tz(q%d)', j);
         end
-        
+
         if L.a ~= 0
             if opt.sym
                 s = append(s, 'Tx(L%d)', varcount);
@@ -80,15 +80,15 @@ function s = trchain(robot, varargin)
             else
                 s = append(s, 'Tx(%g)', L.a);
             end
-            
+
         end
         if L.alpha ~= 0
             s = append(s, 'Rx(%g)', (L.alpha*conv));
         end
     end
 end
-    
-    
+
+
     function s = append(s, fmt, j)
         s = strcat(s, sprintf(fmt, j));
     end

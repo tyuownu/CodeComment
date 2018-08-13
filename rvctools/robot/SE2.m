@@ -5,7 +5,7 @@
 %
 % Constructor methods::
 %  SE2          general constructor
-%  SE2.exp      exponentiate an se(2) matrix  
+%  SE2.exp      exponentiate an se(2) matrix
 %  SE2.rand     random transformation
 %  new          new SE2 object
 %
@@ -47,7 +47,7 @@
 %  trprint2*    print single line representation
 %  trplot2*     plot coordinate frame
 %  tranimate2*  animate coordinate frame
-%  transl2      return translation as a row vector  
+%  transl2      return translation as a row vector
 %
 % Static methods::
 %  check        convert object or matrix to SO2 object
@@ -70,17 +70,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -88,14 +88,14 @@
 
 
 classdef SE2 < SO2
-    
+
     properties (Dependent = true)
         t
     end
-    
+
     methods
-        
-        
+
+
         function obj = SE2(varargin)
             %SE2.SE2 Construct an SE(2) object
             %
@@ -142,22 +142,22 @@ classdef SE2 < SO2
             % - Arguments can be symbolic
             % - The form SE2(XY) is ambiguous with SE2(R) if XY has 2 rows, the second form is assumed.
             % - The form SE2(XYT) is ambiguous with SE2(T) if XYT has 3 rows, the second form is assumed.
-            
+
             opt.deg = false;
-            
+
             [opt,args] = tb_optparse(opt, varargin);
-            
+
             if opt.deg
                 scale = pi/180.0;
             else
                 scale = 1;
             end
-            
+
             % if any of the arguments is symbolic the result will be symbolic
             if any( cellfun(@(x) isa(x, 'sym'), args) )
                 obj.data = sym(obj.data);
             end
-            
+
             obj.data = eye(3,3);
 
             switch length(args)
@@ -167,21 +167,21 @@ classdef SE2 < SO2
                 case 1
                     % 1 argument
                     a = args{1};
-                    
+
                     if isvec(a, 2)
                         % (t)
                         obj.data = [ 1 0 a(1); 0 1 a(2); 0 0 1];
-                        
+
                     elseif isvec(a, 3)
                         % ([x y th])
                         a = a(:);
                         obj.data(1:2,1:2) = rot2(a(3)*scale);
                         obj.t = a(1:2);
-                        
+
                     elseif SO2.isa(a)
                         % (R)
                         obj.data(1:2,1:2) = a;
-                        
+
                     elseif SE2.isa(a)
                         % (T)
                         for i=1:size(a, 3)
@@ -192,7 +192,7 @@ classdef SE2 < SO2
                         for i=1:length(a)
                             obj(i).data = a(i).data;
                         end
-                        
+
                     elseif any( numcols(a) == [2 3] )
                         for i=1:numrows(a)
                             obj(i) = SE2(a(i,:));
@@ -201,7 +201,7 @@ classdef SE2 < SO2
                     else
                         error('RTB:SE2:badarg', 'unknown arguments');
                     end
-                    
+
                 case 2
                     % 2 arguments
                     a = args{1}; b = args{2};
@@ -217,7 +217,7 @@ classdef SE2 < SO2
                     else
                         error('RTB:SE3:badarg', 'unknown arguments');
                     end
-                    
+
                 case 3
                     % 3 arguments
                     a = args{1}; b = args{2}; c = args{3};
@@ -229,9 +229,9 @@ classdef SE2 < SO2
                     end
                 otherwise
                     error('RTB:SE3:badarg', 'unknown arguments');
-                    
+
             end
-            
+
             % add the last row if required
 %             if numrows(obj.data) == 2
 %                 obj.data = [obj.data; 0 0 1];
@@ -239,11 +239,11 @@ classdef SE2 < SO2
             assert(all(size(obj(1).data) == [3 3]), 'RTB:SE2:SE2', 'created wrong size data element');
             %% HACK
         end
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %  GET AND SET
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         function t = get.t(obj)
             %SE2.t  Get translational component
             %
@@ -257,7 +257,7 @@ classdef SE2 < SO2
             % See also SE2.transl.
             t = obj.data(1:2,3);
         end
-        
+
         function o = set.t(obj, t)
             %SE2.t  Set translational component
             %
@@ -268,24 +268,24 @@ classdef SE2 < SO2
             % - TV can be a row or column vector.
             % - If TV contains a symbolic value then the entire matrix is converted to
             %   symbolic.
-            
+
             if isa(t, 'sym') && ~isa(obj.data, 'sym')
                 obj.data = sym(obj.data);
             end
             obj.data(1:2,3) = t;
             o = obj;
         end
-        
+
         function t = transl(obj)
             %SE2.t  Get translational component
             %
             % TV = P.transl() is a row vector (1x2) representing the translational component of
             % the rigid-body motion described by the SE2 object P.  If P is a vector of
             % objects (1xN) then TV (Nx2) will have one row per object element.
-            
+
             t = obj.t';
         end
-        
+
         function T = T(obj)
             %SE2.T  Get homogeneous transformation matrix
             %
@@ -299,7 +299,7 @@ classdef SE2 < SO2
                 T(:,:,i) = obj(i).data;
             end
         end
-        
+
         function t = SE3(obj)
             %SE2.SE3 Lift to 3D
             %
@@ -312,7 +312,7 @@ classdef SE2 < SO2
             t.data(1:2,1:2) = obj.data(1:2,1:2);
             t.data(1:2,4) = obj.data(1:2,3);
         end
-        
+
         function out = SO2(obj)
             %SE2.SO2  Extract SO(2) rotation
             %
@@ -320,13 +320,13 @@ classdef SE2 < SO2
             % the SE2 rigid-body motion.
             %
             % See also SE2.R.
-            
+
             out = SO2( obj.R );
         end
-        
-             
-        
-  
+
+
+
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%  SE(2) OPERATIONS
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -338,11 +338,11 @@ classdef SE2 < SO2
             % matrix.
             %
             % Notes::
-            % - This is formed explicitly, no matrix inverse required.   
+            % - This is formed explicitly, no matrix inverse required.
             it = SE2( obj.R', -obj.R'*obj.t);
         end
- 
-        
+
+
         function v = xyt(obj)
             %SE2.xyt  Construct SE2 object from Lie algebra
             %
@@ -350,7 +350,7 @@ classdef SE2 < SO2
             % parameters of this rigid-body motion [x; y; theta] with translation (x,y)
             % and rotation theta.
 
-            
+
             % TODO VECTORISE
             v = obj.t;
             v(3) = atan2(obj.data(2,1), obj.data(1,1));
@@ -365,7 +365,7 @@ classdef SE2 < SO2
             % See also SE2.Twist, logm.
             S = logm(obj.data);
         end
-        
+
         function T = interp(obj1, obj2, s)
             %SE2.interp Interpolate between SO2 objects
             %
@@ -379,10 +379,10 @@ classdef SE2 < SO2
             %
             % See also SO2.angle.
             assert(all(s>=0 & s<=1), 'RTB:SE2:interp:badarg', 's must be in the interval [0,1]');
-            
+
             th1 = obj1.angle; th2 = obj2.angle;
             xy1 = obj1.t; xy2 = obj2.t;
-            
+
             T = SE2( xy1 + s*(xy2-xy1), th1 + s*(th2-th1) );
         end
 
@@ -395,15 +395,15 @@ classdef SE2 < SO2
             % See also SE2.log, Twist.
             tw = Twist( obj.log );
         end
-        
-         
+
+
         function print(obj, varargin)
             for T=obj
                 theta = atan2(T.data(2,1), T.data(1,1)) * 180/pi;
                 fprintf('t = (%.4g, %.4g), theta = %.4g deg\n', T.t, theta);
             end
         end
-        
+
         function n = new(obj, varargin)
             %SE2.new  Construct a new object of the same type
             %
@@ -419,15 +419,15 @@ classdef SE2 < SO2
             %   one.
             %
             % See also SE3.new, SO3.new, SO2.new.
-            
+
             n = SE2(varargin{:});
         end
-        
+
     end
-    
+
     methods (Static)
         % Static factory methods for constructors from exotic representations
-        
+
         function obj = exp(s)
             %SE2.exp  Construct SE2 object from Lie algebra
             %
@@ -435,9 +435,9 @@ classdef SE2 < SO2
             % argument (3x3).
             obj = SE2( trexp2(s) );
         end
-        
 
-        
+
+
         function T = check(tr)
             %SE2.check  Convert to SE2
             %
@@ -451,7 +451,7 @@ classdef SE2 < SO2
                 error('expecting an SE2 or 3x3 matrix');
             end
         end
-        
+
         function h = isa(tr, rtest)
             %SE2.ISA Test if matrix is SE(2)
             %
@@ -466,11 +466,11 @@ classdef SE2 < SO2
             % - There is ambiguity in the dimensions of SE2 and SO3 in matrix form.
             %
             % See also SO3.ISA, SE2.ISA, SO2.ISA, ishomog2.
-            
+
             d = size(tr);
             if ndims(tr) >= 2
                 h =  all(d(1:2) == [3 3]);
-                
+
                 if h && nargin > 1
                     h = SO3.isa( tr(1:2,1:2) );
                 end
@@ -478,7 +478,7 @@ classdef SE2 < SO2
                 h = false;
             end
         end
-                
+
         function T = rand()
             %SE2.rand Construct a random SE(2) object
             %

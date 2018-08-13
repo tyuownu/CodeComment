@@ -4,17 +4,17 @@
 % Copyright (C) 1993-2017, by Peter I. Corke
 %
 % This file is part of The Robotics Toolbox for MATLAB (RTB).
-% 
+%
 % RTB is free software: you can redistribute it and/or modify
 % it under the terms of the GNU Lesser General Public License as published by
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-% 
+%
 % RTB is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU Lesser General Public License for more details.
-% 
+%
 % You should have received a copy of the GNU Leser General Public License
 % along with RTB.  If not, see <http://www.gnu.org/licenses/>.
 %
@@ -22,18 +22,18 @@
 
 function walking(varargin)
 
-    
+
     opt.niterations = 500;
     opt.movie = [];
-    
+
     opt = tb_optparse(opt, varargin);
-    
+
 L1 = 0.1; L2 = 0.1;
 
 fprintf('create leg model\n');
 
 % create the leg links based on DH parameters
-%                    theta   d     a  alpha  
+%                    theta   d     a  alpha
 links(1) = Link([    0       0    0   pi/2 ], 'standard');
 links(2) = Link([    0       0    L1   0   ], 'standard');
 links(3) = Link([    0       0   -L2   0   ], 'standard');
@@ -88,9 +88,9 @@ qcycle = leg.ikine( transl(xcycle), 'mask', [1 1 1 0 0 0] );
 % are at each corner.
 W = 0.1; L = 0.2;
 
-% a bit of optimization.  We use a lot of plotting options to 
+% a bit of optimization.  We use a lot of plotting options to
 % make the animation fast: turn off annotations like wrist axes, ground
-% shadow, joint axes, no smooth shading.  Rather than parse the switches 
+% shadow, joint axes, no smooth shading.  Rather than parse the switches
 % each cycle we pre-digest them here into a plotopt struct.
 % plotopt = leg.plot({'noraise', 'nobase', 'noshadow', ...
 %     'nowrist', 'nojaxes'});
